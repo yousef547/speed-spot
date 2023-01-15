@@ -1,0 +1,453 @@
+@model PurchaseOrderViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["PurchasingOrdersDetails"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    ViewData["Level2Section"] = SharedLocalizer["PurchasingOrders"];
+    ViewData["Level2Url"] = Url.Action("Index", "PurchasingOrders");
+    ViewData["Level3Section"] = SharedLocalizer["PurchasingOrdersDetails"];
+}
+
+@section HeaderActions{
+
+    <ul class="export-table-data">
+        <li>
+            <a class="parent"> <i class="fas fa-download"></i> Export</a>
+            <ul class="child-exp">
+                <li class="pdf-text"> Export as<span>PDF</span></li>
+                <li class="excel-text"> Export as <span>XLS</span></li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="vertical-split"></div>
+
+    <div class="btn-actions-header-second">
+
+        <a class="btn btn-action show-loader" asp-action="Create" asp-route-id="@Model.Id" title="@SharedLocalizer["Edit"]">
+            <i class="far fa-edit"></i>
+        </a>
+
+
+        @*<button type="button" class="btn btn-action" title="">
+            <i id="favouriteIcon" class="far fa-star"></i>
+        </button>*@
+
+        @*<a href="#" class="btn btn-action">
+            <i class="fas fa-print"></i>
+        </a>
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-ellipsis-h"></i>
+        </a>*@
+    </div>
+}
+
+<br />
+<div class="row d-flex align-items-center m-2">
+    <div class="col-md-5">
+        <p class="title-any">@SharedLocalizer["ID"]: #5454</p>
+        <ul class="nav nav-pills" id="mainTab" role="tablist">
+            <li class=" tabs-link-outline-blue-bg-white">
+                <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                    @SharedLocalizer["PoInformation"]
+                </a>
+            </li>
+            @if (Model.FundDetailsVM != null)
+            {
+                <li class=" tabs-link-outline-blue-bg-white">
+                    <a class="nav-link" id="tss-tab" data-toggle="tab" href="#tss" role="tab" aria-controls="tss" aria-selected="false">
+                        @SharedLocalizer["FundDetails"]
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-7 tender-flex">
+        <div class="tender-progress">
+            <h3 class="head-tender-progress">
+                @SharedLocalizer["TenderProgress"]
+            </h3>
+            <ul class="list-tender-solid">
+                <li class="done"></li>
+                <li class="done"></li>
+                <li class="done"></li>
+                <li class="done"></li>
+                <li class="active"></li>
+            </ul>
+            <ul class="list-tender-progress">
+                <li class="">@SharedLocalizer["Opportunity"]</li>
+                <li class="">@SharedLocalizer["Quotation"]</li>
+                <li class="">@SharedLocalizer["TechnicalSession"]</li>
+                <li class="">@SharedLocalizer["FinancialSession"]</li>
+                <li class="">@SharedLocalizer["PurchaseOrder"]</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<div class="row mx-1">
+    <div class="col-12">
+
+
+        <div class="tab-content px-2 sales-informations-tab-content" id="mainTabContent">
+            <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+                <div class="row poinformation-parent">
+                    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="CustomerPo-tab" data-toggle="tab" href="#CustomerPo" role="tab" aria-controls="CustomerPo" aria-selected="true">@SharedLocalizer["CustomerPo"]</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="SupplierPo-tab" data-toggle="tab" href="#SupplierPo" role="tab" aria-controls="SupplierPo" aria-selected="false">@SharedLocalizer["SupplierPo"]</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="tab-content" id="mainTabContent">
+                            <div class="tab-pane fade active show" id="CustomerPo" role="tabpanel" aria-labelledby="CustomerPo-tab">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["QuotationNo"]</label>
+                                                    <p class="details-label">@Model.QuotationTitle</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["Customer"]</label>
+                                                    <p class="details-label">@(SharedLocalizer.IsRightToLeft()? Model.CustomerNameAr:Model.CustomerName)</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["CustomerPoNumber"]</label>
+                                                    <p class="details-label">#@Model.CustomerPOVM.CustomerPONumber</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["PaymentTerms"]</label>
+                                                    <p class="details-label">
+
+                                                        @{
+                                                            int count = 0;
+                                                        }
+                                                        @if (Model.SelectedVersionVM.DownPaymentPercentage > 0)
+                                                        {
+                                                            <span>@Model.SelectedVersionVM.DownPaymentPercentage.ToString("##.##")@SharedLocalizer["DownPaymentPercentage"]</span>
+                                                            count++;
+                                                        }
+                                                        @if (Model.SelectedVersionVM.UponDeliveryPercentage > 0)
+                                                        {
+                                                            <span>
+                                                                @if (count == 1)
+                                                                {
+                                                                    @SharedLocalizer["And"]
+                                                                }
+                                                                @Model.SelectedVersionVM.UponDeliveryPercentage.ToString("##.##")@SharedLocalizer["UponDeliveryPercentage"]
+                                                            </span>
+                                                            count++;
+                                                        }
+                                                        @if (Model.SelectedVersionVM.AfterInstallationPercentage > 0)
+                                                        {
+                                                            <span>
+                                                                @if (count >= 1)
+                                                                {
+                                                                    @SharedLocalizer["And"]
+                                                                }
+                                                                @Model.SelectedVersionVM.AfterInstallationPercentage.ToString("##.##")@SharedLocalizer["AfterInstallationPercentage"]
+                                                            </span>
+                                                            count++;
+                                                        }
+
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["CertificateIds"]</label>
+                                                    <p class="details-label">@(SharedLocalizer.IsRightToLeft()? Model.SelectedVersionVM.CertificateNamesStrAr : Model.SelectedVersionVM.CertificateNamesStr)</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["DeliveryTerm"]</label>
+                                                    <p class="details-label">@(SharedLocalizer.IsRightToLeft()? Model.SelectedVersionVM.DeliveryPlaceNameAr: Model.SelectedVersionVM.DeliveryPlaceName)</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["DateFrom"]</label>
+                                                    <p class="details-label">@Model.CustomerPOVM.StartDate?.ToString("dd MMM, yyyy")</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["DeliveryRange"]</label>
+                                                    <p class="details-label">@Model.CustomerPOVM.DeliveryPeriod</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label class="text-details" for="">@SharedLocalizer["ExpiryDate"]</label>
+                                                    <p class="details-label">@Model.CustomerPOVM.StartDate?.AddDays(Model.CustomerPOVM.DeliveryPeriod).ToString("dd MMM, yyyy") <span class="info"><i class="fas fa-info"></i></span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-5">
+                                    <div class="col-12 col-lg-5">
+                                        <div class="card">
+                                            <div class="card-body p-0">
+
+                                                <div class="heading-upload-file">
+                                                    <h2>@SharedLocalizer["Attachment"]</h2>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        @foreach (var attach in Model.CustomerPOVM.PoAttachmentPath)
+                                                        {
+                                                            <div class="file-atach">
+                                                                <div class="left">
+                                                                    <div class="file-icon"><a href="/images/CustomerPo/@attach.AttachmentPath"><i class="fas fa-file-download"></i></a></div>
+                                                                    <div class="file-name"><p>@attach.TitleImage</p></div>
+                                                                </div>
+                                                            </div>
+                                                        }
+
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <partial name="_ProductCustomerPartial" model="new List<QuotationOfferProductViewModel>()" view-data='@new ViewDataDictionary(ViewData) { { "QuotationProducts", ViewData["products"] }}' />
+
+                            </div>
+                            <div class="tab-pane fade" id="SupplierPo" role="tabpanel" aria-labelledby="SupplierPo-tab">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <table class="table table-supplierPo-details">
+                                            <thead>
+                                                <tr>
+                                                    <th>@SharedLocalizer["Supplier"]</th>
+                                                    <th>@SharedLocalizer["SupplierPoNumber"].</th>
+                                                    <th>@SharedLocalizer["DeliveryRange "]</th>
+                                                    <th>@SharedLocalizer["DateFrom"]</th>
+                                                    <th>@SharedLocalizer["ExpiryDate"]</th>
+                                                    <th>@SharedLocalizer["OfferNumber"].</th>
+                                                    <th>@SharedLocalizer["Price"]</th>
+                                                    <th>@SharedLocalizer["LocalPriceTable"].</th>
+                                                    <th>@SharedLocalizer["Actions"]</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var supplier in Model.SupplierPOVMs)
+                                                {
+                                                    <tr>
+                                                        <td class="name">@(SharedLocalizer.IsRightToLeft()? supplier.Supplier.NameAr: supplier.Supplier.Name)</td>
+                                                        <td class="SupplierPONO">#@supplier.SupplierPONumber</td>
+                                                        <td class="DeliverPeriod">@supplier.DeliveryPeriod DAY</td>
+                                                        <td class="StartDate">@supplier.StartDate?.ToString("dd MMM, yyyy")</td>
+                                                        <td class="EndDate">@supplier.StartDate?.AddDays(supplier.DeliveryPeriod).ToString("dd MMM, yyyy")</td>
+                                                        <td class="OfferNo">
+                                                            @foreach (var offer in supplier.SupplierPoOffers)
+                                                            {
+                                                                <span># @offer.SupplierOfferVM?.Id ,</span>
+                                                            }
+                                                        </td>
+                                                        <td class="Price">
+                                                            @foreach (var offer in supplier.SupplierPoOffers)
+                                                            {
+                                                                <span>$ @offer.SupplierOfferVM?.TotalPrice ,</span>
+                                                            }
+                                                        </td>
+                                                        <td class="PriceEGP">
+
+                                                            @foreach (var offer in supplier.SupplierPoOffers)
+                                                            {
+                                                                <span>EGP @offer.SupplierOfferVM?.LocalTotalPrice ,</span>
+                                                            }
+                                                        </td>
+                                                        <td class="actions-another-size">
+                                                            <button type="button" class="btn btn-info info-details my-1">
+                                                                <i class="fas fa-info"></i>
+                                                            </button>
+                                                            <a class="btn btn-edit show-loader" title="Edit" href="">
+                                                                <i class="far fa-edit"></i>
+                                                            </a>
+                                                            <a class="btn btn-delete show-loader" href="">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.FundDetailsVM != null)
+            {
+                <div class="tab-pane fade" id="tss" role="tabpanel" aria-labelledby="tss-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["BankName"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.FundDetailsVM.BankNameAr : Model.FundDetailsVM.BankName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["Currency"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.FundDetailsVM.CountryNameAr : Model.FundDetailsVM.CountryName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["Amount"]</label>
+                                        <p class="details-label">$@Model.FundDetailsVM.Amount?.ToString("#,###.00")</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["FundPeriod"]</label>
+                                        <p class="details-label"> @Model.FundDetailsVM.FundPeriod</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["BankInterest"].</label>
+                                        <p class="details-label">% @Model.FundDetailsVM.BankInterest</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["TotalInterest"]</label>
+                                        <p class="details-label">
+                                            <span>@(SharedLocalizer.IsRightToLeft() ? Model.FundDetailsVM.CountryNameAr : Model.FundDetailsVM.CountryName)</span>
+                                            @Model.FundDetailsVM.TotalInterest?.ToString("#,###.00")
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["ProjectAccountNo"].</label>
+                                        <p class="details-label">#@Model.FundDetailsVM.ProjectNo</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["UploadContractFile"].</label>
+                                        <p class="details-label">
+                                            <div class="actions-uploaded">
+                                                <a class="file-name" href="/images/fundDetails/@Model.FundDetailsVM.ContractFilePath" target="_blank">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <p class="">@Model.FundDetailsVM.ContractFileTitle</p>
+                                                </a>
+                                            </div>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details" for="">@SharedLocalizer["ReleaseCustomerCollection"].</label>
+                                        <p class="details-label">
+                                            <div class="actions-uploaded">
+                                                <a class="file-name" href="/images/fundDetails/@Model.FundDetailsVM.CollectionFilePath" target="_blank">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <p class="">@Model.FundDetailsVM.CollectionFileTitle</p>
+                                                </a>
+                                            </div>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="supplier-payment">
+                        <div class="top-add-new">
+                            <h3 class="head-box">@SharedLocalizer["SupplierPayment"]:</h3>
+                        </div>
+                        <div class="card">
+                            <div class="row-employees mt-1" id="customer-employees">
+
+
+
+                                <div class="box employees-list no-padding">
+                                    <div class="header row">
+                                        <div class="col-3">
+                                            <label class="control-label">@SharedLocalizer["SupplierId"]</label>
+                                        </div>
+                                        <div class="col-3">
+                                            <label class="control-label">@SharedLocalizer["SupplierPoNumber"]</label>
+                                        </div>
+                                        <div class="col-3">
+                                            <label class="control-label">@SharedLocalizer["Amount"]</label>
+                                        </div>
+                                        <div class="col-3">
+                                            <label class="control-label">@SharedLocalizer["PaymentType"]</label>
+                                        </div>
+
+                                    </div>
+                                    @foreach (var item in Model.FundDetailsVM.AllSupplierPayments)
+                                    {
+
+                                        <div class="row box-content">
+                                            <div class="col-12 col-md-6 col-lg-3 item">
+                                                <div class="form-group">
+                                                    <label class="details-label">@(SharedLocalizer.IsRightToLeft() ? item.SupplierNameAr : item.SupplierName)</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6 col-lg-3 item">
+                                                <div class="form-group">
+                                                    <label class="details-label">@item.SupplierPONumber</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6 col-lg-3 item">
+                                                <div class="form-group">
+                                                    <label class="details-label">@item.Amount</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 col-md-6 col-lg-3 item">
+                                                <div class="form-group">
+                                                    <label class="details-label">@(SharedLocalizer.IsRightToLeft() ? item.PaymentTypeNameAr : item.PaymentTypeName)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cash-flow">
+                        <label class="details-label">@SharedLocalizer["CashFlow"]</label>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

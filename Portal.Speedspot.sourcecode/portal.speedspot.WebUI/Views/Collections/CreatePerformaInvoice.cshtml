@@ -1,0 +1,171 @@
+@model PerformaInvoiceViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["CreatePerformaInvoice"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+    ViewData["Level2Section"] = SharedLocalizer["Invoices"];
+}
+
+<div class="mx-3">
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="PurchaseOrderId"></label>
+                <div class="input-group">
+                    <select class="form-control select-no-border-white inp-height"
+                            asp-for="PurchaseOrderId"
+                            onchange="getPurchaseOrderData(); getGeneratedCode()">
+                        <option value="">@SharedLocalizer["Select"]</option>
+                        @foreach (var purchaseOrder in ViewData["PurchaseOrderId"] as List<PurchaseOrderViewModel>)
+                        {
+                            <option value="@purchaseOrder.Id"
+                                    data-customerpo="@purchaseOrder.CustomerPOVM.CustomerPONumber"
+                                    data-departmentId="@purchaseOrder.DepartmentId"
+                                    data-departmentname="@(SharedLocalizer.IsRightToLeft() ? purchaseOrder.DepartmentVM.NameAr : purchaseOrder.DepartmentVM.Name)"
+                                    data-customername="@(SharedLocalizer.IsRightToLeft() ? purchaseOrder.CustomerNameAr : purchaseOrder.CustomerName)"
+                                    data-vatno="@purchaseOrder.CustomerVatNo">
+                                @purchaseOrder.QuotationTitle
+                            </option>
+                        }
+                    </select>
+                    <div class="input-group-append">
+                        <input class="input-group-text" id="customerPONumber" value="" onchange="getPurchaseOrderDataByPoNumber()" />
+                    </div>
+                </div>
+                <span class="text-danger" asp-validation-for="PurchaseOrderId"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="DepartmentName"></label>
+                <input class="form-control inp-height" id="department" readonly />
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <div class="form-group">
+                <label class="control-label" asp-for="CustomerName"></label>
+                <input class="form-control inp-height" id="customer" readonly />
+            </div>
+        </div>
+        <div class="col-12 col-lg-1">
+            <div class="form-group">
+                <label class="control-label" asp-for="VATNo"></label>
+                <br />
+                <label class="control-label" id="vatno">#</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="InvoiceNo"></label>
+                <input class="form-control inp-height" asp-for="InvoiceNo" />
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="CurrencyId"></label>
+                <select class="form-control select-no-border-white inp-height"
+                        asp-for="CurrencyId"
+                        asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                </select>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="ExchangeRate"></label>
+                <input class="form-control inp-height" asp-for="ExchangeRate" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="InvoiceDate"></label>
+                <input class="form-control inp-height"
+                       asp-for="InvoiceDate"
+                       onchange="calculateDueDate(); getGeneratedCode()" />
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="PaymentTermId"></label>
+                <select class="form-control select-no-border-white inp-height"
+                        asp-for="PaymentTermId"
+                        onchange="calculateDueDate()">
+                    <option value="">@SharedLocalizer["Select"]</option>
+                    @foreach (var paymentTerm in ViewData["PaymentTermId"] as List<PaymentTerm>)
+                    {
+                        <option value="@paymentTerm.Id"
+                                data-daysno="@paymentTerm.DaysNo">
+                            @paymentTerm.Name
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="DueDate"></label>
+                <br />
+                <label class="control-label" id="duedate"></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="form-group">
+                <label class="control-label" asp-for="Message"></label>
+                <textarea class="form-control" asp-for="Message" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="GeneratedCode"></label>
+                <br />
+                <label class="control-label" id="generatedcode">#</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-12 col-lg-3">
+            <div class="form-group">
+                <label class="control-label" asp-for="IsTaxIncluded"></label>
+                <select class="form-control select-no-border-white inp-height"
+                        asp-for="IsTaxIncluded"
+                        onchange="isTaxIncludedChanged()">
+                    <option value="0">@SharedLocalizer["Exclusive"]</option>
+                    <option value="1">@SharedLocalizer["Inclusive"]</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12" id="products">
+            @await Html.PartialAsync("_ProductsPartial", new List<QuotationOfferProductViewModel>())
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/collections.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            isTaxIncludedChanged();
+            calculateAllItemsTotal();
+        })
+    </script>
+}

@@ -1,0 +1,75 @@
+﻿
+@model List<ProductCategoryViewModel>
+
+<table class="table table-head-fixed table-product-categories">
+    <thead>
+        <tr>
+            <th>
+                @SharedLocalizer["DepartmentId"]
+            </th>
+            <th>
+                @SharedLocalizer["ParentId"]
+            </th>
+            <th>
+                @SharedLocalizer["ProductOrService"]
+            </th>
+            <th>
+                @SharedLocalizer["Code"]
+            </th>
+            <th>
+                @SharedLocalizer["Name"]
+            </th>
+            <th>
+                @SharedLocalizer["NameAr"]
+            </th>
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @(SharedLocalizer.IsRightToLeft() ? item.ParentNameAr : item.ParentName)
+                    </span>
+                </td>
+                <td>
+                    @SharedLocalizer[(item.IsService) ? "Service" : "Product2"]
+                </td>
+                <td class="">
+                    <span class="id-etails one-line">
+                        @item.Code
+                    </span>
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td class="clickable-row-actions">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductCategories.Delete)).Succeeded)
+                    {
+                        <a class="btn btn-delete btn-table-width"
+                           data-toggle="confirmation" data-id="@item.Id">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                        <a class="btn show-loader btn-table-width" asp-action="Restore" asp-route-id="@item.Id" title="@SharedLocalizer["Restore"]">
+                            <i class="fas fa-trash-restore-alt"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

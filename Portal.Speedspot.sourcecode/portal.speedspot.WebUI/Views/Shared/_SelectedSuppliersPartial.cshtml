@@ -1,0 +1,24 @@
+﻿
+@model List<SupplierProductsViewModel>
+
+<div class="row">
+    @if (Model.Count > 0)
+    {
+        <div class="all-select-supp">
+            @foreach (var supplier in Model)
+            {
+                <div class="supp-select" title="@(SharedLocalizer.IsRightToLeft() ? supplier.ProductsStrAr : supplier.ProductsStr)">
+                    <div class="one-line">@(SharedLocalizer.IsRightToLeft() ? supplier.NameAr : supplier.Name)</div>
+                    <i class="fas fa-times" onclick="deSelectSupplier('@supplier.Id')"></i>
+                    <div class="show-item-parent">@(SharedLocalizer.IsRightToLeft() ? supplier.ProductsStrAr : supplier.ProductsStr)</div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="col-12">
+            @SharedLocalizer["SelectedSuppliersMSG"]
+        </div>
+    }
+</div>

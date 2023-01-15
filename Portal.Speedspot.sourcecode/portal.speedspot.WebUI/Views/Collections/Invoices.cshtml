@@ -1,0 +1,11 @@
+@{
+    ViewData["Title"] = SharedLocalizer["Invoices"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+}
+
+@section HeaderActions{
+    <a class="btn btn-primary text-white" asp-action="CreatePerformaInvoice">
+        <i class="fas fa-plus"></i>
+        @SharedLocalizer["NewPerfomaInvoice"]
+    </a>
+}

@@ -1,0 +1,105 @@
+﻿@model List<CustomerContactViewModel>
+
+@{
+    if (Model.Count == 0)
+    {
+        Model.Add(new CustomerContactViewModel());
+    }
+}
+
+<div class="box">
+    <div class="top-add-new">
+        <h3 class="head-box">@SharedLocalizer["Contacts"]:</h3>
+        <a class="btn btn-add-primary" id="add-contact" onclick="addContact()">
+            <i class="fa fa-plus"></i>
+            @SharedLocalizer["AddContact"]
+        </a>
+    </div>
+    <div class="content contact-customers">
+        <div class="header-contact">
+            <span>@SharedLocalizer["Type"]</span>
+            <span>@SharedLocalizer["AlNumber"]</span>
+            <span class="invisible"></span>
+        </div>
+        <div class="actons-mobile-number-contact contacts-list">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="item">
+                    <input class="contact-id"
+                       type="hidden"
+                       value="@Model[i].Id"
+                       name="ContactVMs[@i].Id"
+                       id="ContactVMs[@i]_Id" />
+                    <input class="contact-vm-id"
+                       type="hidden"
+                       value="@Model[i].ContactVM.Id"
+                       name="ContactVMs[@i].ContactVM.Id"
+                       id="ContactVMs[@i]_ContactVM_Id" />
+                    <input class="contact-contactid"
+                       type="hidden"
+                       value="@Model[i].ContactId"
+                       name="ContactVMs[@i].ContactId"
+                       id="ContactVMs[@i]_ContactId" />
+                    <input class="contact-customerid"
+                       type="hidden"
+                       value="@Model[i].CustomerId"
+                       name="ContactVMs[@i].CustomerId"
+                       id="ContactVMs[@i]_CustomerId" />
+                    <div class="mobile-list">
+                        <select name="ContactVMs[@i].ContactVM.TypeId"
+                            id="ContactVMs[@i]_ContactVM_TypeId"
+                            class="form-control contact-type"
+                            value="@Model[i].ContactVM.TypeId"
+                            asp-items="@(new SelectList(ViewBag.ContactTypeId as List<ContactType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model[i].ContactVM.TypeId))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                    </div>
+                    <div class="mobile-number">
+                        <div class="inputs">
+                            <div class="flags-change">
+                                <ul>
+                                    <li class="contact-country parent-list-country" data-country="CodeParent">
+                                        <img class="change-country" />
+                                        <ul class="sub-menu-country-img" data-selectedid="@Model[i].ContactVM.PhoneCodeId">
+                                            @foreach (var country in (List<Country>)ViewBag.CountryId)
+                                            {
+                                                <li class="@(country.Id == Model[i].ContactVM.PhoneCodeId ? "selected" : "")" data-countrychild="+@country.PhoneCode" data-id="@country.Id">
+                                                    <img class="change-countryChild" src="/images/Flags/svg/@(country.Code2).svg" />
+                                                    <span>@(SharedLocalizer.IsRightToLeft() ? country.NameAr : country.Name)</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <input type="hidden" name="ContactVMs[@i].ContactVM.PhoneCodeId" id="ContactVMs[@i]_ContactVM_PhoneCodeId" class="id-country contact-phonecode">
+                                <span class="code-country"></span>
+                                <input name="ContactVMs[@i].ContactVM.Number"
+                                   id="ContactVMs[@i]_ContactVM_Number"
+                                   value="@Model[i].ContactVM.Number"
+                                   type="tel"
+                                   class="country-number-inp contact-number form-control"
+                                   placeholder="xxxxxxxxxx">
+                            </div>
+                        </div>
+                        <div class="actions">
+                            @if (Model[i].Id != 0)
+                            {
+                                <a onclick="deleteDbContact(@Model[i].ContactVM.Id, @i)">
+                                    <i class="fa fa-trash-alt"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a onclick="deleteContact(@i)">
+                                    <i class="fa fa-trash-alt"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+
+</div>

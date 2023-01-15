@@ -1,0 +1,284 @@
+﻿@{
+    ViewData["Title"] = SharedLocalizer["Payments"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+
+    var pendingRequestsTotal = (ViewData["PendingRequests"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+
+    var overDueTotal = (ViewData["PendingRequests"] as List<PaymentRequestViewModel>)
+        .Where(r => r.Deadline < DateTime.UtcNow)
+        .Sum(r => r.LocalTotalAmount);
+
+    var inprogressPaymentsTotal = (ViewData["InprogressPayments"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+
+    var paidPaymentsTotal = (ViewData["PaidPayments"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+}
+
+
+@section HeaderActions{
+    <a class="btn btn-primary text-white" asp-action="RequestPayment">
+        @SharedLocalizer["RequestPayment"]
+    </a>
+
+    <button type="button" class="btn btn-search-top-header visits" onclick="favourite('')">
+        <i id="favouriteIcon_" class="far fa-star"></i>
+    </button>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mx-4 mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active"
+               asp-controller="Payments" asp-action="Index">@SharedLocalizer["Payments"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-controller="Payments" asp-action="Insurance">@SharedLocalizer["TenderInsurance"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-controller="Payments" asp-action="Bills">@SharedLocalizer["Bills"]</a>
+        </li>
+    </ul>
+}
+<br>
+<div class="row mx-2 justify-content-end">
+    <div class="col-12 col-md-9">
+        <div class="input-group mb-3 justify-content-start">
+            <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchPayments"]">
+        </div>
+    </div>
+</div>
+
+<div id="allPayments">
+    <div class="row">
+        <div class="col-4">
+            <div class="payments-requested active d-flex flex-row justify-content-between" onclick="openTablePayment(this,'requestedPayments')">
+                <div class="d-flex flex-column">
+                    <span class="total-title">
+                        @SharedLocalizer["RequestedPayments"]
+                    </span>
+                    <span class="total-number">
+                        <img src="/images/paid.png">
+                        @pendingRequestsTotal.ToString("#,##0.00")
+                    </span>
+                </div>
+                <div class="d-flex flex-column justify-content-center">
+                    <span class="over-due-title">
+                        @SharedLocalizer["Overdue"]
+                    </span>
+                    <span class="over-due-number">@overDueTotal.ToString("#,##0.00")</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="payments-inprogress" onclick="openTablePayment(this,'inprogressPayments')">
+                <div class="d-flex flex-column">
+                    <span class="total-title">
+                        @SharedLocalizer["InprogressPayments"]
+                    </span>
+                    <span class="total-number">
+                        <img src="/images/inprogress.png">
+                        @inprogressPaymentsTotal.ToString("#,##0.00")
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="payments-paid" onclick="openTablePayment(this,'paidPayments')">
+                <div class="d-flex flex-column">
+                    <span class="total-title">
+                        @SharedLocalizer["Paid"]
+                    </span>
+                    <span class="total-number">
+                        <img src="/images/collected.png">
+                        @paidPaymentsTotal.ToString("#,##0.00")
+                    </span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12" id="requestedPayments">
+            @await Html.PartialAsync("_RequestedPaymentsPartial", ViewData["PendingRequests"])
+        </div>
+
+        <div class="col-12 d-none" id="inprogressPayments">
+            @await Html.PartialAsync("_InprogressPaymentsPartial", ViewData["InprogressPayments"])
+        </div>
+
+        <div class="col-12 d-none" id="paidPayments">
+            @await Html.PartialAsync("_PaidPaymentsPartial", ViewData["PaidPayments"])
+        </div>
+    </div>
+</div>
+
+<!---------------------- Modals ------------------------->
+<div class="modal fade" id="modalAddPayment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" id="modelPayment">
+
+    </div>
+</div>
+
+<div class="modal fade" id="modalPaymentDetails" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" id="detailsVM">
+
+    </div>
+</div>
+
+<div class="modal fade" id="modalCanNotApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mt-3">
+                <div class="card shadow-none border-0">
+                    <div class="row justify-content-center mb-3">
+                        <div class="modal-icon">
+                            <i class="fas fa-exclamation fa-2x"></i>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 text-center mb-3 message-modal-title">
+                            @SharedLocalizer["Sorry"]
+                        </div>
+                        <div class="col-12 text-center mb-4 px-5 message-modal-label">
+                            @SharedLocalizer["CannotApproveRequestMSG"]
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-9 text-center">
+                            <button type="button" class="payment-type-modal-btn-cancel-secondary" data-dismiss="modal">@SharedLocalizer["Cancel"]</button>
+                            <button type="button" class="payment-type-modal-btn-save" onclick="addPaymentType('tableRequestedPayments')">
+                                <i class="fas fa-plus"></i> @SharedLocalizer["PaymentType"]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalReject" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mt-3">
+                <div class="card shadow-none border-0">
+                    <div class="row justify-content-center mb-3">
+                        <div class="modal-icon-reject">
+                            <i class="fas fa-times fa-2x"></i>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 text-center message-modal-label mb-2">
+                            @SharedLocalizer["RejectReasonMSG"]
+                        </div>
+                        <div class="col-12 text-center mb-3 px-5">
+                            <input type="hidden" id="reject_PaymentRequestId" />
+                            <textarea class="modal-textarea" rows="3" id="reject_Reason"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-9 text-center">
+                            <button type="button" class="payment-type-modal-btn-cancel-secondary" data-dismiss="modal">@SharedLocalizer["Cancel"]</button>
+                            <button type="button" class="payment-type-modal-btn-save" onclick="rejectRequest('tableRequestedPayments')">
+                                @SharedLocalizer["Reject"]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body mt-3">
+                <div class="card shadow-none border-0">
+                    <div class="row justify-content-center mb-3">
+                        <div class="modal-icon-reject">
+                            <i class="fas fa-trash fa-2x"></i>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 text-center message-modal-label mb-2">
+                            @SharedLocalizer["DeleteRequestsConfirmationMSG"]                            
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center mb-4">
+                        <div class="col-9 text-center">
+                            <button type="button" class="payment-type-modal-btn-cancel-secondary" data-dismiss="modal">@SharedLocalizer["Cancel"]</button>
+                            <button type="button" class="payment-type-modal-btn-save" onclick="deleteRequest('tableRequestedPayments')">
+                                @SharedLocalizer["Delete"]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAttachment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" id="attachmentVM">
+
+    </div>
+</div>
+<!------------------------------------------------------->
+
+@section Scripts{
+    <script src="~/js/payments.js"></script>
+    <script>
+        $(document).ready(function () {
+            handleDataTable({
+                selector: "#tableRequestedPayments",
+                stateloadcallback: stateLoadParams
+            });
+            handleDataTable({
+                selector: "#tablePaidPayments",
+                stateloadcallback: stateLoadParams
+            });
+            handleDataTable({
+                selector: "#tableInprogressPayments",
+                stateloadcallback: stateLoadParams
+            });
+        })
+    </script>
+}

@@ -1,0 +1,28 @@
+﻿
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="BranchId">@SharedLocalizer["BankBranchId"] </label>
+            <select class="form-control inp-height"
+                    type="text"
+                    id="BranchId"
+                    name="BranchId"
+                    asp-items="@(new SelectList(ViewBag.BranchId as List<BankBranch>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                    onchange="branchChanged()">
+                <option value="">@SharedLocalizer["Select"]</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="BranchAddress">@SharedLocalizer["Address"] </label>
+            <input class="form-control inp-height" type="text" id="BranchAddress" name="BranchAddress" value="" disabled>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="SwiftCode">@SharedLocalizer["SwiftCode"] </label>
+            <input class="form-control inp-height" type="text" id="SwiftCode" name="SwiftCode" value="" disabled>
+        </div>
+    </div>
+</div>

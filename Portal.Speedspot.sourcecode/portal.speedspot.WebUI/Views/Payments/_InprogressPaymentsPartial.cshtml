@@ -1,0 +1,101 @@
+
+@model IList<PaymentRequestViewModel>
+
+<div class="card my-3">
+    <div class="card-body p-0">
+        <table class="table table-head-fixed " id="tableInprogressPayments">
+            <thead>
+                <tr>
+                    <th>
+                        @SharedLocalizer["RequestedBy"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Department"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["DirectionId"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Amount"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["ExchangeRate"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["TotalAmount"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Deadline"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["PaymentType"]
+                    </th>
+                    <th class="no-sort">
+                        @SharedLocalizer["Actions"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr class="my-3">
+                        <td data-sort="@item.CreatedByUserName">
+                            <div class="img-user-request">
+                                @if (item.CreatedByUserProfilePicture != null)
+                                {
+                                    <img src="/images/Users/@item.CreatedByUserProfilePicture" class="img-circle user-img" alt="">
+                                }
+                                else
+                                {
+                                    <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                }
+                                <span class="light-blue-2">@item.CreatedByUserName</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-department">
+                                @(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.IsProject)
+                            {
+                                <span class="text-project">@item.ProjectName</span>
+                            }
+                            else
+                            {
+                                <span class="text-directions">@(SharedLocalizer.IsRightToLeft() ? item.DirectionStrAr : item.DirectionStr)</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="text-amount-inprogress">@item.TotalAmount.ToString("#,###.00") @item.CurrencySymbol</span>
+                            </div>
+                        </td>
+                        <td class="text-exchange-rate">@item.PaymentDetailsVM.ExchangeRate</td>
+                        <td>
+                            <span class="text-amount-local-inprogress">
+                                @item.LocalTotalAmount.ToString("#,###.00") @(item.PaymentDetailsVM?.TreasuryVM.CurrencyVM.Symbol)
+                            </span>
+                        </td>
+                        <td class="text-date">@item.Deadline.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <button type="button" class="btn-payment-type" onclick="showPaymentDetails('@item.Id')">
+                                @SharedLocalizer[item.PaymentDetailsVM.Type.ToString()]
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn-add-payment" onclick="openAttachmentModal('@item.Id')">
+                                <i class="fas fa-upload mx-2"></i>@SharedLocalizer["Attachment"]
+                            </button>
+
+                            <button type="button" class="btn-delete-payment">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

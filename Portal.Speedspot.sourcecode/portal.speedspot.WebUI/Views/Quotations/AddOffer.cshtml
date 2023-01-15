@@ -1,0 +1,92 @@
+
+@model QuotationOfferViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["AddOffer"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    ViewData["Level2Section"] = SharedLocalizer["Quotations"];
+    ViewData["Level2Url"] = Url.Action("Index");
+
+    var offers = ViewData["OfferVMs"] as List<QuotationOfferViewModel>;
+}
+
+<div class="row mx-4 mb-4">
+    <h3 class="head-box"> @SharedLocalizer["CurrenciesPrice"]:</h3>
+    <div class="card w-100">
+        <div class="card-body">
+            <br />
+            <div class="row quotationCurrencies" id="quotationCurrencies">
+                @await Html.PartialAsync("_CurrenciesPartial", ViewData["CurrencyVMs"])
+            </div>
+        </div>
+    </div>
+</div>
+<div id="addOffer">
+    @await Html.PartialAsync("_AddOfferPartial")
+</div>
+
+<div class="row mx-4">
+    <div class="col-12">
+        <div id="offers">
+            @if (offers != null && offers.Count > 0)
+            {
+                @await Html.PartialAsync("_OffersPartial", offers, new ViewDataDictionary(ViewData) { { "ShowFinishButton", true } });
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/quotations.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#CurrencyId").selectpicker();
+            $("#ValidityId").selectpicker();
+            $("#DeliveryPlaceId").selectpicker();
+            $("#OriginDocumentId").selectpicker();
+            $("#CertificateIds").selectpicker();
+            $("#GuaranteeTermId").selectpicker();
+            $(".product-origin").selectpicker();
+            $("#VATValueIds").selectpicker();
+
+            checkGuaranteeTerms();
+            checkGuarantee();
+
+            let i = 0;
+            $(".item-row").each(function () {
+                isIncludedChanged(i);
+                i++;
+            })
+
+            calculateAllRowsPrice();
+
+            initRichText("#TechnicalSpecifications");
+
+            initRichText("#CoverLetter");
+
+            var clickFn = function () {
+                var tr = $(this).closest('tr');
+                var row = table.api().row(tr);
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    // Open this row
+                    let itemId = row.data()["DT_RowId"];
+                    $.get(`/Quotations/GetAlternateVersionData?versionId=${itemId}`, function (result) {
+                        row.child(result).show();
+                        tr.addClass('shown');
+                    })
+                }
+            }
+
+            let table = handleDataTable({
+                selector: ".table-offers",
+                childClickFn: clickFn,
+                paging: false
+            });
+        })
+    </script>
+}

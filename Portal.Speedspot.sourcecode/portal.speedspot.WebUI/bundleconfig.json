@@ -1,0 +1,50 @@
+[
+  {
+    "outputFileName": "wwwroot/bundles/bundle.min.css",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "wwwroot/lib/data-tables/css/dataTables.bootstrap4.min.css",
+      "wwwroot/lib/data-tables/css/responsive.bootstrap.min.css",
+      "wwwroot/lib/rich-text-editor/richtext.min.css",
+      "wwwroot/lib/bootstrap-select/css/bootstrap-select.min.css",
+      "wwwroot/lib/FinanTree/main.css",
+      "wwwroot/css/common.css",
+      "wwwroot/lib/adminlte/dist/css/adminlte.css",
+      "wwwroot/lib/fontawesome-free/css/all.min.css",
+      "wwwroot/lib/icheck-bootstrap/icheck-bootstrap.css",
+      "wwwroot/lib/data-tables/css/dataTables.dateTime.min.css",
+      "wwwroot/lib/custom-range/custom-range.css",
+      "wwwroot/lib/dropcountry/dropcountry.css",
+      "wwwroot/lib/Product_Tree/product-tree.css",
+      "wwwroot/lib/supplier-tree/supplier-tree.css",
+      "wwwroot/lib/toastr/toastr.min.css",
+      "wwwroot/lib/data-tables/css/buttons.dataTables.min.css",
+      "wwwroot/lib/custom-list/custom-list.css",
+      "wwwroot/lib/jquery-ui/jquery-ui.min.css",
+      "wwwroot/lib/full-calendar/main.css",
+      "wwwroot/css/print.css",
+      "wwwroot/css/mediaQuery.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/bundle-rtl.min.css",
+    "inputFiles": [
+      "wwwroot/css/site-rtl.css",
+      "wwwroot/lib/bootstrap/dist/css/bootstrap-rtl.min.css",
+      "wwwroot/lib/adminlte/dist/css/custom.css",
+      "wwwroot/css/mediaQuery-rtl.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/bundles/bundle-ltr.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css"
+    ]
+  }
+  //{
+  //  "outputFileName": "wwwroot/bundles/bundle.min.js",
+  //  "inputFiles": [
+  //    "wwwroot/js/site.js"
+  //  ]
+  //}
+]

@@ -1,0 +1,26 @@
+﻿@media (max-width: 768px) {
+    .navbar-expand .navbar-nav {
+
+    }
+
+   .main-header .header-panels-container{
+        margin: 0 10px;
+        position: absolute;
+        top: 40px;
+        right: 120px;
+        z-index: -1;
+    }
+    p.my-company {
+        min-width: 130px;
+    }
+    .navbar-umsco > li:after {
+        top: 6px !important;
+        left: 30px !important;
+    }
+    .layout-fixed .main-sidebar{
+        transition: .3s ease-in-out all;
+    }
+    .table.table-head-fixed td span.one-line {
+        margin-right: auto;
+    }
+   }

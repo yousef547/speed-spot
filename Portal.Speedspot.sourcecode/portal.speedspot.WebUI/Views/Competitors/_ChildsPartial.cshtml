@@ -1,0 +1,77 @@
+
+@model IList<CompetitorViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th></th>
+            <th>@SharedLocalizer["ID"]</th>
+            <th>@SharedLocalizer["Name"]</th>
+            <th>@SharedLocalizer["NameAr"]</th>
+            <th>@SharedLocalizer["SubName"]</th>
+            <th>@SharedLocalizer["Email"]</th>
+            <th>@SharedLocalizer["CreatedById"]</th>
+            <th>@SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td></td>
+                <td class="name-details">@item.Id</td>
+                <td title="@item.Name">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td title="@item.NameAr">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td><span class="name-details one-line">@item.SubName</span></td>
+                <td class="last-visit">@item.Email</td>
+                <td class="created-by">@item.CreatedByName</td>
+                <td class="actions-table-btn min-w-250" data-label="Actions">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Details)).Succeeded)
+                    {
+                        <a class="btn btn-info info-details my-1" asp-action="Details" asp-route-id="@item.Id">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    <button type="button" class="btn btn-fav my-1" onclick="favourite(@item.Id)">
+                        <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star"></i>
+                    </button>
+                    <a href="@item.WebsiteUrl" target="_blank" class="btn website-link ">
+                        <span>@SharedLocalizer["Website"]</span>
+                    </a>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader-ajax" title="Edit" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete competitors-confirm-delete"
+                               data-source="archiveCompetitors"
+                               data-itemId="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader competitors-confirm-delete" data-source="unArchiveCompetitors" data-itemId="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

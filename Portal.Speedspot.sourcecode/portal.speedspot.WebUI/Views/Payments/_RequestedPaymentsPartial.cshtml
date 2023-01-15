@@ -1,0 +1,131 @@
+
+@model IList<PaymentRequestViewModel>
+
+<div class="mt-3 d-none" id="actionPayments">
+    <button type="button" class="btn-payment add-payment-btn" onclick="addPaymentType('tableRequestedPayments')">
+        <i class="fas fa-plus mr-2"></i>@SharedLocalizer["AddPaymentType"]
+    </button>
+    <button type="button" class="btn-payment edit-payment-btn d-none" onclick="editPaymentType('tableRequestedPayments')">
+        <i class="fas fa-edit mr-2"></i>@SharedLocalizer["EditPaymentType"]
+    </button>
+    <button type="button" class="btn-payment approve-payment-btn" onclick="approveRequest('tableRequestedPayments')">
+        <i class="fas fa-check mr-2"></i>@SharedLocalizer["Approve"]
+    </button>
+    <button type="button" class="btn-payment reject-payment-btn" onclick="openRejectModal('tableRequestedPayments')">
+        <i class="fas fa-times mr-2"></i>@SharedLocalizer["Reject"]
+    </button>
+    <button type="button" class="btn-payment delete-payment-btn" onclick="showDeleteModal()">
+        <i class="fas fa-trash-alt mr-2"></i>@SharedLocalizer["Delete"]
+    </button>
+</div>
+
+<div class="card my-3">
+    <div class="card-body p-0">
+        <table class="table table-head-fixed " id="tableRequestedPayments">
+            <thead>
+                <tr>
+                    <th class="no-sort w-25p">
+
+                    </th>
+                    <th>
+                        @SharedLocalizer["RequestedBy"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Department"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["DirectionId"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["TotalAmount"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Deadline"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Status"]
+                    </th>
+                    <th class="no-sort">
+                        @SharedLocalizer["PaymentType"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int i = 0;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="dtr-control">
+                            <div class="icheck-primary d-inline ml-2">
+                                <input data-id="@item.Id" data-has-payment="@(item.PaymentDetailsVM != null)" type="checkbox" id="chk_@i" onchange="showActionBtn('actionPayments','tableRequestedPayments')">
+                                <label for="chk_@i"></label>
+                            </div>
+                        </td>
+                        <td data-sort="@item.CreatedByUserName">
+                            <div class="img-user-request">
+                                @if (item.CreatedByUserProfilePicture != null)
+                                {
+                                    <img src="/images/Users/@item.CreatedByUserProfilePicture" class="img-circle user-img" alt="">
+                                }
+                                else
+                                {
+                                    <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                }
+                                <span class="light-blue-2">@item.CreatedByUserName</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="text-department">
+                                @(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.IsProject)
+                            {
+                                <a asp-controller="Projects" asp-action="Details" asp-route-id="@item.ProjectId" target="_blank">
+                                    <span class="text-project">@item.ProjectName</span>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-directions">@(SharedLocalizer.IsRightToLeft() ? item.DirectionStrAr : item.DirectionStr)</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span class="text-amount">@item.TotalAmount.ToString("#,###.00") @item.CurrencySymbol</span>
+                                <span class="text-amount-local">
+                                    @item.LocalTotalAmount.ToString("#,###.00") @(item.PaymentDetailsVM?.TreasuryVM.CurrencyVM.Symbol)
+                                </span>
+                            </div>
+                        </td>
+                        <td class="text-date">@item.Deadline.ToString("dd/MM/yyyy")</td>
+                        <td class="text-status">
+                            <span class="pending">
+                                <i class="fas fa-history"></i>
+                                @SharedLocalizer["Pending"]
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.PaymentDetailsVM == null)
+                            {
+                                <button type="button" onclick="openAddTypeModal(@item.Id)" class="btn-add-payment">
+                                    <i class="fas fa-plus"></i>@SharedLocalizer["Add"]
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" class="btn-payment-type" onclick="showPaymentDetails('@item.Id')">
+                                    @SharedLocalizer[item.PaymentDetailsVM.Type.ToString()]
+                                </button>
+                            }
+                        </td>
+                    </tr>
+                    i++;
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

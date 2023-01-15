@@ -1,0 +1,45 @@
+﻿@model TaskViewModel
+
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["PriorityLevel"]</label>
+            <p>@Model.PriorityLevel</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Tasks"]</label>
+            <p>@Model.Title</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["CreatedById"]</label>
+            <p>@Model.CreatedByName</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Date"]</label>
+            <p>@Model.CreatedDate.ToString("dd/MM/yyyy") - <span>@Model.CreatedDate.ToString("hh:mm tt")</span></p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Deadline"]</label>
+            <p class="deadline">@Model.Deadline?.ToString("dd/MM/yyyy") - <span>@Model.Deadline?.ToString("hh:mm tt")</span></p>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Description"]</label>
+            <p class="deadline">@Model.Description</p>
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,150 @@
+﻿@model EditUserViewModel
+
+@{
+    ViewData["Title"] = Model.Email;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+    <form enctype="multipart/form-data" method="post" asp-action="Edit" class="d-inline" id="userForm">
+        <div class="form-global-inp mx-4">
+            <div class="">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <input asp-for="Id" type="hidden" />
+
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="ProfileImage">@SharedLocalizer["ProfileImage"]</label>
+                            <div class="custom-file">
+                                <label class="file file-upload-label" for="customFile">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                    <span class="span-upload"> @SharedLocalizer["ChooseFile"]</span>
+                                </label>
+                                <input asp-for="ProfileImage" class="custom-file-input" id="customFile">
+                                <label class="custom-file-label d-none" for="customFile"></label>
+                            </div>
+                            <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="EmployeeTypeId">@SharedLocalizer["EmployeeType"]</label>
+                            <select class="form-control inp-height select-no-border-white"
+                                asp-for="EmployeeTypeId"
+                                data-live-search="true"
+                                asp-items="@(new SelectList(ViewData["EmployeeTypeId"] as List<EmployeeType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            </select>
+                            <span asp-validation-for="EmployeeTypeId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="DepartmentId"></label>
+                            <select class="form-control inp-height select-no-border-white"
+                                asp-for="DepartmentId"
+                                data-live-search="true"
+                                asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="DirectManagerId"></label>
+                            <select class="form-control inp-height select-no-border-white"
+                                asp-for="DirectManagerId"
+                                data-live-search="true"
+                                asp-items="@(new SelectList(ViewBag.DirectManagerId as List<ApplicationUser>, "Id", "Name"))">
+                                <option value="">@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span asp-validation-for="DirectManagerId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="SupervisorIds"></label>
+                            <select class="form-control inp-height"
+                                asp-for="SupervisorIds"
+                                data-live-search="true"
+                                asp-items="@(new SelectList(ViewBag.DirectManagerId as List<ApplicationUser>, "Id", "Name"))" multiple>
+                            </select>
+                            <span asp-validation-for="SupervisorIds" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="FirstName">@SharedLocalizer["FirstName"]</label>
+                            <input class="form-control inp-height" asp-for="FirstName" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="LastName">@SharedLocalizer["LastName"]</label>
+                            <input class="form-control inp-height" asp-for="LastName" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="Email">@SharedLocalizer["Email"]</label>
+                            <input class="form-control inp-height" asp-for="Email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label lable-create-roles" asp-for="PhoneNumber">@SharedLocalizer["PhoneNumber"]</label>
+                            <input class="form-control inp-height" asp-for="PhoneNumber" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @*        <div class="card-footer">
+        <input type="button" value="@SharedLocalizer["Save"]" class="btn btn-save show-loader" />
+        <a asp-action="Index" class="btn btn-default float-right show-loader">
+        @SharedLocalizer["Cancel"]
+        </a>
+        </div>*@
+        </div>
+    </form>
+
+    @section scripts{
+    <script src="~/js/users.js"></script>
+
+    <script type="text/javascript">
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function() {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+        $('select').selectpicker();
+
+    </script>
+}  

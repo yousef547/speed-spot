@@ -1,0 +1,122 @@
+﻿
+@model QuotationViewModel
+
+@{
+    var companyData = ViewBag.CompanyData as CompanyDataViewModel;
+
+    List<QuotationGroupViewModel> quotationGroups = (ViewData["QuotationGroups"] as List<QuotationGroupViewModel>).OrderBy(o => o.TotalPrice).ToList();
+
+    var offerGroup = quotationGroups.FirstOrDefault(g => !g.IsCompetitor);
+    var selectedVersion = offerGroup.OfferVMs.SelectMany(x => x.VersionVMs).ToList().FirstOrDefault(v => v.IsSelected);
+    var selectedOffer = offerGroup.OfferVMs.FirstOrDefault(x => x.VersionVMs.Any(y => y.IsSelected));
+    if (selectedVersion == null)
+    {
+        selectedVersion = offerGroup.OfferVMs.LastOrDefault()?.VersionVMs.LastOrDefault();
+        selectedOffer = offerGroup.OfferVMs.LastOrDefault();
+    }
+    decimal localSupplierPrice = selectedVersion.LocalSupplierPrice;
+    decimal supplierPrice = selectedVersion.TotalSupplierPrice;
+}
+
+<div class="card w-100">
+    <div class="h-375">
+        <div class="bg-full d-none" id="loader-chartsComparison">
+            <div class="spinner-loading" role="status">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </div>
+        </div>
+        <canvas id="chartsComparison"></canvas>
+    </div>
+</div>
+
+<div class="card my-5">
+    <table class="table table-striped competitors">
+        <thead>
+            <tr>
+                <th>@SharedLocalizer["Company"]</th>
+                <th>@SharedLocalizer["CompanyPrice"]</th>
+                <th>@SharedLocalizer["SupplierPrice"]</th>
+                <th>@SharedLocalizer["Factor"]</th>
+                <th>@SharedLocalizer["SelectedOrigins"]</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var group in quotationGroups)
+            {
+                if (!group.IsCompetitor)
+                {
+                    <tr>
+                        <td class="companyName">
+                            <div class="img-user-request">
+                                <img src="/images/Company/@group.ImagePath" />
+                                <span>@group.Name</span>
+                            </div>
+                        </td>
+                        <td>@selectedVersion.TotalPrice.ToString("#,###.##") @selectedVersion.CurrencySymbol</td>
+                        <td>
+                            @localSupplierPrice.ToString("#,###.##") @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                                Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                        </td>
+                        <td>@selectedVersion.AverageFactor.ToString("##.####")</td>
+                        <td>
+                            @(string.Join(", ", selectedVersion.ProductVMs
+                                .SelectMany(x => x.SelectedOriginVMs)
+                                .Select(y => (SharedLocalizer.IsRightToLeft() ? y.CountryNameAr : y.CountryName)).Distinct().ToList()))
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    var competitor = group.CompetitorOfferVMs.FirstOrDefault();
+                    <tr>
+                        <td class="companyName">
+                            <div class="img-user-request">
+                                <img src="/images/Competitors/@group.ImagePath" />
+                                <span>@group.Name</span>
+                            </div>
+                        </td>
+                        <td>@competitor.TotalPrice.ToString("#,###.##") @competitor.CurrencySymbol</td>
+                        <td></td>
+                        <td>
+                            @{
+                                decimal factor = supplierPrice > 0 ? (competitor.TotalPrice / supplierPrice) - competitor.ExchangeRate : 1;
+                                <span>@factor.ToString("##.####")</span>
+                            }
+                        </td>
+                        <td>
+                            @(string.Join(", ", competitor.ProductVMs.SelectMany(x => x.OriginVMs)
+                            .Select(y => (SharedLocalizer.IsRightToLeft() ? y.CountryNameAr : y.CountryName)).Distinct().ToList()))
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@* Import Partial Comarison Compare *@
+<div class="comparsion-compare">
+    <div class="head-comparsion">
+        <p>@SharedLocalizer["SelectCompaniesToCompereBetween"]</p>
+        <button class="ChooseCompanies" type="button">@SharedLocalizer["ChooseCompanies"]</button>
+    </div>
+    <div class="select-all-comarison visible-cheked">
+        <div class="icheck-primary">
+            <input type="checkbox" id="selectAll">
+            <label class="" for="selectAll">
+                @SharedLocalizer["SelectAll"]
+            </label>
+        </div>
+    </div>
+    @await Html.PartialAsync("_FinancialSessionCompetitorsWChkPartial")
+
+    <div class="ShowComparison visible-cheked">
+        <button class="btn disabled" disabled type="button" onclick="compareCompanies()">@SharedLocalizer["ShowComparison"]</button>
+    </div>
+</div>

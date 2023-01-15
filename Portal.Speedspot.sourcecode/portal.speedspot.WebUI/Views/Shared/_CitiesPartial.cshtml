@@ -1,0 +1,7 @@
+﻿
+@model CityListViewModel
+
+<input type="hidden" value="@Model.CityId" id="selectedCity" />
+<select id="AddressVM_CityId" name="AddressVM.CityId" class="form-control" data-live-search="true" asp-items="@(new SelectList(Model.Cities as List<City>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model.CityId))">
+    <option value="">@SharedLocalizer["Select"]</option>
+</select>

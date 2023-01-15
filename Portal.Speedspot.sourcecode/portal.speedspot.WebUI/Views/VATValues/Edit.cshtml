@@ -1,0 +1,59 @@
+﻿
+@model VATValueViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.Title : Model.Title;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["VATValue"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["VATValue"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form method="post" asp-action="Edit" class="d-inline" id="vatValueseForm">
+    <div class="create-organizationTypes mx-4">
+        <div class="col-12">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="IsArchived" />
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Title"></label>
+                        <input class="form-control inp-height" asp-for="Title">
+                        <span class="text-danger" asp-validation-for="Title"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Value"></label>(%)
+                        <input class="form-control inp-height" asp-for="Value">
+                        <span class="text-danger" asp-validation-for="Value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script type="text/javascript">
+        saveForm = function () {
+            var isFormValid = $("#vatValueseForm").valid();
+            if (isFormValid) {
+                showLoader();
+                $("#vatValueseForm").submit();
+            }
+        }
+    </script>
+}

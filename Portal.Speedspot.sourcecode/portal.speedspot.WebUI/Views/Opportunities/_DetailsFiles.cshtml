@@ -1,0 +1,33 @@
+﻿
+@model List<OpportunityAttachmentViewModel>
+
+<div class="card mx-2">
+
+<table class="table" >
+    <thead>
+        <tr>
+            <th>@SharedLocalizer["FileName"]</th>
+            <th>@SharedLocalizer["UploadedById"]</th>
+            <th>@SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+
+    <tbody class="">
+        @foreach (var attachment in Model)
+        {
+            <tr>
+                <td class="details-title-name">@attachment.AttachmentTitle</td>
+                <td class="details-title-name">@attachment.AttachmentUploadedByName</td>
+                <td class="">
+                    <a class="btn text-blue " href="/images/Opportunities/@attachment.AttachmentPath" target="_blank">
+                        <i class="fas fa-file-download"></i>
+                    </a>
+                    <button type="button" class="btn Opportunities-edit-btn" onclick="deleteAttachment('@attachment.AttachmentId')" @(attachment.IsDeletable ? "" : "disabled")>
+                        <i class="far fa-trash-alt "></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>

@@ -1,0 +1,76 @@
+@model List<LogisticViewModel>
+
+<table class="table table-Logistics">
+    <thead>
+        <tr>
+            <th class="no-sort"></th>
+            <th>@SharedLocalizer["Name"]</th>
+            <th>@SharedLocalizer["NameAr"]</th>
+            <th>@SharedLocalizer["SubName"]</th>
+            <th>@SharedLocalizer["Email"]</th>
+            <th>@SharedLocalizer["ActivityTypeId"]</th>
+            <th>@SharedLocalizer["CreatedById"]</th>
+            <th class="no-sort">@SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="@item.Id">
+                <td class="@(item.ChildVMs.Count > 0 ? "dt-control" : "")"></td>
+                <td title="@item.Name">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td class="toggle-td" id="parent_@item.Id" title="@item.NameAr">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td class="name-details">@item.SubName</td>
+                <td class="last-visit">@item.Email</td>
+                <td class="name-details">@(SharedLocalizer.IsRightToLeft() ? item.ActivityTypeNameAr : item.ActivityTypeName)</td>
+                <td class="last-visit">@item.CreatedByName</td>
+                <td class="actions-table-btn min-w-250" data-label="Actions">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.Details)).Succeeded)
+                    {
+                        <a class="btn btn-info info-details show-loader-ajax my-1" asp-action="Details" asp-route-id="@item.Id">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    <button type="button" class="btn btn-fav my-1" onclick="favourite(@item.Id)">
+                        <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star"></i>
+                    </button>
+                    <a href="@item.WebsiteUrl" target="_blank" class="btn website-link ">
+                        <span>@SharedLocalizer["Website"]</span>
+                    </a>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader" title="Edit" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete logistics-confirm-delete"
+                               data-source="archiveLogistics"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader logistics-confirm-delete" data-source="unArchiveLogistics" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

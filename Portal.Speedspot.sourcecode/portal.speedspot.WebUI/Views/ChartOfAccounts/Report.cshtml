@@ -1,0 +1,43 @@
+@model List<FinancialAccountTransactionViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Report"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+
+    var modelGroup = Model.GroupBy(x => x.FinancialAccountId).ToList();
+}
+
+@foreach (var group in modelGroup)
+{
+    <h1 class="title-heade-second-header one-line" title="القيود اليومية">
+        @(SharedLocalizer.IsRightToLeft()? group.FirstOrDefault().FinancialAccountVM.NameAr: group.FirstOrDefault().FinancialAccountVM.Name)
+    </h1>
+    <div class="card">
+        <table class="table table-striped">
+            <thead>
+                <tr class="font-table">
+                    <th>@SharedLocalizer["Amount"]</th>
+                    <th>@SharedLocalizer["Description"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in group)
+                {
+                    <tr>
+                        <td>@(transaction.Type == ApplicationEnums.TransactionType.Credit ? "-" : "") @(transaction.Amount * transaction.CurrencyVM.ExchangeRate)</td>
+                        <td>@(SharedLocalizer.IsRightToLeft() ? transaction.DescriptionAr : transaction.Description)</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="font-table">
+                    <th>
+                        @(group.Where(t=>t.Type == ApplicationEnums.TransactionType.Debit).Sum(t => t.Amount * t.CurrencyVM.ExchangeRate) -
+        group.Where(t => t.Type == ApplicationEnums.TransactionType.Credit).Sum(t => t.Amount * t.CurrencyVM.ExchangeRate))
+                    </th>
+                    <th>@SharedLocalizer["Total"]</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+}

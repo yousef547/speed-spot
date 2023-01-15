@@ -1,0 +1,784 @@
+﻿
+@model QuotationViewModel
+
+@if (Model.PerformanceLGVM == null)
+{
+    Model.PerformanceLGVM = new LetterOfGuaranteeViewModel();
+}
+
+@{
+    bool canSend = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.SendLG)).Succeeded;
+    bool canApprove = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ApproveLG)).Succeeded;
+    bool canPrint = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.PrintLG)).Succeeded;
+
+    bool disablePerformanceFields = Model.PerformanceLGVM.IsApproved || Model.PerformanceLGVM.IsRejected;
+}
+
+<label>@SharedLocalizer["PerformanceLG"]:</label>
+@if (Model.PerformanceLGVM.RequestVM != null)
+{
+    <input asp-for="PerformanceLGVM.RequestVM.Id" type="hidden" />
+    <input asp-for="PerformanceLGVM.RequestVM.RequestedById" type="hidden" />
+    <input asp-for="PerformanceLGVM.RequestVM.RequestedDate" type="hidden" value="@Model.PerformanceLGVM.RequestVM.RequestedDate.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+
+    <input asp-for="PerformanceLGVM.RequestVM.Status" type="hidden" />
+    if (Model.PerformanceLGVM.RequestVM.Status != ApplicationEnums.RequestStatusEnum.Pending)
+    {
+        <input asp-for="PerformanceLGVM.RequestVM.StatusById" type="hidden" />
+        <input asp-for="PerformanceLGVM.RequestVM.StatusDate" type="hidden" value="@Model.PerformanceLGVM.RequestVM.StatusDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+
+    <input asp-for="PerformanceLGVM.RequestVM.IsSent" type="hidden" />
+    if (Model.PerformanceLGVM.RequestVM.IsSent)
+    {
+        <input asp-for="PerformanceLGVM.RequestVM.SentById" type="hidden" />
+        <input asp-for="PerformanceLGVM.RequestVM.SentDate" type="hidden" value="@Model.PerformanceLGVM.RequestVM.SentDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+
+    <input asp-for="PerformanceLGVM.RequestVM.IsPrinted" type="hidden" />
+    if (Model.PerformanceLGVM.RequestVM.IsPrinted)
+    {
+        <input asp-for="PerformanceLGVM.RequestVM.PrintedById" type="hidden" />
+        <input asp-for="PerformanceLGVM.RequestVM.PrintedDate" type="hidden" value="@Model.PerformanceLGVM.RequestVM.PrintedDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+}
+
+<input asp-for="PerformanceLGVM.Id" type="hidden" />
+<input asp-for="PerformanceLGVM.QuotationId" type="hidden" />
+<input asp-for="PerformanceLGVM.IsRequested" id="performance-is-requested" type="hidden" />
+<input asp-for="PerformanceLGVM.IsSent" id="performance-is-sent" type="hidden" />
+<input asp-for="PerformanceLGVM.IsApproved" id="performance-is-approved" type="hidden" />
+<input asp-for="PerformanceLGVM.IsRejected" id="performance-is-rejected" type="hidden" />
+<input asp-for="PerformanceLGVM.IsPrinted" id="performance-is-printed" type="hidden" />
+
+@if ((Model.PerformanceLGVM.CashType && Model.PerformanceLGVM.LetterOfGuaranteeNo != null && Model.PerformanceLGVM.IssueDate != null && Model.PerformanceLGVM.AttachmentPath != null) ||
+(!Model.PerformanceLGVM.CashType && Model.PerformanceLGVM.AttachmentPath != null))
+{
+    <input type="hidden" asp-for="PerformanceLGVM.Amount" />
+    <input type="hidden" asp-for="PerformanceLGVM.AssignedToId" />
+    <input type="hidden" asp-for="PerformanceLGVM.CashType" />
+    <input type="hidden" asp-for="PerformanceLGVM.IsCredit" />
+    <input type="hidden" asp-for="PerformanceLGVM.NoOfPeriods" />
+    <input type="hidden" asp-for="PerformanceLGVM.BankId" />
+    <input type="hidden" asp-for="PerformanceLGVM.Percentage" />
+    <input type="hidden" asp-for="PerformanceLGVM.PaidAmount" />
+    <input type="hidden" asp-for="PerformanceLGVM.Fees" />
+    <input type="hidden" asp-for="PerformanceLGVM.BankBranchId" />
+    <input type="hidden" asp-for="PerformanceLGVM.LetterOfGuaranteeNo" />
+
+    if (Model.PerformanceLGVM.IssueDate.HasValue)
+    {
+        <input type="hidden" asp-for="PerformanceLGVM.IssueDate" value="@Model.PerformanceLGVM.IssueDate.Value.ToString("yyyy-MM-dd")" />
+    }
+    if (Model.PerformanceLGVM.ExpiryDate.HasValue)
+    {
+        <input type="hidden" asp-for="PerformanceLGVM.ExpiryDate" value="@Model.PerformanceLGVM.ExpiryDate.Value.ToString("yyyy-MM-dd")" />
+    }
+
+    <input type="hidden" asp-for="PerformanceLGVM.Description" />
+    <input type="hidden" asp-for="PerformanceLGVM.AttachmentPath" />
+    <input type="hidden" asp-for="PerformanceLGVM.AttachmentTitle" />
+
+    <div class="card card-lg">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <label asp-for="PerformanceLGVM.BankId" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.PerformanceLGVM.BankNameAr : Model.PerformanceLGVM.BankName)</label>
+                </div>
+                <div class="col-12 col-lg-8">
+                    <label asp-for="PerformanceLGVM.AssignedToId" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@Model.PerformanceLGVM.AssignedToName</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <label asp-for="PerformanceLGVM.Amount" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@Model.PerformanceLGVM.Amount</label>
+                </div>
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ViewLGTotals)).Succeeded)
+                {
+                    <div class="col-12 col-lg-8">
+                        <div class="totals-list">
+                            <div class="totals-list-item">
+                                <label class="label-header">@SharedLocalizer["Percentage"]</label>
+                                <br />
+                                <label class="label-info">@Model.PerformanceLGVM.Percentage</label>
+                            </div>
+                            <div class="totals-list-splitter"></div>
+                            <div class="totals-list-item">
+                                <label class="label-header">@SharedLocalizer["PaidAmount"]</label>
+                                <br />
+                                <label class="label-info">@Model.PerformanceLGVM.PaidAmount</label>
+                            </div>
+                            <div class="totals-list-splitter"></div>
+                            <div class="totals-list-item">
+                                <label class="label-header">@SharedLocalizer["BankFees"]</label>
+                                <br />
+                                <label class="label-info">@Model.PerformanceLGVM.Fees</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <label asp-for="PerformanceLGVM.BankBranchId" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.PerformanceLGVM.BankBranchNameAr : Model.PerformanceLGVM.BankBranchName)</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <label asp-for="PerformanceLGVM.Description" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@Model.PerformanceLGVM.Description</label>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="totals-list">
+                        <div class="totals-list-item">
+                            <label asp-for="PerformanceLGVM.LetterOfGuaranteeNo" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.LetterOfGuaranteeNo</label>
+                        </div>
+                        <div class="totals-list-splitter"></div>
+                        <div class="totals-list-item">
+                            <label asp-for="PerformanceLGVM.IssueDate" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.IssueDate.Value.ToString("dd/MM/yyyy")</label>
+                        </div>
+                        <div class="totals-list-splitter"></div>
+                        <div class="totals-list-item">
+                            <label asp-for="PerformanceLGVM.ExpiryDate" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.ExpiryDate.Value.ToString("dd/MM/yyyy")</label>
+                        </div>
+                        <div class="totals-list-splitter"></div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4 d-flex align-items-center">
+                    <label class="label-info">
+                        <i class="fas fa-file-download"></i>
+                        <a class="label-info" target="_blank" href="/images/Quotations/@Model.PerformanceLGVM.AttachmentPath">@Model.PerformanceLGVM.AttachmentTitle</a>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <label>@SharedLocalizer["CustomerReceived"] - @SharedLocalizer["PerformanceLG"]:</label>
+    if (Model.PerformanceLGVM.ReceivingDate != null && Model.PerformanceLGVM.EmployeeName != null && Model.PerformanceLGVM.ReceiptAttachmentPath != null)
+    {
+        <input type="hidden" asp-for="PerformanceLGVM.ReceivingDate" value="@Model.PerformanceLGVM.ReceivingDate.Value.ToString("yyyy-MM-dd")" />
+        <input type="hidden" asp-for="PerformanceLGVM.EmployeeName" />
+        <input type="hidden" asp-for="PerformanceLGVM.ReceiptAttachmentPath" />
+        <input type="hidden" asp-for="PerformanceLGVM.ReceiptAttachmentTitle" />
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for="PerformanceLGVM.ReceivingDate" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.PerformanceLGVM.ReceivingDate.Value.ToString("dd/MM/yyyy")</label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <label asp-for="PerformanceLGVM.EmployeeName" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.PerformanceLGVM.EmployeeName</label>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <label class="label-info">
+                            <i class="fas fa-file-download"></i>
+                            <a class="label-info" target="_blank" href="/images/Quotations/@Model.PerformanceLGVM.ReceiptAttachmentPath">@Model.PerformanceLGVM.ReceiptAttachmentTitle</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <label>@SharedLocalizer["AdvancePayment"]:</label>
+        if (Model.PerformanceLGVM.AdvanceType != null && Model.PerformanceLGVM.AdvanceAmount != null && Model.PerformanceLGVM.AdvanceAttachmentPath != null &&
+            Model.PerformanceLGVM.AdvanceDate != null && Model.PerformanceLGVM.AdvanceNo != null && Model.PerformanceLGVM.IssueBankId != null &&
+            (Model.PerformanceLGVM.AdvanceType != ApplicationEnums.AdvancePaymentType.Transfer || Model.PerformanceLGVM.ReceiveBankId != null))
+        {
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceType" />
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceAmount" />
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceAttachmentPath" />
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceAttachmentTitle" />
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceDate" />
+            <input type="hidden" asp-for="PerformanceLGVM.AdvanceNo" />
+            <input type="hidden" asp-for="PerformanceLGVM.IssueBankId" />
+            if (Model.PerformanceLGVM.ReceiveBankId != null)
+            {
+                <input type="hidden" asp-for="PerformanceLGVM.ReceiveBankId" />
+            }
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>@SharedLocalizer["Type"]:</label>
+
+                            <div class="icheck-primary d-inline mx-2">
+                                <input type="radio" asp-for="PerformanceLGVM.AdvanceType" value="0" checked disabled />
+                                <label class="form-label" for="advance-cheque">@SharedLocalizer["Cheque"]</label>
+                            </div>
+
+                            <div class="icheck-primary d-inline mx-2">
+                                <input type="radio" asp-for="PerformanceLGVM.AdvanceType" value="1" disabled />
+                                <label class="form-label" for="advance-transfer">@SharedLocalizer["Transfer"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <label asp-for="PerformanceLGVM.AdvanceDate" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.AdvanceDate.Value.ToString("dd/MM/yyyy")</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6 advance-cheque">
+                            <label asp-for="PerformanceLGVM.AdvanceNo" class="label-header">@SharedLocalizer["ChequeNo"]</label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.AdvanceNo</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6 advance-cheque">
+                            <label asp-for="PerformanceLGVM.AdvanceAmount" class="label-header">@SharedLocalizer["ChequeValue"]</label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.AdvanceAmount.Value.ToString("#,###.##")</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6 advance-transfer">
+                            <label asp-for="PerformanceLGVM.AdvanceNo" class="label-header">@SharedLocalizer["TransferNo"]</label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.AdvanceNo</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6 advance-transfer">
+                            <label asp-for="PerformanceLGVM.AdvanceAmount" class="label-header">@SharedLocalizer["TransferAmount"]</label>
+                            <br />
+                            <label class="label-info">@Model.PerformanceLGVM.AdvanceAmount.Value.ToString("#,###.##")</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6">
+                            <label asp-for="PerformanceLGVM.IssueBankId" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.PerformanceLGVM.IssueBankNameAr : Model.PerformanceLGVM.IssueBankName)</label>
+                        </div>
+
+                        <div class="col-12 col-lg-6 advance-transfer">
+                            <label asp-for="PerformanceLGVM.ReceiveBankId" class="label-header"></label>
+                            <br />
+                            <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.PerformanceLGVM.ReceiveBankNameAr : Model.PerformanceLGVM.ReceiveBankName)</label>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <label class="label-info">
+                                <i class="fas fa-file-download"></i>
+                                <a class="label-info" target="_blank" href="/images/Quotations/@Model.PerformanceLGVM.AdvanceAttachmentPath">@Model.PerformanceLGVM.AdvanceAttachmentTitle</a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group">
+                            <label>@SharedLocalizer["Type"]:</label>
+
+                            <div class="icheck-primary d-inline mx-2">
+                                <input type="radio" asp-for="PerformanceLGVM.AdvanceType" value="0" id="advance-cheque" onchange="checkAdvanceType()" checked />
+                                <label class="form-label" for="advance-cheque">@SharedLocalizer["Cheque"]</label>
+                            </div>
+
+                            <div class="icheck-primary d-inline mx-2">
+                                <input type="radio" asp-for="PerformanceLGVM.AdvanceType" value="1" id="advance-transfer" onchange="checkAdvanceType()" />
+                                <label class="form-label" for="advance-transfer">@SharedLocalizer["Transfer"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 col-lg-6 form-group">
+                            <label asp-for="PerformanceLGVM.AdvanceDate" class="control-label label-sales-information"></label>
+                            <input asp-for="PerformanceLGVM.AdvanceDate" class="form-control inp-height" />
+                            <span asp-validation-for="PerformanceLGVM.AdvanceDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group advance-cheque">
+                            <label asp-for="PerformanceLGVM.AdvanceNo" class="control-label label-sales-information">@SharedLocalizer["ChequeNo"]</label>
+                            <input asp-for="PerformanceLGVM.AdvanceNo" class="form-control inp-height" />
+                            <span asp-validation-for="PerformanceLGVM.AdvanceNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group advance-cheque">
+                            <label asp-for="PerformanceLGVM.AdvanceAmount" class="control-label label-sales-information">@SharedLocalizer["ChequeValue"]</label>
+                            <div class="input-group">
+                                <input asp-for="PerformanceLGVM.AdvanceAmount" class="form-control inp-height" id="advance-cheque-value" oninput="checkAdvanceValue(this)" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">/@Model.PerformanceLGVM.Amount.Value.ToString("#,###.##")</span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="PerformanceLGVM.AdvanceAmount" class="text-danger"></span>
+                        </div>
+                        <div class="col-12 col-lg-6 form-group advance-transfer">
+                            <label asp-for="PerformanceLGVM.AdvanceNo" class="control-label label-sales-information">@SharedLocalizer["TransferNo"]</label>
+                            <input asp-for="PerformanceLGVM.AdvanceNo" class="form-control inp-height" />
+                            <span asp-validation-for="PerformanceLGVM.AdvanceNo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group advance-transfer">
+                            <label asp-for="PerformanceLGVM.AdvanceAmount" class="control-label label-sales-information">@SharedLocalizer["TransferAmount"]</label>
+                            <div class="input-group">
+                                <input asp-for="PerformanceLGVM.AdvanceAmount" class="form-control inp-height" id="advance-transfer-value" oninput="checkAdvanceValue(this)" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">/@Model.PerformanceLGVM.Amount.Value.ToString("#,###.##")</span>
+                                </div>
+                            </div>
+                            <span asp-validation-for="PerformanceLGVM.AdvanceAmount" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group">
+                            <label asp-for="PerformanceLGVM.IssueBankId" class="control-label label-sales-information"></label>
+                            <select class="form-control inp-height"
+                                    asp-for="PerformanceLGVM.IssueBankId"
+                                    id="advance-issue-bank-id"
+                                    asp-items="@(new SelectList(ViewBag.BankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                                <option value="" selected>@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span asp-validation-for="PerformanceLGVM.IssueBankId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group advance-transfer">
+                            <label asp-for="PerformanceLGVM.ReceiveBankId" class="control-label label-sales-information"></label>
+                            <select class="form-control inp-height"
+                                    asp-for="PerformanceLGVM.ReceiveBankId"
+                                    id="advance-issue-bank-id"
+                                    asp-items="@(new SelectList(ViewBag.DepartmentBankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                                <option value="" selected>@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span asp-validation-for="PerformanceLGVM.ReceiveBankId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 form-group">
+                            <div class="custom-file">
+                                <label class="control-label" asp-for="PerformanceLGVM.AdvanceAttachmentFile"></label>
+                                <label class="file file-upload-label" for="advance-file">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                    @if (Model.PerformanceLGVM.AdvanceAttachmentPath != null)
+                                    {
+                                        <input type="hidden" asp-for="PerformanceLGVM.AdvanceAttachmentPath" />
+                                        <input type="hidden" asp-for="PerformanceLGVM.AdvanceAttachmentTitle" />
+                                        <a class="one-line" href="/images/Quotations/@Model.PerformanceLGVM.AdvanceAttachmentPath" title="@Model.PerformanceLGVM.AdvanceAttachmentPath" target="_blank">@Model.PerformanceLGVM.AdvanceAttachmentTitle</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="span-upload">
+                                            @SharedLocalizer["Upload"]
+                                        </span>
+                                    }
+                                </label>
+                                <input id="advance-file"
+                                       asp-for="PerformanceLGVM.AdvanceAttachmentFile"
+                                       type="file"
+                                       class="custom-file-input d-none">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label asp-for="PerformanceLGVM.ReceivingDate" class="control-label label-sales-information"></label>
+                        <input asp-for="PerformanceLGVM.ReceivingDate" class="form-control inp-height" />
+                        <span asp-validation-for="PerformanceLGVM.ReceivingDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-lg-6 form-group">
+                        <label asp-for="PerformanceLGVM.EmployeeName" class="control-label label-sales-information"></label>
+                        <input asp-for="PerformanceLGVM.EmployeeName" class="form-control inp-height" />
+                        <span asp-validation-for="PerformanceLGVM.EmployeeName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 form-group">
+                        <div class="custom-file">
+                            <label class="control-label" asp-for="PerformanceLGVM.ReceiptAttachmentFile"></label>
+                            <label class="file file-upload-label" for="performance-receipt-file">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                @if (Model.PerformanceLGVM.ReceiptAttachmentPath != null)
+                                {
+                                    <input type="hidden" asp-for="PerformanceLGVM.ReceiptAttachmentPath" />
+                                    <input type="hidden" asp-for="PerformanceLGVM.ReceiptAttachmentTitle" />
+                                    <a class="one-line" href="/images/Quotations/@Model.PerformanceLGVM.ReceiptAttachmentPath" title="@Model.PerformanceLGVM.ReceiptAttachmentPath" target="_blank">@Model.PerformanceLGVM.ReceiptAttachmentTitle</a>
+                                }
+                                else
+                                {
+                                    <span class="span-upload">
+                                        @SharedLocalizer["Upload"]
+                                    </span>
+                                }
+                            </label>
+                            <input id="performance-receipt-file"
+                                   asp-for="PerformanceLGVM.ReceiptAttachmentFile"
+                                   type="file"
+                                   class="custom-file-input d-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="card performance-lg">
+        <div class="card-body">
+            <div class="row position-relative">
+                <div class="position-absolute w-100 h-100 bg-white overlay-block disable-performance @(!disablePerformanceFields ? "d-none" : "")">
+
+                </div>
+                <div class="col-12 col-lg-6 form-group">
+                    <label asp-for="PerformanceLGVM.Amount" class="control-label label-sales-information"></label>
+                    <input asp-for="PerformanceLGVM.Amount" class="form-control inp-height" id="performance-amount" onchange="calculatePaidAmount('performance')" />
+                    <span asp-validation-for="PerformanceLGVM.Amount" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-lg-6 form-group">
+                    <label class="control-label" asp-for="PerformanceLGVM.AssignedToId">@SharedLocalizer["AssignedToId"]</label>
+                    <select class="form-control inp-height"
+                            data-size="5" data-live-search="true"
+                            id="performance-assigned-to"
+                            asp-for="PerformanceLGVM.AssignedToId"
+                            asp-items="@(new SelectList(ViewBag.AssignedToId as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="PerformanceLGVM.AssignedToId" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (Model.PerformanceLGVM.IsRequested && canSend)
+            {
+                <div class="row mb-3 position-relative">
+                    <div class="position-absolute w-100 h-100 bg-white overlay-block disable-performance @(!disablePerformanceFields ? "d-none" : "")">
+
+                    </div>
+                    <div class="col-12 col-lg-4 d-table">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block">
+
+                        </div>
+                        <div class="custom-control custom-switch d-table-cell align-middle">
+                            <input type="checkbox" class="custom-control-input cash-type"
+                                   asp-for="PerformanceLGVM.CashType"
+                                   id="performance-cash-type"
+                                   checked />
+                            <label class="custom-control-label" asp-for="PerformanceLGVM.CashType" for="performance-cash-type"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 performance-cash-type-on">
+                        <div class="d-table h-100">
+                            <div class="position-absolute w-100 h-100 bg-white overlay-block">
+
+                            </div>
+                            <div class="custom-control custom-switch d-table-cell align-middle">
+                                <input class="custom-control-input"
+                                       asp-for="PerformanceLGVM.IsCredit"
+                                       checked
+                                       id="performance-is-credit">
+                                <label asp-for="PerformanceLGVM.IsCredit" class="custom-control-label label-sales-information" for="performance-is-credit"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 performance-cash-type-on">
+                        <select asp-for="PerformanceLGVM.NoOfPeriods"
+                                class="form-control inp-height"
+                                id="performance-periods-no"
+                                asp-items="@(new SelectList(ViewBag.PerformancePeriods as List<Period>, "Value", "Text"))"
+                                onchange="calculateExpiryDate('performance')"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 performance-cash-type-on position-relative">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disable-performance @(!disablePerformanceFields ? "d-none" : "")">
+
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="PerformanceLGVM.BankId"></label>
+                            <select class="form-control inp-height"
+                                    asp-for="PerformanceLGVM.BankId"
+                                    id="performance-bank-id"
+                                    onchange="getBankDetails('performance')"
+                                    asp-items="@(new SelectList(ViewBag.DepartmentBankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                                <option value="" selected>@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span asp-validation-for="PerformanceLGVM.BankId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ViewLGTotals)).Succeeded)
+                    {
+                        <div class="col-12 col-lg-6 performance-cash-type-on">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["Percentage"]</label>
+                                    <br />
+                                    <input type="hidden" id="performance-percentage" asp-for="PerformanceLGVM.Percentage" />
+                                    <p id="lbl-performance-percentage"></p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["PaidAmount"]</label>
+                                    <br />
+                                    <input type="hidden" id="performance-paid-amount" asp-for="PerformanceLGVM.PaidAmount" />
+                                    <p id="lbl-performance-paid-amount"></p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["BankFees"]</label>
+                                    <br />
+                                    <input type="hidden" id="performance-bank-fees" asp-for="PerformanceLGVM.Fees" />
+                                    <p id="lbl-performance-bank-fees"></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row performance-cash-type-on">
+                    <div class="col-12 col-lg-6 form-group">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disable-performance @(!disablePerformanceFields ? "d-none" : "")">
+
+                        </div>
+                        <label class="control-label" asp-for="PerformanceLGVM.BankBranchId"></label>
+                        <input type="hidden" value="@Model.PerformanceLGVM.BankBranchId" id="performance-branch-id" />
+                        <select class="form-control inp-height"
+                                id="performance-bank-branch-id"
+                                asp-for="PerformanceLGVM.BankBranchId">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="PerformanceLGVM.BankBranchId" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.PerformanceLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 performance-cash-type-on form-group">
+                            <label class="control-label" asp-for="PerformanceLGVM.LetterOfGuaranteeNo">@SharedLocalizer["PerformanceLGNo"]</label>
+                            <input class="form-control inp-height" id="performance-lg-no" asp-for="PerformanceLGVM.LetterOfGuaranteeNo">
+                            <span asp-validation-for="PerformanceLGVM.LetterOfGuaranteeNo" class="text-danger"></span>
+                        </div>
+                    }
+                </div>
+
+                <div class="row performance-cash-type-on">
+                    @if (Model.PerformanceLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 form-group">
+                            <label class="control-label" asp-for="PerformanceLGVM.IssueDate"></label>
+                            <input class="form-control inp-height"
+                                   asp-for="PerformanceLGVM.IssueDate"
+                                   id="performance-issue-date"
+                                   onchange="calculateExpiryDate('performance')" />
+                            <span asp-validation-for="PerformanceLGVM.IssueDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group">
+                            <label class="control-label" asp-for="PerformanceLGVM.ExpiryDate"></label>
+                            <input class="form-control inp-height" asp-for="PerformanceLGVM.ExpiryDate" id="performance-expiry-date" readonly />
+                            <span asp-validation-for="PerformanceLGVM.ExpiryDate" class="text-danger"></span>
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label class="control-label" asp-for="PerformanceLGVM.Description"></label>
+                        <textarea class="form-control" asp-for="PerformanceLGVM.Description" rows="4"></textarea>
+                        <span asp-validation-for="PerformanceLGVM.Description" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.PerformanceLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 form-group">
+                            <div class="custom-file">
+                                <label class="control-label" asp-for="PerformanceLGVM.AttachmentFile"></label>
+                                <label class="file file-upload-label" for="performance-file">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                    @if (Model.PerformanceLGVM.AttachmentPath != null)
+                                    {
+                                        <input type="hidden" asp-for="PerformanceLGVM.AttachmentPath" />
+                                        <input type="hidden" asp-for="PerformanceLGVM.AttachmentTitle" />
+                                        <a class="one-line" href="/images/Quotations/@Model.PerformanceLGVM.AttachmentPath" title="@Model.PerformanceLGVM.AttachmentPath" target="_blank">@Model.PerformanceLGVM.AttachmentTitle</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="span-upload">
+                                            @SharedLocalizer["Upload"]
+                                        </span>
+                                    }
+                                </label>
+                                <input id="performance-file"
+                                       asp-for="PerformanceLGVM.AttachmentFile"
+                                       type="file"
+                                       class="custom-file-input d-none">
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (!Model.PerformanceLGVM.IsRequested)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <button type="button" class="btn btn-request" onclick="requestLG('performance')" id="performance-request">
+                        @SharedLocalizer["Request"]
+                    </button>
+                    <div class="d-none" id="performance-pending-financial-msg">
+                        <i class="fas fa-history"></i>
+                        @SharedLocalizer["PendingSaveMSG"]
+                    </div>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsRequested && !Model.PerformanceLGVM.IsSent && !canSend)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <i class="fas fa-history"></i>
+                    <p class="PendingFinancialMSG">@SharedLocalizer["PendingFinancialMSG"]</p>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsRequested && !Model.PerformanceLGVM.IsSent && canSend)
+            {
+                @* Send Bidbond (Requested & Not Sent & Can Send) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-send" onclick="sendLG('performance')" id="performance-send">
+                        @SharedLocalizer["Send"]
+                    </button>
+                    <div class="d-none" id="performance-pending-manager-msg">
+                        <i class="fas fa-history"></i>
+                        <span class="font-size-action">
+                            @SharedLocalizer["PendingSaveMSG"]
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsSent && !(Model.PerformanceLGVM.IsApproved || Model.PerformanceLGVM.IsRejected) && !canApprove)
+            {
+                @* (Sent & Not Approved & Cannot Approve) *@
+                <div class="row justify-content-end mx-1">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingManagerMSG"]
+                    </span>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsSent && !(Model.PerformanceLGVM.IsApproved || Model.PerformanceLGVM.IsRejected) && canApprove)
+            {
+                @* Approve / Reject Bidbond (Sent & Not Approved & Can Approve or Reject) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-approve mx-1" id="btn-performance-approve" onclick="approveLG('performance')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Approve"]
+                    </button>
+                    <div class="d-none mx-1 approvedBlock" id="performance-approved-block">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelLGApproval('performance')">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-reject" id="btn-performance-reject" onclick="rejectLG('performance')">
+                        <i class="fas fa-times"></i>
+                        @SharedLocalizer["Reject"]
+                    </button>
+                    <div class="d-none rejectedBlock" id="performance-rejected-block">
+                        <i class="fas fa-times"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelLGRejection('performance')">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsApproved && !Model.PerformanceLGVM.IsPrinted && canPrint)
+            {
+                @* Print Bidbond (Approved & Can Print) *@
+                <div class="row justify-content-end mx-1 ">
+                    <button type="button" class="btn btn-approve mx-1" id="btn-performance-print" onclick="printLGPage('@Model.PerformanceLGVM.RequestVM.Id', 'performance')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Print"]
+                    </button>
+                    <div class="d-none mx-1 printedBlock" id="printed-performance-block">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsRejected)
+            {
+                <div class="row justify-content-end">
+                    <div class="mx-1">
+                        <i class="fas fa-times"></i>
+                        <span class="font-size-action">@SharedLocalizer["RejectedBy"] @Model.PerformanceLGVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.PerformanceLGVM.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success mx-1">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["DoneBy"] @Model.PerformanceLGVM.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["ApprovedBy"] @Model.PerformanceLGVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

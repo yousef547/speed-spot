@@ -1,0 +1,62 @@
+﻿@model CustomerViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Partners"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["Customers"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["Customer"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm('Save')">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form enctype="multipart/form-data" method="post" asp-action="Edit" class="d-inline" id="customerForm">
+    <div class=" mx-2 partial-edit">
+        <div class="card-body ">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IsArchived" type="hidden" />
+            <input asp-for="CreatedById" type="hidden" />
+            <input asp-for="BeneficiaryName" type="hidden" />
+            <input asp-for="BeneficiaryAddress" type="hidden" />
+
+            @await Html.PartialAsync("_CustomerDataPartial", Model)
+        </div>
+
+        @*        <div class="card-footer">
+                <input type="button" value="@SharedLocalizer["Save"]" class="btn btn-save show-loader" />
+                <a asp-action="Index" class="btn btn-default float-right show-loader">
+                    @SharedLocalizer["Cancel"]
+                </a>
+            </div>*@
+    </div>
+</form>
+
+@await Html.PartialAsync("_MapsModalPartial")
+
+@section Scripts{
+    <script src="~/js/maps.js"></script>
+    <script src="~/js/customers.js"></script>
+
+    <script type="text/javascript">
+        var cityId = $("#selectedCity").val();
+
+        $(document).ready(function () {
+            checkIsSubCompany();
+
+            initView();
+
+            getCities(cityId);
+
+            initDropDownCountry(".parent-list-country");
+        })
+    </script>
+}

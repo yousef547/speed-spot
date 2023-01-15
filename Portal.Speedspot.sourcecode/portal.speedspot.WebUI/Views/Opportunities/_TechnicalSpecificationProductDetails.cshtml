@@ -1,0 +1,75 @@
+﻿
+@model TechnicalSpecificationProductViewModel
+
+@if (Model.Id != 0)
+{
+    <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <br />
+        <label>@(SharedLocalizer.IsRightToLeft() ? Model.ProductNameAr : Model.ProductName)</label>
+
+        <div class="row justify-content-center  modal-supp">
+            <div class="col-12 ">
+                <div class="row">
+                    <div class="col-6">
+                        <label class="modal-title">
+                            @SharedLocalizer["Description"]
+                        </label>
+                        <br />
+                        <label class="modal-contenttt">
+                            @Model.Description
+                        </label>
+                    </div>
+                    <div class="col-6">
+                        <label class="modal-title">
+                            @SharedLocalizer["Quantity"]
+                        </label>
+                        <br />
+                        <label class="modal-contenttt">
+                            @Model.Quantity
+                        </label>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="modal-title">
+                            @SharedLocalizer["Origin"]
+                        </label>
+                        <br />
+                        <label class="modal-contenttt">
+                            @(SharedLocalizer.IsRightToLeft() ? Model.RequestedOriginsStrAr : Model.RequestedOriginsStr)
+                        </label>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="modal-title">
+                            @SharedLocalizer["Attachment"]
+                        </label>
+                        <br />
+                        @if (Model.AttachmentId != null)
+                        {
+                            <div class="custom-label-upload">
+                                <label>
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                </label>
+                                <a title="@Model.AttachmentTitle" class="one-line title-modal-supp" href="/images/Opportunities/@Model.AttachmentPath" target="_blank">@Model.AttachmentTitle</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-center">
+            <div class="">
+                <div class="action action-modal">
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">@SharedLocalizer["Done"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,215 @@
+﻿@model List<ProjectViewModel>
+
+<table class="table table-head-fixed " id="datatable_Projects">
+    <thead>
+        <tr>
+            <th>
+                @SharedLocalizer["ID"]
+            </th>
+            <th>
+                @SharedLocalizer["ProjectName"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Customer"]
+            </th>
+
+            <th class="w-300">
+                @SharedLocalizer["Finance"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Profit"]
+            </th>
+            <th class="">
+                <span>@SharedLocalizer["StartData"]</span>
+            </th>
+            <th>
+                @SharedLocalizer["EndDate"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Status"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Action"]
+            </th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var project in Model)
+        {
+
+            <tr class="my-3">
+                <td class="dtr-control">#@project.Code</td>
+                <td>
+                    <span class="text-project">
+                        @project.Name
+                    </span>
+                </td>
+                <td>
+                    <span class="text-project ">
+                        @project.CustomerName
+                    </span>
+                </td>
+                <td>
+
+                    <div class="row">
+                        <div class="grid mt-2 col-md-2">
+                            <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                                <circle class="circle-chart__background" stroke="#007F5F" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                                <circle class="circle-chart__circle" stroke="#E88A89" stroke-width="2" stroke-dasharray="50.0" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                            </svg>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <ul>
+                                    <li class="p-green"><span>Collected</span> <span class="color-project1">Egp 265,500</span></li>
+                                    <li class="p-red"><span>Paid</span> <span class="color-project2">Egp 265,500</span></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </td>
+                <td>20%</td>
+                <td>@project.CreatedDate.ToString("dd/MM/yyyy")</td>
+                <td>
+                    @if (project.EndDate is null)
+                    {
+                        <div class="status-block pending">
+                            <span class="status-label"> <i class="fas fa-history"></i> @SharedLocalizer["Inprogress"] </span>
+                        </div>
+                    }
+                    else
+                    {
+                        @project.EndDate?.ToString("dd/MM/yyyy")
+                    }
+
+                </td>
+                <td>
+                    @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.Opportunity)
+                    {
+                        <span class="text-project">@ApplicationEnums.ProjectStatus.Opportunity</span>
+                    }
+                    else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.PerchasingOrder)
+                    {
+                        <span class="text-project ">Perchasing Order</span>
+                    }
+                    else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.TechnicalSession)
+                    {
+                        <span class="text-project">Tech. Session</span>
+                    }
+                    else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.StoppedTechnicalSession)
+                    {
+                        <p class="m-0"><span class="text-danger font-weight-bold">Stopped</span> <span class="text-stopped">Tech. Session</span></p>
+                    }
+                    else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.FinanialSession)
+                    {
+                        <span class="text-project">Finan. Session</span>
+                    }
+                    else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.StoppedFinanialSession)
+                    {
+                        <p class="m-0"><span class="text-danger font-weight-bold">Stopped</span> <span class="text-stopped">Finan. Session</span></p>
+                    }
+                    else
+                    {
+                        <span class="text-success">Finished</span>
+                    }
+                    <div class=" tender-flex tender-project">
+                        <div class="tender-progress">
+                            <ul class="list-tender-solid">
+                                @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.Opportunity)
+                                {
+                                    <li class="active"> </li>
+                                }
+                                else if ((int)project.Status > (int)ApplicationEnums.ProjectStatus.Opportunity)
+                                {
+                                    <li class="done"></li>
+                                }
+                                else
+                                {
+                                    <li class=""></li>
+                                }
+
+                                @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.TechnicalSession)
+                                {
+                                    <li class="active"> </li>
+                                }
+                                else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.StoppedTechnicalSession)
+                                {
+                                    <li class="stoped"> </li>
+                                }
+                                else if ((int)project.Status > (int)ApplicationEnums.ProjectStatus.TechnicalSession)
+                                {
+                                    <li class="done"></li>
+                                }
+                                else
+                                {
+                                    <li class=""></li>
+                                }
+                                @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.FinanialSession)
+                                {
+                                    <li class="active"> </li>
+                                }
+                                else if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.StoppedFinanialSession)
+                                {
+                                    <li class="stoped"> </li>
+                                }
+                                else if ((int)project.Status > (int)ApplicationEnums.ProjectStatus.FinanialSession)
+                                {
+                                    <li class="done"></li>
+                                }
+                                else
+                                {
+                                    <li class=""></li>
+                                }
+
+                                @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.PerchasingOrder)
+                                {
+                                    <li class="active"> </li>
+                                }
+                                else if ((int)project.Status > (int)ApplicationEnums.ProjectStatus.PerchasingOrder)
+                                {
+                                    <li class="done"></li>
+                                }
+                                else
+                                {
+                                    <li class=""></li>
+                                }
+                                @if ((int)project.Status == (int)ApplicationEnums.ProjectStatus.Finished)
+                                {
+                                    <li class="Finished"></li>
+                                }
+                                else
+                                {
+                                    <li class=""></li>
+                                }
+
+
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <a class="btn info-details my-1 show-loader-ajax" asp-action="Details" asp-route-id="@project.Id">
+                        <i class="fas fa-info"></i>
+                    </a>
+                    <a class="btn quotations-confirm-delete"
+                       data-status=""
+                       title="@SharedLocalizer[" Delete"]"
+                       data-itemid="" data-source="myQuotations"
+                       data-singleton="true"
+                       data-popout="true"
+                       data-toggle="confirmation">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+

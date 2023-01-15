@@ -1,0 +1,99 @@
+﻿
+@model PaymentRequestViewModel
+
+<div class="modal-content">
+    <div class="modal-header border-0 pb-2">
+        <div>
+            <h5 class="payment-type-modal-title">@SharedLocalizer["PaymentType"]</h5>
+            <span class="payment-type-modal-subtitle">@(SharedLocalizer.IsRightToLeft() ? Model.DirectionStrAr : Model.DirectionStr)</span>
+        </div>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body pt-2">
+        <div class="row justify-content-center text-center mb-3">
+            <div class="col-4 payment-details-modal-title">@SharedLocalizer[Model.PaymentDetailsVM.Type.ToString()]</div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 mb-2">
+                <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["Amount"]</p>
+                <p class="payment-details-modal-data text-center mb-1">@Model.TotalAmount</p>
+            </div>
+
+            @if (Model.PaymentDetailsVM.Type != ApplicationEnums.PaymentTypeEnum.Cheque)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["ExchangeRate"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">@Model.PaymentDetailsVM.ExchangeRate</p>
+                </div>
+            }
+
+            <div class="col-12 col-md-6 mb-2">
+                <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["Treasury"]</p>
+                <p class="payment-details-modal-data text-center mb-1">
+                    @(SharedLocalizer.IsRightToLeft() ? Model.PaymentDetailsVM.TreasuryVM.DescriptionAr : Model.PaymentDetailsVM.TreasuryVM.Description)
+                </p>
+            </div>
+
+            @if (Model.PaymentDetailsVM.Type != ApplicationEnums.PaymentTypeEnum.Cash)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["IssueDate"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">
+                        @Model.PaymentDetailsVM.IssueDate.Value.ToString("dd/MM/yyyy")
+                    </p>
+                </div>
+            }
+
+            @if (Model.PaymentDetailsVM.Type == ApplicationEnums.PaymentTypeEnum.Cheque)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["DueDate"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">
+                        @Model.PaymentDetailsVM.DueDate.Value.ToString("dd/MM/yyyy")
+                    </p>
+                </div>
+            }
+
+            @if (Model.PaymentDetailsVM.Type == ApplicationEnums.PaymentTypeEnum.Transfer)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["ReceiveBankId"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">
+                        @(SharedLocalizer.IsRightToLeft() ? Model.PaymentDetailsVM.ReceiveBankVM.NameAr : Model.PaymentDetailsVM.ReceiveBankVM.Name)
+                    </p>
+                </div>
+            }
+
+            @if (Model.PaymentDetailsVM.Type != ApplicationEnums.PaymentTypeEnum.Cash)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["ReceiptNo"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">
+                        @Model.PaymentDetailsVM.ReceiptNo
+                    </p>
+                </div>
+            }
+
+            @if (Model.PaymentDetailsVM.Type != ApplicationEnums.PaymentTypeEnum.Cheque)
+            {
+                <div class="col-12 col-md-6 mb-2">
+                    <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["AmountLocal"]</p>
+                    <p class="payment-details-modal-data text-center mb-1">
+                        @Model.PaymentDetailsVM.TotalAmount
+                    </p>
+                </div>
+            }
+
+            <div class="col-12 col-md-6 mb-2">
+                <p class="payment-details-modal-label text-center mb-1">@SharedLocalizer["Description"]</p>
+                <p class="payment-details-modal-data text-center mb-1">
+                    @Model.PaymentDetailsVM.Description
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

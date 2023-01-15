@@ -1,0 +1,308 @@
+﻿@model LogisticViewModel
+
+<div class="partial-edit mx-4">
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 p-2 d-flex  mb-2">
+                <div class="logo-section-partial">
+                    <div class="img-upload-partial">
+                        @if (Model.LogoAttachmentPath != null)
+                        {
+                            <input type="hidden" asp-for="LogoAttachmentId" />
+                            <img class="uploaded-cust" src="/images/Logistics/@Model.LogoAttachmentPath" id="img-src-upload" />
+                        }
+                        else
+                        {
+                            <img src="/images/instagram.png" id="img-src-upload" />
+                        }
+                    </div>
+
+                    <div class="contant-partner-logo">
+                        <span>@SharedLocalizer["UploadCompanyLogoMSG"]</span>
+                        <p>@SharedLocalizer["CompanyLogoSizeNote"]</p>
+                        <div class="btn-partner-edit">
+                            <label for="upload-img-logo-edit-customer">
+                                <span>@SharedLocalizer["UploadImage"]</span>
+                                <input asp-for="LogoFile" class="d-none" type="file" value="Upload Image" id="upload-img-logo-edit-customer" accept="image/x-png,image/gif,image/jpeg" />
+                            </label>
+                            <a href="#" class="search-logo-edit-partner">
+                                <span>@SharedLocalizer["SearchForLogo"]</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*First Row*@
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="Name"></label>
+                    <input class="form-control" asp-for="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="SubName"></label>
+                    <input class="form-control" asp-for="SubName" />
+                    <span asp-validation-for="SubName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="NameAr"></label>
+                    <input class="form-control" asp-for="NameAr" />
+                    <span asp-validation-for="NameAr" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+        @*Second Row*@
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="Email"></label>
+                    <input class="form-control" asp-for="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="WebsiteUrl"></label>
+                    <input type="url" class="form-control" asp-for="WebsiteUrl" />
+                    <span class="text-danger" asp-validation-for="WebsiteUrl"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="ActivityTypeId"></label>
+                    <select asp-for="ActivityTypeId" data-live-search="true" class="form-control" asp-items="@(new SelectList(ViewBag.ActivityTypeId as List<ActivityType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="ActivityTypeId"></span>
+                </div>
+            </div>
+        </div>
+
+        @*Third Row*@
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="OrganizationTypeId"></label>
+                    <select asp-for="OrganizationTypeId" data-live-search="true" class="form-control" asp-items="@(new SelectList(ViewBag.OrganizationTypeId as List<OrganizationType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="OrganizationTypeId"></span>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="DepartmentIds"></label>
+                    <select data-live-search="true" asp-for="DepartmentIds" class="form-control selectpicker select-multiple" id="DepartmentId" multiple>
+                        @foreach (var department in ViewData["DepartmentId"] as List<Department>)
+                        {
+                            <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                        }
+                    </select>
+                    <span class="text-danger" asp-validation-for="DepartmentIds"></span>
+                </div>
+            </div>
+        </div>
+
+        @*Four Row*@
+        @if (Model.ChildVMs.Count == 0)
+        {
+            <div class="row">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="row customers-edit-checked">
+                        <div class="col-6">
+                            <label class="checked-label-edit-customers">@SharedLocalizer["IsSubCompany"]</label>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <div class="custom-control custom-switch d-table-cell align-middle">
+                                <input class="custom-control-input" asp-for="IsSubCompany" />
+                                <label class="custom-control-label label-sales-information" for="IsSubCompany"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2 company-select d-none">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="ParentId"></label>
+                        <select data-live-search="true" asp-for="ParentId" class="form-control" asp-items="@(new SelectList(ViewBag.ParentId as List<Logistic>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="ParentId"></span>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @*Five Row*@
+        <div class="row row-details-customers logistics">
+            <div class="col-sm-12 col-md-8">
+                <div class="row">
+                    <input type="hidden" asp-for="LegalInfoId" />
+                    <input type="hidden" asp-for="LegalInfoVM.Id" />
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="box">
+                            <h3 class="head-box">@SharedLocalizer["LegalInfo"]:</h3>
+                            <div class="content scroll-Custom">
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="LegalInfoVM.TaxCardNumber"></label>
+                                    <input type="text" class="form-control" asp-for="LegalInfoVM.TaxCardNumber" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="LegalInfoVM.CommercialRegister"></label>
+                                    <input type="text" class="form-control" asp-for="LegalInfoVM.CommercialRegister" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="LegalInfoVM.VatNumber">VAT #</label>
+                                    <input type="text" class="form-control" asp-for="LegalInfoVM.VatNumber" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for=LegalInfoVM.CargoXNumber></label>
+                                    <input type="text" class="form-control" asp-for="LegalInfoVM.CargoXNumber" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="label-customer-form"></label>
+                                    <div class="custom-file">
+                                        <label class="file file-upload-label" for="recipeAttachment">
+                                            <span class="upload-file-icons">
+                                                <i class="fas fa-file-upload"></i>
+                                            </span>
+                                            <span class="span-upload">@SharedLocalizer["Upload"]</span>
+                                        </label>
+                                        <input id="recipeAttachment" asp-for="LegalInfoVM.File" class="custom-file-input d-none">
+                                        <label class="custom-file-label d-none" for="customFile"></label>
+                                    </div>
+                                    @if (Model.LegalInfoVM != null && Model.LegalInfoVM.AttachmentPath != null)
+                                    {
+                                        <input asp-for="LegalInfoVM.AttachmentId" type="hidden" />
+                                        <a class="view-attach-edit" href="/images/Logistics/@Model.LegalInfoVM.AttachmentPath" target="_blank">@SharedLocalizer["ViewAttachment"]</a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6  col-lg-6">
+                        <input type="hidden" asp-for="AddressId" />
+                        <input type="hidden" asp-for="AddressVM.Id" />
+                        <div class="box">
+                            <h3 class="head-box">@SharedLocalizer["Address"]:</h3>
+                            <div class="content scroll-Custom address-customer">
+                                <div class="header-address">
+                                    <div class="street-map">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <p id="locationText"></p>
+                                        @if (Model.AddressVM != null && Model.AddressVM.Longitude != null && Model.AddressVM.Latitude != null)
+                                        {
+                                            <button type="button" class="btn change-map" data-toggle="modal" data-target="#selectLocationModal">@SharedLocalizer["Change"]</button>
+                                        }
+                                        else
+                                        {
+                                            <button type="button" class="btn change-map" data-toggle="modal" data-target="#selectLocationModal">@SharedLocalizer["LocateOnMap"]</button>
+                                        }
+                                    </div>
+                                    <input type="hidden" asp-for="AddressVM.Latitude" />
+                                    <input type="hidden" asp-for="AddressVM.Longitude" />
+
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="AddressVM.CountryId"></label>
+                                    <select id="addressCountry"
+                                            asp-for="AddressVM.CountryId"
+                                            data-live-search="true"
+                                            class="form-control"
+                                            asp-items="@(new SelectList(ViewBag.CountryId as List<Country>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="AddressVM.CityId"></label>
+                                    <div id="addressCities">
+                                        @await Html.PartialAsync("_CitiesPartial", new CityListViewModel() { CityId = Model.AddressVM != null && Model.AddressVM.CityId != null ? Model.AddressVM.CityId : null })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="AddressVM.Street"></label>
+                                    <input type="text" class="form-control" asp-for="AddressVM.Street" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="label-customer-form" asp-for="AddressVM.BillingAddress"></label>
+                                    <input type="text" class="form-control" asp-for="AddressVM.BillingAddress" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="logistic-contacts" class="col-12">
+                        @await Html.PartialAsync("_ContactsPartial", Model.ContactVMs)
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4">
+                <h3 class="head-box">@SharedLocalizer["UploadFiles"]</h3>
+                <div class="card logistics-right-section">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="file file-upload-label" for="upload-recipe-attachment-2">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                <span class="span-upload">@SharedLocalizer["Upload"]</span>
+                            </label>
+                            <input asp-for="Attachments" class="custom-file-input d-none" id="upload-recipe-attachment-2" type="file" multiple>
+                            <div class="csUploadVendorCount">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            @{
+                                int j = 0;
+                                foreach (var attachment in Model.FileVMs)
+                                {
+                                    <div id="attachment_@attachment.AttachmentId">
+                                        <input type="hidden" asp-for="FileVMs[j].AttachmentId" />
+                                        <input type="hidden" asp-for="FileVMs[j].AttachmentPath" />
+                                        <input type="hidden" asp-for="FileVMs[j].AttachmentTitle" />
+                                        <input type="hidden" asp-for="FileVMs[j].LogisticId" />
+                                        <div class="actions-uploaded">
+                                            <div class="file-name">
+                                                <i class="fas fa-file-upload"></i>
+                                                <a href="/images/Logistics/@attachment.AttachmentPath" target="_blank">
+                                                    @attachment.AttachmentTitle
+                                                </a>
+                                            </div>
+                                            <div class="close-del">
+                                                <a onclick="deleteDbAttachment(@attachment.AttachmentId)">
+                                                    <i class="fas fa-times"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    j++;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @*Six Row*@
+        <div class="row-employees" id="logistic-employees">
+            @await Html.PartialAsync("_EmployeesPartial", Model.EmployeeVMs)
+        </div>
+    </div>
+</div>

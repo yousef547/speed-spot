@@ -1,0 +1,12 @@
+﻿
+@model IList<CurrencyViewModel>
+
+@foreach (var item in Model)
+{
+    <div class="col-12 col-md-3">
+        <p>
+            <span>@(SharedLocalizer.IsRightToLeft() ? item.NameAr : item.Name)(@item.Symbol): </span>
+            <span class="light-blue">@item.ExchangeRate</span>
+        </p>
+    </div>
+}

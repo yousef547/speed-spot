@@ -1,0 +1,95 @@
+﻿
+@model LetterOfGuaranteeRequestViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["PrintLGRequest"];
+
+    bool? isFinal = ViewData["IsFinal"] as bool?;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="printLG('@((bool)isFinal ? "final" : "performance")');">
+        @SharedLocalizer["Print"]
+    </button>
+}
+
+<div class="header-print-pdf">
+    <img src="/images/umsco01.png" />
+    <div class="qrcode" id="qrcode"></div>
+</div>
+<table class="print-table">
+    <tr>
+        <th colspan="2">
+            @if ((bool)isFinal)
+            {
+                <h3>@SharedLocalizer["FinalLGRequest"]</h3>
+            }
+            else
+            {
+                <h3>@SharedLocalizer["PerformanceLGRequest"]</h3>
+            }
+        </th>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["AssignedToId"]</th>
+        <td>@Model.LGVM.AssignedToName</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["CustomerName"]</th>
+        <td>@(SharedLocalizer.IsRightToLeft() ? Model.CustomerNameAr : Model.CustomerName)</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["TypeId"]</th>
+        <td>@(Model.LGVM.CashType ? SharedLocalizer["LG"] : SharedLocalizer["Cash"])</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["Amount"]</th>
+        <td>@Model.LGVM.Amount</td>
+    </tr>
+    @if (Model.LGVM.CashType)
+    {
+        <tr>
+            <th>@SharedLocalizer["BankId"]</th>
+            <td>@(SharedLocalizer.IsRightToLeft() ? Model.LGVM.BankNameAr : Model.LGVM.BankName)</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["NoOfPeriods"]</th>
+            <td>@Model.LGVM.NoOfPeriods</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["IssueDate"]</th>
+            <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["IsCredit"]</th>
+            <td>@(Model.LGVM.IsCredit ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <th>@SharedLocalizer["Date"]</th>
+            <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+        </tr>
+    }
+</table>
+
+@section Scripts{
+    <script type="text/javascript" src="~/js/quotations.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("#ready-spinner").fadeOut(function () {
+            @if ((bool)isFinal)
+            {
+                @:printLG('final');
+            }
+            else
+            {
+                @:printLG('performance');
+            }
+            //$(this).remove(); // Optional if it's going to only be used once.
+        });
+    })
+    </script>
+}

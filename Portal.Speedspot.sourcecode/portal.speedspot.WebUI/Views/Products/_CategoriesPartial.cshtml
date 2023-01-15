@@ -1,0 +1,10 @@
+﻿
+@model List<ProductCategory>
+
+<select class="form-control inp-height" id="CategoryId" name="CategoryId">
+    <option value="" selected>@SharedLocalizer["Select"]</option>
+    @foreach (var category in Model)
+    {
+        <option value="@category.Id">@(SharedLocalizer.IsRightToLeft() ? category.NameAr : category.Name)</option>
+    }
+</select>

@@ -1,0 +1,10 @@
+﻿
+@model OpportunityViewModel
+
+<input id="roOpportunityId" asp-for="Id" type="hidden" />
+
+<div class="card">
+    <div id="requestOffers">
+        @await Html.PartialAsync("_DetailsRequestOffersPartial", Model.RequestOfferVMs)
+    </div>
+</div>

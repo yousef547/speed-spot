@@ -1,0 +1,104 @@
+﻿@model List<SupplierCertificateViewModel>
+
+<div class="box">
+    <div class="top-add-new">
+        <h3 class="head-box">@SharedLocalizer["Certifications"]:</h3>
+        <a class="btn btn-add-primary" id="add-certificate" onclick="addCertificate()">
+            <i class="fa fa-plus"></i>
+            @SharedLocalizer["AddCertificate"]
+        </a>
+    </div>
+    <div class="content scroll-Custom">
+        <div class="form-group">
+            <div class="d-flex justify-content-around">
+                <p>@SharedLocalizer["Name"]</p>
+                <p>@SharedLocalizer["Attachment"]</p>
+                <p class="invisible"></p>
+            </div>
+            <div class="certificates-list">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <div class="certificate-item">
+                        <input type="hidden"
+                           class="certificate-id"
+                           id="CertificateVMs[@i]_Id"
+                           name="CertificateVMs[@i].Id"
+                           value="@Model[i].Id" />
+                        <input type="hidden"
+                           class="certificate-supplierid"
+                           id="CertificateVMs[@i]_SupplierId"
+                           name="CertificateVMs[@i].SupplierId"
+                           value="@Model[i].SupplierId" />
+                        <input type="hidden"
+                           class="certificate-certificateid"
+                           id="CertificateVMs[@i]_CertificateId"
+                           name="CertificateVMs[@i].CertificateId"
+                           value="@Model[i].CertificateId" />
+                        <input type="hidden"
+                           class="certificate-vm-id"
+                           id="CertificateVMs[@i]_CertificateVM_Id"
+                           name="CertificateVMs[@i].CertificateVM.Id"
+                           value="@Model[i].CertificateVM.Id" />
+                        @*<input type="hidden"
+                            class="certificate-vm-attachmentid"
+                            id="CertificateVMs[@i]_CertificateVM_AttachmentId"
+                            name="CertificateVMs[@i].CertificateVM.AttachmentId" />*@
+
+                        <div class="item input-actions-creat-suppliers">
+                            <input type="text"
+                               id="CertificateVMs[@i]_CertificateVM_Name"
+                               name="CertificateVMs[@i].CertificateVM.Name"
+                               class="form-control certificate-vm-name"
+                               value="@Model[i].CertificateVM.Name" />
+
+                            <label class="file file-upload-label" for="CertificateVMs[@i]_File">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                <span class="span-upload">@SharedLocalizer["ChooseFile"]</span>
+                            </label>
+                            <input class="custom-file-input d-none certificate-file" id="CertificateVMs[@i]_File" type="file" name="CertificateVMs[@i].File">
+                            @if (Model[i].CertificateVM.AttachmentId != null && Model[i].CertificateVM.AttachmentPath != null)
+                            {
+                                <input class="certificate-vm-attachmentid"
+                               name="CertificateVMs[@i].CertificateVM.AttachmentId"
+                               id="CertificateVMs[@i]_CertificateVM_AttachmentId"
+                               value="@Model[i].CertificateVM.AttachmentId"
+                               type="hidden" />
+                                <input class="certificate-vm-attachmentpath"
+                               name="CertificateVMs[@i].CertificateVM.AttachmentPath"
+                               id="CertificateVMs[@i]_CertificateVM_AttachmentPath"
+                               value="@Model[i].CertificateVM.AttachmentPath"
+                               type="hidden" />
+                            }
+
+                            <div class="actions">
+                                @if (Model[i].Id != null && Model[i].Id != 0)
+                                {
+                                    <a onclick="deleteDbCertificate(@Model[i].CertificateVM.Id, @i)">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a onclick="deleteCertificate(@i)">
+                                        <i class="fa fa-trash-alt"></i>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                        @if (Model[i].CertificateVM.AttachmentId != null && Model[i].CertificateVM.AttachmentPath != null)
+                        {
+                            <a class="view-attach-edit"
+                       href="/images/Suppliers/@Model[i].CertificateVM.AttachmentPath"
+                       target="_blank">
+                                @SharedLocalizer["ViewAttachment"]
+                            </a>
+                        }
+                    </div>
+
+                }
+            </div>
+        </div>
+    </div>
+</div>

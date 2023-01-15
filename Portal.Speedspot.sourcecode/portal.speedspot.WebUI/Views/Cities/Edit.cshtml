@@ -1,0 +1,70 @@
+﻿
+@model CityViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["Cities"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["City"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form method="post" asp-action="Edit" class="d-inline" id="citiesForm">
+    <div class="create-cities mx-4">
+        <div class="col-12">
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IsArchived" type="hidden" />
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CountryId"></label>
+                        <select asp-for="CountryId" data-live-search="true" class="form-control select-no-border-white" asp-items="@(new SelectList(ViewBag.CountryId as List<Country>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="CountryId"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name">@SharedLocalizer["Name"]</label>
+                        <input class="form-control inp-height" type="text" asp-for="Name">
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr">@SharedLocalizer["NameAr"]</label>
+                        <input class="form-control inp-height" type="text" asp-for="NameAr">
+                        <span class="text-danger" asp-validation-for="NameAr"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script type="text/javascript">
+        saveForm = function () {
+            var isFormValid = $("#citiesForm").valid();
+            if (isFormValid) {
+                showLoader();
+                $("#citiesForm").submit();
+            }
+        }
+        $('select').selectpicker();
+
+    </script>
+}

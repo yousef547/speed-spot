@@ -1,0 +1,75 @@
+﻿
+@model UserInfoViewModel
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="img-profile-user-details">
+                    <img src="/images/Users/@Model.ProfilePicture" class="" title="@Model.FullName" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="FullName"></label>
+                    <p>@Model.FullName</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="PhoneNumber"></label>
+                    <p>@Model.PhoneNumber</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="Email"></label>
+                    <p>@Model.Email</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="EmployeeTypeId"></label>
+                    <p>@(SharedLocalizer.IsRightToLeft() ? Model.EmployeeTypeNameAr : Model.EmployeeTypeName)</p>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="DefaultDepartmentId"></label>
+                    <p>@(SharedLocalizer.IsRightToLeft() ? Model.DefaultDepartmentNameAr : Model.DefaultDepartmentName)</p>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="DirectManagerId"></label>
+                    <p>@Model.DirectManagerName</p>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="RoleVMs"></label>
+                    @foreach (var department in Model.RoleVMs)
+                    {
+                        <p>@(SharedLocalizer.IsRightToLeft() ? department.RoleNameAr : department.RoleName)</p>
+                    }
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="DepartmentVMs"></label>
+                    <div class="row">
+                    @foreach (var department in Model.DepartmentVMs)
+                    {
+                        <div class="col-md-4">
+                        <p>@(SharedLocalizer.IsRightToLeft() ? department.DepartmentNameAr : department.DepartmentName)</p>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

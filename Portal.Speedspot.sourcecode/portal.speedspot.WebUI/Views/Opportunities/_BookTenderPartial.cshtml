@@ -1,0 +1,277 @@
+﻿
+@model OpportunityViewModel
+
+@if (Model.BookTenderVM == null)
+{
+    Model.BookTenderVM = new BookTenderViewModel();
+}
+
+@{
+    bool canSend = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.SendBookTender)).Succeeded;
+    bool canApprove = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ApproveBookTender)).Succeeded;
+    bool canPrint = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.PrintBookTender)).Succeeded;
+    bool disableFields = Model.BookTenderVM.IsApproved || Model.BookTenderVM.IsRejected;
+}
+
+<div class="col-12 col-lg-4" id="bookTenderBlock">
+    <h5><strong>@SharedLocalizer["BookTender"]:</strong></h5>
+
+    <input asp-for="BookTenderVM.Id" type="hidden" />
+    <input asp-for="BookTenderVM.OpportunityId" type="hidden" />
+
+    @if (Model.BookTenderVM.RequestVM != null)
+    {
+        <input asp-for="BookTenderVM.RequestVM.Id" type="hidden" />
+        <input asp-for="BookTenderVM.RequestVM.RequestedById" type="hidden" />
+        <input asp-for="BookTenderVM.RequestVM.RequestedDate" type="hidden" value="@Model.BookTenderVM.RequestVM.RequestedDate.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+
+        <input asp-for="BookTenderVM.RequestVM.Status" type="hidden" />
+        if (Model.BookTenderVM.RequestVM.Status != ApplicationEnums.RequestStatusEnum.Pending)
+        {
+            <input asp-for="BookTenderVM.RequestVM.StatusById" type="hidden" />
+            <input asp-for="BookTenderVM.RequestVM.StatusDate" type="hidden" value="@Model.BookTenderVM.RequestVM.StatusDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+
+        <input asp-for="BookTenderVM.RequestVM.IsSent" type="hidden" />
+        if (Model.BookTenderVM.RequestVM.IsSent)
+        {
+            <input asp-for="BookTenderVM.RequestVM.SentById" type="hidden" />
+            <input asp-for="BookTenderVM.RequestVM.SentDate" type="hidden" value="@Model.BookTenderVM.RequestVM.SentDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+
+        <input asp-for="BookTenderVM.RequestVM.IsPrinted" type="hidden" />
+        if (Model.BookTenderVM.RequestVM.IsPrinted)
+        {
+            <input asp-for="BookTenderVM.RequestVM.PrintedById" type="hidden" />
+            <input asp-for="BookTenderVM.RequestVM.PrintedDate" type="hidden" value="@Model.BookTenderVM.RequestVM.PrintedDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+    }
+
+    <input asp-for="BookTenderVM.IsRequested" type="hidden" />
+    <input asp-for="BookTenderVM.IsSent" type="hidden" />
+    <input asp-for="BookTenderVM.IsApproved" type="hidden" />
+    <input asp-for="BookTenderVM.IsRejected" type="hidden" />
+    <input asp-for="BookTenderVM.IsPrinted" type="hidden" />
+
+    <div class="card Opportunities-sections-details">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="position-absolute w-100 h-100 bg-white overlay-block disableBookTender @(!disableFields ? "d-none" : "")">
+
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="BookTenderVM.AssignedToId" class="control-label label-sales-information"></label>
+                        <select asp-for="BookTenderVM.AssignedToId" data-live-search="true" data-size="5" class="form-control inp-height" asp-items="@(new SelectList(ViewBag.AssignedToId as List<UserViewModel>, "Id", "Name"))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="position-absolute w-100 h-100 bg-white overlay-block disableBookTender @(!disableFields ? "d-none" : "")">
+
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="BookTenderVM.Fees" class="control-label label-sales-information"></label>
+                                <input asp-for="BookTenderVM.Fees" class="form-control inp-height" id="bookTenderFees" onchange="calculateBookTenderTotal()" />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="BookTenderVM.VAT" class="control-label label-sales-information">VAT (%)</label>
+                                <input asp-for="BookTenderVM.VAT" class="form-control inp-height" id="VAT" value="@(Model.BookTenderVM.Id == 0 ? Configuration.GetSection("AppSettings").GetValue<decimal>("VAT") : Model.BookTenderVM.VAT)" readonly />
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="BookTenderVM.TotalFees" class="control-label label-sales-information"></label>
+                                <input asp-for="BookTenderVM.TotalFees" class="form-control inp-height" id="bookTenderTotalFees" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.BookTenderVM.IsPrinted)
+                {
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="BookTenderVM.ReceiptNo" class="control-label label-sales-information"></label>
+                            <input asp-for="BookTenderVM.ReceiptNo" class="form-control inp-height" />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="BookTenderVM.ReceiptDate" class="control-label label-sales-information"></label>
+                            <input asp-for="BookTenderVM.ReceiptDate" class="form-control inp-height" />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="control-label label-sales-information" asp-for="BookTenderVM.ReceiptAttachmentFile">@SharedLocalizer["ReceiptAttachmentFile"]</label>
+
+
+                            <div class="custom-label-upload">
+                                <label class="" asp-for="BookTenderVM.ReceiptAttachmentFile" for="BookTender">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                </label>
+
+                                @if (Model.BookTenderVM.ReceiptAttachmentId != null)
+                                {
+                                    <a class="one-line" href="/images/Opportunities/@Model.BookTenderVM.ReceiptAttachmentPath" title="@Model.BookTenderVM.ReceiptAttachmentTitle" target="_blank">@Model.BookTenderVM.ReceiptAttachmentTitle</a>
+                                }
+                                else
+                                {
+                                    <label class="file-name one-line" asp-for="BookTenderVM.ReceiptAttachmentFile" for="BookTender">
+                                        @SharedLocalizer["Upload"]
+                                    </label>
+                                }
+                                <input id="BookTender" asp-for="BookTenderVM.ReceiptAttachmentFile" class="custom-file-input d-none">
+                            </div>
+
+                            @if (Model.BookTenderVM.ReceiptAttachmentId != null)
+                            {
+                                <input asp-for="BookTenderVM.ReceiptAttachmentId" type="hidden" />
+                            }
+                            <span asp-validation-for="BookTenderVM.ReceiptAttachmentFile" class="text-danger"></span>
+                        </div>
+                    </div>
+                }
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="BookTenderVM.Description" class="control-label label-sales-information"></label>
+                        <textarea asp-for="BookTenderVM.Description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            @if (!Model.BookTenderVM.IsRequested)
+            {
+                @* Request Book Tender (Not Requested) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-request" onclick="requestBookTender(this)">
+                        @SharedLocalizer["Request"]
+                    </button>
+                    <div class="d-none" id="bookTenderPendingFinancialMSG">
+                        <i class="fas fa-history"></i>
+                        <span class="font-size-action">
+                            @SharedLocalizer["PendingSaveMSG"]
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsRequested && !Model.BookTenderVM.IsSent && !canSend)
+            {
+                @* (Requested & Cannot Send) *@
+                <div class="row justify-content-end mx-1">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action"> @SharedLocalizer["PendingFinancialMSG"]</span>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsRequested && !Model.BookTenderVM.IsSent && canSend)
+            {
+                @* Send Book Tender (Requested & Not Sent & Can Send) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-send" onclick="sendBookTender(this)">
+                        @SharedLocalizer["Send"]
+                    </button>
+                    <div class="d-none" id="bookTenderPendingManagerMSG">
+                        <i class="fas fa-history"></i>
+                        <span class="font-size-action">
+                            @SharedLocalizer["PendingSaveMSG"]
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsSent && !(Model.BookTenderVM.IsApproved || Model.BookTenderVM.IsRejected) && !canApprove)
+            {
+                @* (Can Send & Sent & Cannot Approve) *@
+                <div class="row justify-content-end mx-1">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingManagerMSG"]
+                    </span>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsSent && !(Model.BookTenderVM.IsApproved || Model.BookTenderVM.IsRejected) && canApprove)
+            {
+                @* Approve / Reject Book Tender (Sent & Not Approved & Can Approve or Reject) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-approve mx-1" id="btnBookTenderApprove" onclick="approveBookTender()">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Approve"]
+                    </button>
+                    <div class="d-none approvedBlock" id="approvedBookTenderBlock">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelBookTenderApproval()">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-reject" id="btnBookTenderReject" onclick="rejectBookTender()">
+                        <i class="fas fa-times"></i>
+                        @SharedLocalizer["Reject"]
+                    </button>
+                    <div class="d-none rejectedBlock" id="rejectedBookTenderBlock">
+                        <i class="fas fa-times"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelBookTenderRejection()">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsApproved && !Model.BookTenderVM.IsPrinted && canPrint)
+            {
+                @* Print Book Tender (Approved & Can Print) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-approve mx-1" id="btnBookTenderPrint" onclick="printBookTenderPage('@Model.BookTenderVM.RequestVM.Id')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Print"]
+                    </button>
+                    <div class="d-none mx-1 printedBlock" id="printedBookTenderBlock">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsRejected)
+            {
+                <div class="row justify-content-end">
+                    <div class="mx-1">
+                        <i class="fas fa-times"></i>
+                        <span>@SharedLocalizer["RejectedBy"] @Model.BookTenderVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BookTenderVM.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["DoneBy"] @Model.BookTenderVM.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["ApprovedBy"] @Model.BookTenderVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

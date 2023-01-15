@@ -1,0 +1,72 @@
+﻿@model List<DepartmentDocumentViewModel>
+@{
+    int i = 0;
+}
+    <div class="card">
+        <div class="row">
+            <div class="col-md-12">
+
+                <form id="documentValue">
+                    <table id="table_decument" class="table">
+                        <thead>
+                            <tr>
+                                <th>@SharedLocalizer["Title"]</th>
+                                <th>@SharedLocalizer["AlNumber"]</th>
+                                <th>@SharedLocalizer["IssueDate"]</th>
+                                <th>ِ@SharedLocalizer["ExpiryDate"]</th>
+                                <th>@SharedLocalizer["Attachment"]</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="input-table">
+                                    <td class="light-blue-2 "><input class="form-control inp-height title" type="text" name="Documents[@i].Title" value="@item.Title" /></td>
+                                    <td><input class="form-control inp-height" type="text" value="@item.Number" name="Documents[@i].Number" /></td>
+                                    <td class="light-blue "><input class="form-control inp-height issuedate" type="date" name="Documents[@i].IssueDate" value="@item.IssueDate.ToString("yyyy-MM-dd")" /></td>
+                                    <td class="light-blue exclamation ">
+                                        <input class="form-control inp-height expirydate" type="date" value="@item.ExpiryDate.ToString("yyyy-MM-dd")" name="Documents[@i].ExpiryDate" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" class="AttachmentId" name="Documents[@i].AttachmentId" value="@item.AttachmentId" />
+                                        <label class="file file-upload-label tsproduct-attachment-label mt-1" for="fileDocument_@i">
+                                            <span class="upload-file-icons">
+                                                <i class="fas fa-file-upload"></i>
+                                            </span>
+                                            <span class="span-upload">
+                                                @SharedLocalizer["Upload"]
+                                            </span>
+                                        </label>
+                                        <input id="fileDocument_@i"
+                                               name="Documents[@i].DocumentFile"
+                                               type="file"
+                                               class="custom-file-input tsproduct-attachment-input d-none">
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-confirm-delete" title="" data-itemid="" onclick="deleteDocument(@i)" data-source="" data-original-title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                                i++;
+                            }
+
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-12">
+                <div class="addOffers-Quotations">
+                    <a class="btn btn-cancel-transparent" onclick="hideSectionEdit()">Cancel</a>
+                    <button class="btn btn-primary" type="button" onclick="saveDocuments()">@SharedLocalizer["Save"]</button>
+                </div>
+            </div>
+        </div>
+
+
+
+</div>

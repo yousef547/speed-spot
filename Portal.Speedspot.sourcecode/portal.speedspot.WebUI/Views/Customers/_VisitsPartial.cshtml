@@ -1,0 +1,63 @@
+﻿
+@model List<VisitViewModel>
+
+<div class="card">
+    <div class="card-body">
+        <table class="table customers-details-visit text-center">
+            <thead>
+                <tr>
+                    <th>@SharedLocalizer["VisitorId"]</th>
+                    <th>@SharedLocalizer["Date"]</th>
+                    <th>@SharedLocalizer["Time"]</th>
+                    <th>@SharedLocalizer["VisitDuration"] (@SharedLocalizer["Hours"])</th>
+                    <th>@SharedLocalizer["ReasonId"]</th>
+                    <th>@SharedLocalizer["Actions"]</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.SalesAgentName</td>
+                        <td>@item.DateTime.ToString("dd/MM/yyyy")</td>
+                        <td>@item.DateTime.ToString("hh:mm tt")</td>
+                        <td>@item.Duration</td>
+                        <td>@(SharedLocalizer.IsRightToLeft() ? item.ReasonNameAr : item.ReasonName)</td>
+                        <td class="actions-table-btn">
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Details)).Succeeded)
+                            {
+                                <a class="btn btn-info info-details my-1 show-loader" onclick="showVisitDetails(@item.Id)">
+                                    <i class="fas fa-info"></i>
+                                </a>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Edit)).Succeeded)
+                            {
+                                <a class="btn btn-edit" title="@SharedLocalizer["Edit"]" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Delete)).Succeeded)
+                            {
+                                if (!item.IsArchived)
+                                {
+                                    <a data-toggle="confirmation"
+                                       class="btn btn-delete my-1 visits-confirm-delete"
+                                       data-source="archiveVisits"
+                                       data-itemid="@item.Id">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-delete-unarchive my-1 show-loader visits-confirm-delete" data-source="unArchiveVisits" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

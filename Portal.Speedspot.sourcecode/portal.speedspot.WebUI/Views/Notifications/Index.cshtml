@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = SharedLocalizer["Notifications"];
+    ViewData["Level1Section"] = SharedLocalizer["Notifications"];
+}
+<div class="container">
+    <div class="row">
+        <div class="all-notification-actions">
+            <ul class="nav nav-pills" id="mainTab" role="tablist">
+                <li class=" tabs-link-customer-history">
+                    <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                        @SharedLocalizer["IsRead"]
+                    </a>
+                </li>
+                <li class=" tabs-link-customer-history">
+                    <a class="nav-link" id="tss-tab" data-toggle="tab" href="#tss" role="tab" aria-controls="tss" aria-selected="false">
+                        @SharedLocalizer["NotRead"]
+                    </a>
+                </li>
+                <li class=" tabs-link-customer-history">
+                    <a class="nav-link" id="soo-tab" data-toggle="tab" href="#soo" role="tab" aria-controls="soo" aria-selected="false">
+                        @SharedLocalizer["AllNotification"]
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="all-notification-actions">
+            <div class="tab-content px-2 sales-informations-tab-content" id="mainTabContent">
+                <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+                    <div id="isRead"></div>
+                </div>
+                <div class="tab-pane fade" id="tss" role="tabpanel" aria-labelledby="tss-tab">
+                    <div id="notRead"></div>
+                </div>
+                <div class="tab-pane fade" id="soo" role="tabpanel" aria-labelledby="soo-tab">
+                    <div id="allRead"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            isReadNotifications();
+            isNotReadNotifications();
+            allNotifications();
+        })
+    </script>
+}

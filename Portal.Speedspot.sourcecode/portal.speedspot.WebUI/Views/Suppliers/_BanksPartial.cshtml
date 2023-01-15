@@ -1,0 +1,47 @@
+﻿
+@model IList<SupplierBankViewModel>
+
+<table class="table table-bank-details">
+    <thead>
+        <tr>
+            <th scope="col">@SharedLocalizer["BankName"]</th>
+            <th scope="col">@SharedLocalizer["Branch"]</th>
+            <th scope="col">@SharedLocalizer["Address"]</th>
+            <th scope="col">@SharedLocalizer["SwiftCode"]</th>
+            <th scope="col">@SharedLocalizer["Currency"]</th>
+            <th scope="col">@SharedLocalizer["AccountNo"]</th>
+            <th scope="col">@SharedLocalizer["IBAN"]</th>
+            <th class="action" scope="col">@SharedLocalizer["Actions"]</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bank in Model)
+        {
+            <tr>
+                <td scope="row">@(SharedLocalizer.IsRightToLeft() ? bank.BankNameAr : bank.BankName)</td>
+                <td>@(SharedLocalizer.IsRightToLeft() ? bank.BranchNameAr : bank.BranchName)</td>
+                <td>@bank.BranchAddress</td>
+                <td>@bank.SwiftCode</td>
+                <td>
+                    <select onchange="supplierBankCurrencyChanged('@bank.Id')" id="currency_@bank.Id">
+                        @foreach (var currency in bank.CurrencyVMs)
+                        {
+                            <option value="@currency.Id">@(SharedLocalizer.IsRightToLeft() ? currency.CurrencyNameAr : currency.CurrencyName)</option>
+                        }
+                    </select>
+                </td>
+                <td id="accountno_@bank.Id">@bank.CurrencyVMs[0].AccountNo</td>
+                <td id="iban_@bank.Id">@bank.CurrencyVMs[0].IBAN</td>
+                <td class="actions-table-btn">
+                    <button type="button" class="btn btn-delete" title="@SharedLocalizer["Delete"]" onclick="deleteSupplierBank('@bank.Id')">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                    <button type="button" class="btn btn-edit" title="@SharedLocalizer["Edit"]" onclick="editSupplierBank('@bank.Id')">
+                        <i class="far fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

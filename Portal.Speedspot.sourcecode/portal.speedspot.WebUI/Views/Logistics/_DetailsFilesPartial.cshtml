@@ -1,0 +1,15 @@
+﻿
+@model List<LogisticFileViewModel>
+
+@foreach (var file in Model)
+{
+    <div class="actions-uploaded">
+        <a class="file-name" href="/images/Suppliers/@file.AttachmentPath" target="_blank">
+            <i class="fas fa-file-upload"></i>
+            <p class="one-line">@file.AttachmentTitle</p>
+        </a>
+        <div class="close-del" onclick="deleteDetailsDbAttachment(@file.LogisticId, @file.AttachmentId)">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+}

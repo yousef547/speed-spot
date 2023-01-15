@@ -1,0 +1,150 @@
+﻿@model EditProfileViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["ViewProfile"];
+    ViewData["Level1Section"] = SharedLocalizer["Account"];
+    ViewData["Level2Section"] = SharedLocalizer["Profile"];
+}
+
+@section HeaderActions{
+
+    <button onclick="saveProfile()" class="btn btn-outline-primary mx-2 headres-action-global">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+
+}
+<div class="row">
+
+    <div class="edit-profile">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <img class="profile-user-img-edit" src="/images/Users/@Model.ProfilePicture" />
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>@SharedLocalizer["EmployeeTypeId"]</label>
+                                <p>@(SharedLocalizer.IsRightToLeft() ? Model.EmployeeTypeNameAr : @Model.EmployeeTypeName)</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>@SharedLocalizer["DirectManagerId"]</label>
+                                <p>@Model.DirectManagerName</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>@SharedLocalizer["DefaultDepartment"]</label>
+                                <p>@(SharedLocalizer.IsRightToLeft() ? Model.DefaultDepartmentNameAr : @Model.DefaultDepartmentName)</p>
+                            </div>
+                            <div class="form-group">
+                                <label>@SharedLocalizer["Email"]</label>
+                                <p>@Model.EmailAddress</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>@SharedLocalizer["OtherDepartments"]</label>
+                                @if (Model.DepartmentVMs != null)
+                                {
+                                    foreach (var department in Model.DepartmentVMs)
+                                    {
+                                        <p>- @(SharedLocalizer.IsRightToLeft() ? department.DepartmentNameAr : department.DepartmentName)</p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<p>
+
+</p>
+<form enctype="multipart/form-data" method="post" asp-action="Profile" class="d-inline" id="profileForm">
+    <div class="form-global-inp mx-4">
+        <div class="">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input type="hidden" asp-for="DepartmentId" />
+            <input type="hidden" asp-for="EmployeeTypeId" />
+            <input type="hidden" asp-for="DirectManagerId" />
+            <input type="hidden" asp-for="IsArchived" />
+
+
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="label-customer-form" asp-for="ProfileImage">@SharedLocalizer["ChooseFile"]</label>
+                        <label class="file file-upload-label" for="custom-file-input">
+                            <span class="upload-file-icons">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            <span class="span-upload"> @SharedLocalizer["ChooseFile"]</span>
+                        </label>
+                        <input class="custom-file-input d-none ProfileImage" asp-for="ProfileImage" id="custom-file-input" type="file" accept="image/png, image/gif, image/jpeg" />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label lable-create-roles" asp-for="FirstName">@SharedLocalizer["FirstName"]</label>
+                        <input class="form-control inp-height" asp-for="FirstName" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label lable-create-roles" asp-for="LastName">@SharedLocalizer["LastName"]</label>
+                        <input class="form-control inp-height" asp-for="LastName" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label lable-create-roles" asp-for="PhoneNumber">@SharedLocalizer["PhoneNumber"]</label>
+                        <input class="form-control inp-height" asp-for="PhoneNumber" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-end">
+                        <a class="ChangePssword show-loader" asp-action="ChangePassword">@SharedLocalizer["ChangePassword"]</a>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <script src="~/js/users.js"></script>
+    <script>
+        //$('#EmployeeTypeId,#DepartmentId,#DirectManagerId').selectpicker();
+
+        saveProfile = function () {
+            if ($("#profileForm").valid()) {
+                showLoader();
+                $("#profileForm").submit();
+            }
+        }
+    </script>
+
+}

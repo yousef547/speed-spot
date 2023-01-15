@@ -1,0 +1,251 @@
+﻿
+@model List<QuotationComparisonViewModel>
+
+@{
+    ViewData["Title"] = "Comparison";
+
+    List<TechnicalSpecificationProductViewModel> productVMs = ViewData["ProductVMs"] as List<TechnicalSpecificationProductViewModel>;
+}
+
+<div class="row">
+    <div class="col-12">
+        <h4>
+            <b>
+                @SharedLocalizer["CompetitorsComparison"]
+            </b>
+        </h4>
+    </div>
+    <div class="col-12">
+        <div class="parents-comparison">
+            <table class="table first-column-hidden">
+                <thead>
+                    <tr>
+                        <th class="invisible"></th>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <th class="">
+                                <div class="head-comp-logo">
+                                    @if (quotationComparison.Id == 0)
+                                    {
+                                        <img src="/images/Company/@quotationComparison.ImagePath" class="" alt="logo" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/Competitors/@quotationComparison.ImagePath" class="" alt="logo" />
+                                    }
+                                    <p class="name-comp one-line"> @quotationComparison.CompanyName</p>
+                                </div>
+                            </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    <tr>
+                        <td data-label_table="" class="compair-td">@SharedLocalizer["CurrencyId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td>@quotationComparison.ComparisonOfferVM.CurrencyName</td>
+                        }
+
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["ExchangeRate"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td> @quotationComparison.ComparisonOfferVM.ExchangeRate</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["ValidityId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.ValidityName</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["GuaranteeTermId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.GuaranteeName</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["DeliveryRange"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td>
+                                @SharedLocalizer["From"] @quotationComparison.ComparisonOfferVM.DeliveryFromDays @SharedLocalizer["To"] @quotationComparison.ComparisonOfferVM.DeliveryToDays
+                                <span class="month"> @SharedLocalizer["Days"]</span>
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["DeliveryPlaceId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.DeliveryPlaceName</span></td>
+
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["IsVATIncluded"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@(quotationComparison.ComparisonOfferVM.IsVATIncluded? SharedLocalizer["Yes"] : SharedLocalizer["No"])</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["PaymentTerms"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td>
+                                @{
+                                    int count = 0;
+                                }
+                                @if (quotationComparison.ComparisonOfferVM.DownPaymentPercentage > 0)
+                                {
+                                    <span>@quotationComparison.ComparisonOfferVM.DownPaymentPercentage.ToString("##.##")@SharedLocalizer["DownPaymentPercentage"]</span>
+                                    count++;
+                                }
+                                @if (quotationComparison.ComparisonOfferVM.UponDeliveryPercentage > 0)
+                                {
+                                    <span>
+                                        @if (count == 1)
+                                        {
+                                            @SharedLocalizer["And"]
+                                        }
+                                        @quotationComparison.ComparisonOfferVM.UponDeliveryPercentage.ToString("##.##")@SharedLocalizer["UponDeliveryPercentage"]
+                                    </span>
+                                    count++;
+                                }
+                                @if (quotationComparison.ComparisonOfferVM.AfterInstallationPercentage > 0)
+                                {
+                                    <span>
+                                        @if (count >= 1)
+                                        {
+                                            @SharedLocalizer["And"]
+                                        }
+                                        @quotationComparison.ComparisonOfferVM.AfterInstallationPercentage.ToString("##.##")@SharedLocalizer["AfterInstallationPercentage"]
+                                    </span>
+                                    count++;
+                                }
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["OriginDocumentId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.OriginDocumentName</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["CertificateIds"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.CertificateNames</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["SupplierId"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.SupplierName</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["Notes"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.ComparisonOfferVM.Notes</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["TotalPrice"]</td>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <td><span>@quotationComparison.TotalPrice.ToString("#,###.##")</span></td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h4>
+            <b>
+                @SharedLocalizer["Products"]
+            </b>
+        </h4>
+    </div>
+    <div class="col-12">
+        <div class="parents-comparison">
+            <table class="table first-column-hidden">
+                <thead>
+                    <tr>
+                        <th class="invisible"></th>
+                        @foreach (var quotationComparison in Model)
+                        {
+                            <th class="">
+                                <div class="head-comp-logo">
+                                    @if (quotationComparison.Id == 0)
+                                    {
+                                        <img src="/images/Company/@quotationComparison.ImagePath" class="" alt="logo" />
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/Competitors/@quotationComparison.ImagePath" class="" alt="logo" />
+                                    }
+                                    <p class="name-comp one-line"> @quotationComparison.CompanyName</p>
+                                </div>
+                            </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    @foreach (var productVM in productVMs)
+                    {
+                        decimal lowestPrice = decimal.MaxValue;
+                        int lowestPriceId = 0;
+                        foreach (var quotationComparison in Model)
+                        {
+                            if (quotationComparison.ComparisonProductVMs.FirstOrDefault(p => p.Id == productVM.Id) != null)
+                            {
+                                decimal companyPrice = quotationComparison.ComparisonProductVMs.FirstOrDefault(p => p.Id == productVM.Id).TotalPrice;
+                                if (companyPrice < lowestPrice && companyPrice > 0)
+                                {
+                                    lowestPrice = companyPrice;
+                                    lowestPriceId = quotationComparison.Id;
+                                }
+                            }
+                        }
+                        <tr>
+                            <td data-label_table="" class="compair-td">@(SharedLocalizer.IsRightToLeft() ? productVM.ProductNameAr : productVM.ProductName)</td>
+                            @foreach (var quotationComparison in Model)
+                            {
+                                var comparisonProductVM = quotationComparison.ComparisonProductVMs.FirstOrDefault(p => p.Id == productVM.Id);
+                                <td>
+                                    @if (comparisonProductVM != null && comparisonProductVM.TotalPrice > 0)
+                                    {
+                                        <span>@comparisonProductVM.TotalPrice.ToString("#,###.##")</span>
+                                    }
+                                    @if (lowestPriceId == quotationComparison.Id)
+                                    {
+                                        <span class="text-success">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

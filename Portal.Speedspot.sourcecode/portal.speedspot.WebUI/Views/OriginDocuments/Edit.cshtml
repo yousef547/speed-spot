@@ -1,0 +1,59 @@
+﻿
+@model OriginDocumentViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["OriginDocuments"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["OriginDocument"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+<form method="post" asp-action="Edit" class="d-inline" id="OriginDocumentForm">
+    <div class="create-organizationTypes mx-4">
+        <div class="col-12">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="IsArchived" />
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name"></label>
+                        <input class="form-control inp-height" type="text" asp-for="Name">
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <input class="form-control inp-height" type="text" asp-for="NameAr">
+                        <span class="text-danger" asp-validation-for="NameAr"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <script type="text/javascript">
+        saveForm = function () {
+            var isFormValid = $("#OriginDocumentForm").valid();
+            if (isFormValid) {
+                showLoader();
+                $("#OriginDocumentForm").submit();
+            }
+        }
+    </script>
+}

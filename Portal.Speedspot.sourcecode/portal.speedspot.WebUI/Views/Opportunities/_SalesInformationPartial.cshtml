@@ -1,0 +1,167 @@
+﻿
+@model OpportunityViewModel
+<input type="hidden" asp-for="TypeId" value="@Model.TypeId" />
+<div class="row">
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="Name" class="control-label label-sales-information"></label>*
+            <input asp-for="Name" class="form-control inp-height" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4 typeDependant">
+        <div class="form-group">
+            <label asp-for="TenderNumber" class="control-label label-sales-information"></label>
+            <input asp-for="TenderNumber" class="form-control inp-height" />
+            <span asp-validation-for="TenderNumber" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-2 d-flex align-items-start mt-5">
+        <div class="custom-control custom-switch typeDependant">
+            <input class="custom-control-input" asp-for="IsLocalTenderType">
+            <label asp-for="IsLocalTenderType" class="custom-control-label label-sales-information"></label>
+        </div>
+    </div>
+    <div class="col-12 col-lg-2 d-flex align-items-start mt-5">
+        <div class="custom-control custom-switch typeDependant">
+            <input class="custom-control-input" asp-for="IsLimitedTenderType">
+            <label asp-for="IsLimitedTenderType" class="custom-control-label label-sales-information"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="DueDate" class="control-label label-sales-information"></label>*
+            <input asp-for="DueDate" class="form-control inp-height" />
+            <span asp-validation-for="DueDate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group" id="selectCustomer">
+          @await Html.PartialAsync("_ShowCustomerPartial")
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="CountryId" class="control-label label-sales-information"></label>*
+            <select asp-for="CountryId" class="form-control inp-height" data-live-search="true" asp-items="@(new SelectList(ViewBag.CountryId as List<Country>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+            </select>
+            <span asp-validation-for="CountryId" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="Address" class="control-label label-sales-information"></label>
+            <input asp-for="Address" class="form-control inp-height" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="SalesAgentId" class="control-label label-sales-information"></label>*
+            <select asp-for="SalesAgentId" class="form-control inp-height" data-live-search="true" asp-items="@(new SelectList(ViewBag.SalesAgentId as List<UserViewModel>, "Id", "Name"))">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+            </select>
+            <span asp-validation-for="SalesAgentId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="Budget" class="control-label label-sales-information"></label>
+            <input asp-for="Budget" class="form-control inp-height" />
+            <span asp-validation-for="Budget" class="text-danger"></span>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="DepartmentId" class="control-label label-sales-information"></label>*
+            @if (Model.IsTechnicalApproved)
+            {
+                <select asp-for="DepartmentId"
+                        class="form-control inp-height"
+                        data-live-search="true"
+                        asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                        onchange="clearProducts()" disabled>
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+                <input type="hidden" asp-for="DepartmentId" />
+            }
+            else
+            {
+                <select asp-for="DepartmentId"
+                        class="form-control inp-height"
+                        data-live-search="true"
+                        asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                        onchange="clearProducts()">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+            }
+            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="ProjectManagerId" class="control-label label-sales-information"></label>
+            <select data-live-search="true" asp-for="ProjectManagerId" class="form-control inp-height" asp-items="@(new SelectList(ViewBag.AssignedToId as List<UserViewModel>, "Id", "Name"))">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+            </select>
+            <span asp-validation-for="ProjectManagerId" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="GuestId" class="control-label label-sales-information"></label>
+            <select asp-for="GuestId" class="form-control inp-height" data-live-search="true" asp-items="@(new SelectList(ViewBag.AssignedToId as List<UserViewModel>, "Id", "Name"))">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+            </select>
+            <span asp-validation-for="GuestId" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <div class="form-group">
+            <label asp-for="Notes" class="control-label label-sales-information"></label>
+            <textarea rows="4" asp-for="Notes" class="form-control"></textarea>
+            <span asp-validation-for="Notes" class="text-danger"></span>
+        </div>
+    </div>
+</div>
+
+<div class="row typeDependant mt-4">
+    <div class="col-2">
+        <div class="icheck-primary d-inline ml-2">
+            <input type="checkbox" asp-for="IsBidBond" onchange="checkBidBond()" />
+            <label asp-for="IsBidBond"></label>
+        </div>
+    </div>
+
+    <div class="col-2">
+        <div class="icheck-primary d-inline ml-2">
+            <input type="checkbox" asp-for="IsBookTender" onchange="checkBookTender()" />
+            <label asp-for="IsBookTender"></label>
+        </div>
+    </div>
+</div>
+
+<div class="row typeDependant mt-4">
+    @await Html.PartialAsync("_BidBondPartial", Model)
+
+    @await Html.PartialAsync("_BookTenderPartial", Model)
+</div>
+
+
+

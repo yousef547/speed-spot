@@ -1,0 +1,88 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.Models", "portal.speedspot.Models\portal.speedspot.Models.csproj", "{86293379-B16C-49D8-BFAB-E930DFBED0A2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.DALRepositories", "portal.speedspot.DALRepositories\portal.speedspot.DALRepositories.csproj", "{5A85DCA5-5439-4471-B28A-C213A29A3205}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.BizLayer", "portal.speedspot.BizLayer\portal.speedspot.BizLayer.csproj", "{017C2AD2-816F-4195-BB86-7D063AE8E9F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.WebAPI", "portal.speedspot.WebAPI\portal.speedspot.WebAPI.csproj", "{CEE36F7A-A747-49F9-B8B5-2227BCEE7A47}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.WebUI", "portal.speedspot.WebUI\portal.speedspot.WebUI.csproj", "{3971D375-44CD-43F2-9F8D-D655455DD74A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.Resources", "portal.speedspot.Resources\portal.speedspot.Resources.csproj", "{B620EF4C-2E4F-4252-AD03-F8AFACA2FF40}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "portal.speedspot.ConsoleProductsTreeCopy", "portal.speedspot.ConsoleProductsTreeCopy\portal.speedspot.ConsoleProductsTreeCopy.csproj", "{23B688B1-3D5E-4A00-81F2-FD7F00683A2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{86293379-B16C-49D8-BFAB-E930DFBED0A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86293379-B16C-49D8-BFAB-E930DFBED0A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86293379-B16C-49D8-BFAB-E930DFBED0A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86293379-B16C-49D8-BFAB-E930DFBED0A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A85DCA5-5439-4471-B28A-C213A29A3205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A85DCA5-5439-4471-B28A-C213A29A3205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A85DCA5-5439-4471-B28A-C213A29A3205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A85DCA5-5439-4471-B28A-C213A29A3205}.Release|Any CPU.Build.0 = Release|Any CPU
+		{017C2AD2-816F-4195-BB86-7D063AE8E9F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{017C2AD2-816F-4195-BB86-7D063AE8E9F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{017C2AD2-816F-4195-BB86-7D063AE8E9F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{017C2AD2-816F-4195-BB86-7D063AE8E9F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE36F7A-A747-49F9-B8B5-2227BCEE7A47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE36F7A-A747-49F9-B8B5-2227BCEE7A47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE36F7A-A747-49F9-B8B5-2227BCEE7A47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE36F7A-A747-49F9-B8B5-2227BCEE7A47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3971D375-44CD-43F2-9F8D-D655455DD74A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3971D375-44CD-43F2-9F8D-D655455DD74A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3971D375-44CD-43F2-9F8D-D655455DD74A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3971D375-44CD-43F2-9F8D-D655455DD74A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B620EF4C-2E4F-4252-AD03-F8AFACA2FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B620EF4C-2E4F-4252-AD03-F8AFACA2FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B620EF4C-2E4F-4252-AD03-F8AFACA2FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B620EF4C-2E4F-4252-AD03-F8AFACA2FF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23B688B1-3D5E-4A00-81F2-FD7F00683A2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23B688B1-3D5E-4A00-81F2-FD7F00683A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23B688B1-3D5E-4A00-81F2-FD7F00683A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23B688B1-3D5E-4A00-81F2-FD7F00683A2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A299ABA-6283-4371-B7E4-FD730E7E33F3}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 8
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://dev.azure.com/umsco
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = portal.speedspot.BizLayer\\portal.speedspot.BizLayer.csproj
+		SccProjectName1 = portal.speedspot.BizLayer
+		SccLocalPath1 = portal.speedspot.BizLayer
+		SccProjectUniqueName2 = portal.speedspot.DALRepositories\\portal.speedspot.DALRepositories.csproj
+		SccProjectName2 = portal.speedspot.DALRepositories
+		SccLocalPath2 = portal.speedspot.DALRepositories
+		SccProjectUniqueName3 = portal.speedspot.Models\\portal.speedspot.Models.csproj
+		SccProjectName3 = portal.speedspot.Models
+		SccLocalPath3 = portal.speedspot.Models
+		SccProjectUniqueName4 = portal.speedspot.WebAPI\\portal.speedspot.WebAPI.csproj
+		SccProjectName4 = portal.speedspot.WebAPI
+		SccLocalPath4 = portal.speedspot.WebAPI
+		SccProjectUniqueName5 = portal.speedspot.WebUI\\portal.speedspot.WebUI.csproj
+		SccProjectName5 = portal.speedspot.WebUI
+		SccLocalPath5 = portal.speedspot.WebUI
+		SccProjectUniqueName6 = portal.speedspot.Resources\\portal.speedspot.Resources.csproj
+		SccProjectName6 = portal.speedspot.Resources
+		SccLocalPath6 = portal.speedspot.Resources
+		SccProjectUniqueName7 = portal.speedspot.ConsoleProductsTreeCopy\\portal.speedspot.ConsoleProductsTreeCopy.csproj
+		SccProjectName7 = portal.speedspot.ConsoleProductsTreeCopy
+		SccLocalPath7 = portal.speedspot.ConsoleProductsTreeCopy
+	EndGlobalSection
+EndGlobal

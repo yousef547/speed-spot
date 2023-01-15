@@ -1,0 +1,89 @@
+﻿
+@model PaymentRequestViewModel
+
+<div class="modal-content">
+    <div class="modal-header border-0 pb-2">
+        <div>
+            <h5 class="payment-type-modal-title">@SharedLocalizer[Model.PaymentDetailsVM.Type.ToString()]</h5>
+            <span class="payment-type-modal-subtitle">
+                @SharedLocalizer["PaymentID"]
+                <span>#@Model.Id</span>
+            </span>
+        </div>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body pt-2">
+        <form asp-action="UploadAttachments" method="post" enctype="multipart/form-data" id="attachmentsForm">
+            <input type="hidden" asp-for="Id" name="requestId" />
+            @switch (Model.PaymentDetailsVM.Type)
+            {
+                case ApplicationEnums.PaymentTypeEnum.Cash:
+                    <div class="payment-attachment-row">
+                        <div class="payment-attachment-container">
+                            <label asp-for="ReceiptAttachmentFile" class="payment-attachment-title">
+                                <i class="fas fa-file-upload"></i>
+                            </label>
+                            <label class="payment-attachment-file-title"></label>
+                            <label asp-for="ReceiptAttachmentFile" class="payment-attachment-label">
+                                @SharedLocalizer["UploadReceiptAttachment"]
+                            </label>
+                            <input asp-for="ReceiptAttachmentFile" type="file" class="d-none payment-attachment-file" />
+                        </div>
+                    </div>
+                    break;
+
+                case ApplicationEnums.PaymentTypeEnum.Transfer:
+                    <div class="payment-attachment-row">
+                        <div class="payment-attachment-container">
+                            <label asp-for="TransferAttachmentFile" class="payment-attachment-title">
+                                <i class="fas fa-file-upload"></i>
+                            </label>
+                            <label class="payment-attachment-file-title"></label>
+                            <label asp-for="TransferAttachmentFile" class="payment-attachment-label">
+                                @SharedLocalizer["UploadTransferAttachment"]
+                            </label>
+                            <input asp-for="TransferAttachmentFile" type="file" class="d-none payment-attachment-file" />
+                        </div>
+                    </div>
+                    break;
+
+                case ApplicationEnums.PaymentTypeEnum.Cheque:
+                    <div class="payment-attachment-row">
+                        <div class="payment-attachment-container container-sm">
+                            <label asp-for="ReceiptAttachmentFile" class="payment-attachment-title">
+                                <i class="fas fa-file-upload"></i>
+                            </label>
+                            <label class="payment-attachment-file-title"></label>
+                            <label asp-for="ReceiptAttachmentFile" class="payment-attachment-label">
+                                @SharedLocalizer["UploadReceiptAttachment"]
+                            </label>
+                            <input asp-for="ReceiptAttachmentFile" type="file" class="d-none payment-attachment-file" />
+                        </div>
+
+                        <div class="attachment-splitter"></div>
+
+                        <div class="payment-attachment-container container-sm">
+                            <label asp-for="CashAttachmentFile" class="payment-attachment-title">
+                                <i class="fas fa-file-upload"></i>
+                            </label>
+                            <label class="payment-attachment-file-title"></label>
+                            <label asp-for="CashAttachmentFile" class="payment-attachment-label">
+                                @SharedLocalizer["UploadCashAttachment"]
+                            </label>
+                            <input asp-for="CashAttachmentFile" type="file" class="d-none payment-attachment-file" />
+                        </div>
+                    </div>
+                    break;
+            }
+
+            <div class="payment-attachment-row mt-5">
+                <button type="button" class="btn-attachment" onclick="saveAttachments()" disabled>
+                    @SharedLocalizer["Done"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div> 

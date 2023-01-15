@@ -1,0 +1,103 @@
+﻿@model List<VisitViewModel>
+
+
+<table class="table table-head-fixed tables-visitor-home">
+    <thead>
+        <tr>
+            <th class="">
+                @SharedLocalizer["VisitorId"]
+            </th>
+            <th class="">
+                @SharedLocalizer["CustomerId"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Date"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Time"]
+            </th>
+            <th class="">
+                @SharedLocalizer["VisitDuration"] (@SharedLocalizer["Hours"])
+            </th>
+            <th class="">
+                @SharedLocalizer["ReasonId"]
+            </th>
+            <th class="">
+                @SharedLocalizer["Brief"]
+            </th>
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+            <th class="no-sort d-none">
+                Department Id
+            </th>
+        </tr>
+    </thead>
+    <tbody class="data-body-visitor">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td data-label_table="@SharedLocalizer["VisitorId"]">
+                    @item.SalesAgentName
+                </td>
+                <td data-label_table="@SharedLocalizer["CustomerId"]">
+                    @(SharedLocalizer.IsRightToLeft() ? item.CustomerNameAr : item.CustomerName)
+                </td>
+                <td data-label_table="@SharedLocalizer["Date"]"
+                    data-sort="@item.DateTime.ToString("yyyy-MM-dd")"
+                    data-filter="@item.DateTime.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                    @item.DateTime.ToString("dd/MM/yyyy")
+                </td>
+                <td data-label_table="@SharedLocalizer["Time"]"
+                    data-sort="@item.DateTime.ToString("hh:mm tt")"
+                    data-filter="@item.DateTime.ToString("hh:mm tt", new CultureInfo("en-US"))">
+                    @item.DateTime.ToString("hh:mm tt")
+                </td>
+                <td data-label_table="@SharedLocalizer["VisitDuration"]">
+                    @item.Duration
+                </td>
+                <td data-label_table="@SharedLocalizer["ReasonId"]">
+                    @(SharedLocalizer.IsRightToLeft() ? item.ReasonNameAr : item.ReasonName)
+                </td>
+                <td data-label_table="@SharedLocalizer["Brief"]" title="@item.Notes">
+                    <span class="one-line">@item.Notes</span>
+                </td>
+                <td data-label_table="@SharedLocalizer["Actions"]" class="actions-table-btn">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Details)).Succeeded)
+                    {
+                        <a class="btn btn-info info-details my-1" onclick="showVisitDetails(@item.Id)">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader" title="@SharedLocalizer["Edit"]" asp-action="Edit" asp-route-id="@item.Id">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete my-1 visits-confirm-delete"
+                               data-source="archiveVisits"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive my-1 show-loader visits-confirm-delete" data-source="unArchiveVisits" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+                <td class="d-none">
+                    @Json.Serialize(item.CustomerDepartmentIds.ToArray()).ToString()
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

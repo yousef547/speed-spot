@@ -1,0 +1,323 @@
+﻿
+@model CompetitorOfferViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["EditCompetitorOffer"];
+}
+
+<h3>@SharedLocalizer["EditCompetitorOffer"]</h3>
+
+<form id="editCompetitorOfferForm" asp-action="EditCompetitorOffer" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="QuotationId" />
+    <input type="hidden" asp-for="CreatedById" />
+    <input type="hidden" asp-for="CreatedDate" />
+    <input type="hidden" asp-for="IsTwoEnvelopes" />
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CompetitorId"></label>
+                        <input type="hidden" asp-for="CompetitorId" />
+                        <select class="form-control inp-height select-no-border-white"
+                                disabled
+                                asp-for="CompetitorId"
+                                asp-items="@(new SelectList(ViewBag.CompetitorId as List<Competitor>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="CompetitorId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="ValidityId"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                asp-for="ValidityId"
+                                asp-items="@(new SelectList(ViewBag.ValidityId as List<OfferValidity>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="ValidityId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DeliveryPlaceId"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                asp-for="DeliveryPlaceId"
+                                asp-items="@(new SelectList(ViewBag.DeliveryPlaceId as List<DeliveryPlace>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="DeliveryPlaceId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="control-label">@SharedLocalizer["PaymentTerms"]</label>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DownPaymentPercentage"></label>
+                        <input class="form-control inp-height" asp-for="DownPaymentPercentage" />
+                        <span asp-validation-for="DownPaymentPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="UponDeliveryPercentage"></label>
+                        <input class="form-control inp-height" asp-for="UponDeliveryPercentage" />
+                        <span asp-validation-for="UponDeliveryPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="AfterInstallationPercentage"></label>
+                        <input class="form-control inp-height" asp-for="AfterInstallationPercentage" />
+                        <span asp-validation-for="AfterInstallationPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CurrencyId"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                asp-for="CurrencyId"
+                                asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                                onchange="currencyChanged()">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="CurrencyId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="ExchangeRate"></label>
+                        <input class="form-control inp-height" asp-for="ExchangeRate" />
+                        <span asp-validation-for="ExchangeRate" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CurrentRate"></label>
+                        <input class="form-control inp-height" asp-for="CurrentRate" readonly />
+                        <span asp-validation-for="CurrentRate" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="@Model.CertificateIds"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                id="CertificateIds"
+                                asp-for="@Model.CertificateIds"
+                                asp-items="@(new SelectList(ViewBag.CertificateId as List<OfferCertificate>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                                multiple
+                                data-live-search="true">
+                        </select>
+                        <span asp-validation-for="@Model.CertificateIds" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="OriginDocumentId"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                asp-for="OriginDocumentId"
+                                asp-items="@(new SelectList(ViewBag.OriginDocumentId as List<OriginDocument>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="OriginDocumentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="GuaranteeTermId"></label>
+                        <select class="form-control inp-height select-no-border-white"
+                                asp-for="GuaranteeTermId"
+                                asp-items="@(new SelectList(ViewBag.GuaranteeTermId as List<GuaranteeTerm>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="GuaranteeTermId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="@Model.DeliveryFromDays"></label>
+                        <input class="form-control inp-height" asp-for="@Model.DeliveryFromDays" min="1" onchange="validity.valid || (value = '1');" />
+                        <span asp-validation-for="@Model.DeliveryFromDays" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="@Model.DeliveryToDays"></label>
+                        <input class="form-control inp-height" asp-for="@Model.DeliveryToDays" min="2" onchange="validity.valid || (value = '2');" />
+                        <span asp-validation-for="@Model.DeliveryToDays" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4 d-flex align-items-center">
+                    <div class="custom-control custom-switch d-table-cell align-middle">
+                        <input class="custom-control-input" asp-for="@Model.IsVATIncluded">
+                        <label class="custom-control-label" asp-for="@Model.IsVATIncluded"></label>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-8">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Notes"></label>
+                        <textarea class="form-control inp-height" asp-for="Notes"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Supplier"></label>
+                        <input class="form-control inp-height" asp-for="Supplier" />
+                        <span asp-validation-for="Supplier" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h3 class="head-box">@SharedLocalizer["Products"]:</h3>
+            @{
+                int i = 0;
+            }
+            @foreach (var item in ViewData["ProductVMs"] as List<TechnicalSpecificationProductViewModel>)
+            {
+                <div class="row item-row" id="item_@i">
+                    <input type="hidden" asp-for="@Model.ProductVMs[i].ProductId" value="@item.Id" />
+                    <div class="col-xs-12 col-lg-2">
+                        <label class="control-label one-line finan-product-name" title="@item.Description">
+                            @item.Description
+                        </label>
+                        <div class="custom-control custom-switch d-table-cell align-middle check-products ">
+                            <input class="custom-control-input" id="itemIncluded_@i" type="checkbox" asp-for="@Model.ProductVMs[i].IsIncluded" onchange="isIncludedChanged('@i')">
+                            <label class="custom-control-label" for="itemIncluded_@i"></label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-lg-4 include-item-@i">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["SelectedOrigins"]</label>
+                            <select class="form-control product-origin inp-height select-no-border-white" data-dropup-auto="false" data-size="5"
+                                    asp-for="@Model.ProductVMs[i].OriginIds" multiple>
+                                @foreach (var origin in ViewData["Origins"] as List<Country>)
+                                {
+                                    <option value="@origin.Id">@(SharedLocalizer.IsRightToLeft() ? origin.NameAr : origin.Name)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="@Model.ProductVMs[i].OriginIds" class="text-danger"></span>
+                        </div>
+                    </div>
+                    @if (!Model.IsTwoEnvelopes)
+                    {
+                        <div class="col-xs-12 col-lg-2 include-item-@i">
+                            <div class="form-group">
+                                <label class="control-label">@SharedLocalizer["Price"]</label>
+                                <input class="form-control inp-height product-price"
+                                       asp-for="@Model.ProductVMs[i].UnitPrice"
+                                       onchange="priceChanged(@i)" />
+                                <span asp-validation-for="@Model.ProductVMs[i].UnitPrice" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                    <div class="col-xs-12 col-lg-1 include-item-@i">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["Quantity"]</label>
+                            <input type="hidden" class="item-quantity" asp-for="@Model.ProductVMs[i].Quantity" value="@item.Quantity" />
+                            <input class="form-control inp-height item-quantity" value="@item.Quantity" disabled />
+                        </div>
+                    </div>
+                    @if (!Model.IsTwoEnvelopes)
+                    {
+                        <div class="col-xs-12 col-lg-3 include-item-@i">
+                            <div class="form-group">
+                                <label class="control-label" asp-for="@Model.ProductVMs[i].TotalPrice"></label>
+                                <input type="hidden" class="product-total" asp-for="@Model.ProductVMs[i].TotalPrice" />
+                                <input class="form-control inp-height product-total" disabled asp-for="@Model.ProductVMs[i].TotalPrice" />
+                            </div>
+                        </div>
+                    }
+                </div>
+                i++;
+            }
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-12">
+            <div class="addOffers-Quotations">
+                <a class="btn btn-cancel-transparent" asp-action="Details" asp-route-id="@Model.QuotationId">@SharedLocalizer["Cancel"]</a>
+                <button class="btn btn-primary" type="button" onclick="editOffer()">@SharedLocalizer["Update"]</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script type="text/javascript">
+        currencyChanged = function () {
+            let currencyId = $("#CurrencyId").val();
+            if (currencyId) {
+                showLoader();
+                $.ajax({
+                    url: "/Quotations/GetCurrencyData?currencyId=" + currencyId,
+                    success: function (data) {
+                        $("#CurrentRate").val(data.ExchangeRate);
+                    },
+                    complete: function () {
+                        hideLoader();
+                    }
+                })
+            }
+        }
+
+        isIncludedChanged = function (index) {
+            let isIncluded = $("#itemIncluded_" + index).is(":checked");
+            if (isIncluded) {
+                $(".include-item-" + index).removeClass('d-none');
+            } else {
+                $(".include-item-" + index).addClass('d-none');
+            }
+        }
+
+        editOffer = function () {
+            let form = $("#editCompetitorOfferForm");
+            if (form.valid()) {
+                showLoader();
+                form.submit();
+            }
+        }
+
+        priceChanged = function (index) {
+            let unitPrice = $("#item_" + index).find(".product-price").val();
+            if (unitPrice) {
+                let quantity = $("#item_" + index).find(".item-quantity").val();
+                let totalPrice = unitPrice * quantity;
+                $("#item_" + index).find(".product-total").val(totalPrice);
+            } else {
+                $("#item_" + index).find(".product-total").val(0);
+            }
+        }
+
+        $(document).ready(function () {
+            currencyChanged();
+            $("#CompetitorId").selectpicker();
+            $("#ValidityId").selectpicker();
+            $("#DeliveryPlaceId").selectpicker();
+            $("#CurrencyId").selectpicker();
+            $("#CertificateIds").selectpicker();
+            $(".product-origin").selectpicker();
+
+            let k = 0;
+            $(".item-row").each(function () {
+                priceChanged(k);
+                isIncludedChanged(k);
+                k++;
+            })
+        })
+    </script>
+}

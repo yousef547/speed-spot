@@ -1,0 +1,120 @@
+﻿@model CustomerViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+    ViewData["Level2Section"] = SharedLocalizer["Customers"];
+    ViewData["Level2Url"] = Url.Action("Index", "Customers");
+    ViewData["Level3Section"] = SharedLocalizer["CustomerDetails"];
+    ViewData["PartnerLogo"] = "/images/Customers/" + Model.LogoAttachmentPath;
+
+    bool hasBankDetailsPermission = (await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.BankDetails)).Succeeded;
+}
+
+
+@section HeaderActions{
+
+<input type="hidden" value="@Model.Id" id="Customer_Id"/>
+
+    <div id="changeableActions" >
+        @await Html.PartialAsync("_DetailsChangeableActionsPartial")
+
+    </div>
+
+    <div class="vertical-split"></div>
+
+    <div class="btn-actions-header-second">
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.Edit)).Succeeded)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-action show-loader" title="@SharedLocalizer["Edit"]">
+                <i class="far fa-edit"></i>
+            </a>
+        }
+
+        @* <button type="button" class="btn btn-action" onclick="favourite('@Model.Id')" title="@SharedLocalizer[Model.IsFavourite ? "RemoveFromFavourites" : "AddToFavourites"]">
+            <i id="favouriteIcon_@Model.Id" class="fa@(Model.IsFavourite ? "s" : "r") fa-star"></i>
+            </button>*@
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-print"></i>
+        </a>
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-ellipsis-h"></i>
+        </a>
+    </div>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item ">
+            <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">@SharedLocalizer["GeneralInfo"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">@SharedLocalizer["History"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="visits-tab" data-toggle="tab" href="#visits" role="tab" aria-controls="visits" aria-selected="false">@SharedLocalizer["Visits"]</a>
+        </li>
+        @if (hasBankDetailsPermission)
+        {
+            <li class="nav-item">
+                <a class="nav-link" id="bdetails-tab" data-toggle="tab" href="#bdetails" role="tab" aria-controls="bdetails" aria-selected="false">@SharedLocalizer["BankDetails"]</a>
+            </li>
+        }
+    </ul>
+}
+
+<br />
+
+<div class="tab-content" id="mainTabContent">
+    <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+        @await Html.PartialAsync("_DetailsGeneralInfoPartial", Model)
+    </div>
+    <div class="tab-pane fade mt-3" id="history" role="tabpanel" aria-labelledby="history-tab">
+        @await Html.PartialAsync("_HistoryPartial")
+    </div>
+    <div class="tab-pane fade" id="visits" role="tabpanel" aria-labelledby="visits-tab">
+        @await Html.PartialAsync("_VisitsPartial", Model.VisitVMs)
+    </div>
+    @if (hasBankDetailsPermission)
+    {
+        <div class="tab-pane fade" id="bdetails" role="tabpanel" aria-labelledby="bdetails-tab">
+            @await Html.PartialAsync("_BankDetailsPartial")
+        </div>
+    }
+</div>
+
+@await Html.PartialAsync("_VisitDetailsModalPartial")
+
+@section Scripts{
+    <script src="~/js/maps.js"></script>
+    <script src="~/js/customers.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var lat = $("#AddressVM_Latitude").val();
+        var lng = $("#AddressVM_Longitude").val();
+        if (lat != "" && lng != "") {
+            getAddress(lat, lng, locationText);
+        }
+
+        $("[data-toggle=confirmation]").confirmation({
+            rootSelector: '[data-toggle=confirmation]',
+            // other options
+            popout: true,
+            singleton: true,
+            title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+            btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+            btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+            onConfirm: function () {
+                showLoader();
+            }
+        });
+
+        getOpportunities();
+
+        //handleTable(".customers-details-visit", null, null, null);
+    })
+    </script>
+}

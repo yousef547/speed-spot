@@ -1,0 +1,20 @@
+﻿
+@model CustomerViewModel
+
+@if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.Delete)).Succeeded)
+{
+    @if (!Model.IsArchived)
+    {
+        <a data-toggle="confirmation"
+           class="btn btn-action btn-action-details"
+           asp-action="Archive" asp-route-id="@Model.Id">
+            <i class="fas fa-trash-alt"></i>
+        </a>
+    }
+    else
+    {
+        <a class="btn btn-action btn-action-danger show-loader" asp-action="Unarchive" asp-route-id="@Model.Id" title="@SharedLocalizer["Unarchive"]">
+            <i class="fas fa-trash-alt"></i>
+        </a>
+    }
+}

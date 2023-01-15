@@ -1,0 +1,21 @@
+﻿
+@model List<IGrouping<string, SupplierProductViewModel>>
+
+@foreach (var group in Model)
+{
+    <p>@group.Key</p>
+    foreach (var product in group)
+    {
+        <div class="department-partial-tab">
+            <div class="form-group">
+                @*<label class="text-details">Department</label>*@
+                <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? product.ProductNameAr : product.ProductName)</p>
+                <p class="one-line">@(SharedLocalizer.IsRightToLeft()? product.ProductVM.CategoryTreeAr : product.ProductVM.CategoryTree)</p>
+            </div>
+            <div class="icon-close" onclick="deleteDbProduct(@product.SupplierId, @product.Id)">
+                <i>X</i>
+            </div>
+        </div>
+    }
+
+}

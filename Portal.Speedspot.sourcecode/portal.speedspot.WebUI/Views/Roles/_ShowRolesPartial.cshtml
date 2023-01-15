@@ -1,0 +1,72 @@
+﻿@model List<RoleViewModel>
+
+<table class="table table-head-fixed tables-roles">
+    <thead>
+        <tr>
+            <th class="roles-name">
+                @SharedLocalizer["Name"]
+            </th>
+            <th class="roles-name">
+                @SharedLocalizer["NameAr"]
+            </th>
+            <th class="roles-name">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td class="actions-table-btn no-sort">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Details)).Succeeded)
+                    {
+                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader">
+                                <i class="fas fa-info"></i>
+                            </a>*@
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader-ajax" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete roles-confirm-delete"
+                               data-source="archiveRoles"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader roles-confirm-delete" data-source="unArchiveRoles" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.ManagePermissions)).Succeeded)
+                    {
+                        <a class="btn btn-manage show-loader" asp-action="RolePermissions" asp-route-id="@item.Id" title="@SharedLocalizer["ManagePermissions"]">
+                            <i class="fas fa-key"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

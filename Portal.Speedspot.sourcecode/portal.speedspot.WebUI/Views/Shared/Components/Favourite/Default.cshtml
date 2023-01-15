@@ -1,0 +1,29 @@
+﻿@model List<FavouriteViewModel>
+
+<i class="far fa-star" title="@SharedLocalizer["Favourites"]" onclick="toggleFavouritePanel(event)"></i>
+<div class="fav-dropdown">
+    <div class="header-fav-box">
+        <h6>@SharedLocalizer["Favourites"]</h6>
+    </div>
+    <div class="box-item-links">
+        <ul>
+            @foreach(var item in Model)
+            {
+            <li>
+                <div class="content-fav">
+                    <span class="title">@SharedLocalizer[@item.FavouriteName]</span>
+                    <p class="desc">@item.Description</p>
+                </div>
+                @if (item.ItemId != null)
+                {
+                    <a asp-action="Details" asp-controller="@item.FavouriteName" asp-route-id="@item.ItemId"><i class="fas fa-arrow-@(SharedLocalizer.IsRightToLeft()?"left":"right")"></i> </a>
+                }
+                else
+                {<a asp-action="Index" asp-controller="@item.FavouriteName"><i class="fas fa-arrow-@(SharedLocalizer.IsRightToLeft()?"left":"right")"></i> </a>}
+            </li>
+            }
+
+
+        </ul>
+    </div>
+</div>

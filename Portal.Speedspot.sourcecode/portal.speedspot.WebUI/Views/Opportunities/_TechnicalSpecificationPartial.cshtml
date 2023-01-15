@@ -1,0 +1,72 @@
+﻿
+@model OpportunityViewModel
+
+@if (!Model.IsTechnicalApproved && Model.TechnicalSpecificationVM.ProductVMs.Count > 0)
+{
+    <div class="row my-4">
+        <div class="col-2">
+            <div class="pending-approve">
+                <i class="fas fa-history"></i>
+                <p> @SharedLocalizer["PendingApprovalMSG"] </p>
+
+            </div>
+        </div>
+    </div>
+}
+
+<input asp-for="TechnicalSpecificationVM.Id" type="hidden" />
+<input asp-for="TechnicalSpecificationVM.OpportunityId" type="hidden" />
+
+<div class="row">
+    <div class="col-12 col-lg-8">
+        @*<label asp-for="TechnicalSpecificationVM.Specifications" class="control-label"></label>*@
+        <div class="card card-transparent">
+            <div class="card-body p-0">
+                <div class="form-group">
+                    <label class="control-label" asp-for="TechnicalSpecificationVM.Specifications"></label>
+                    <textarea class="form-control richText" rows="6" asp-for="TechnicalSpecificationVM.Specifications"></textarea>
+                    <span asp-validation-for="TechnicalSpecificationVM.Specifications" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        @*<label class="control-label" asp-for="TechnicalSpecificationVM.AttachmentFiles"></label>*@
+        <div class="card card-transparent">
+            <div class="card-body p-0">
+
+                <div class="heading-upload-file">
+                    <h2>@SharedLocalizer["AttachmentFiles"]</h2>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label class="file file-upload-label" for="file-upload">
+                            <span class="upload-file-icons">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            <span class="span-upload">@SharedLocalizer["Upload"]</span>
+
+                        </label>
+                        <input class="d-none" id="file-upload" type="file" asp-for="TechnicalSpecificationVM.Files" multiple aria-label="File browser example">
+                        <span id="file-count-upload" class="file-custom"></span>
+                    </div>
+                </div>
+
+                @if (Model.TechnicalSpecificationVM.AttachmentFiles != null && Model.TechnicalSpecificationVM.AttachmentFiles.Count > 0)
+                {
+                    <div class="row" id="techSpecsAttachments">
+                        @await Html.PartialAsync("_TechnicalSpecificaton" + (Model.IsTechnicalApproved ? "Disabled" : "") + "AttachmentsPartial", Model.TechnicalSpecificationVM.AttachmentFiles)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="techSpecsProducts">
+    @await Html.PartialAsync("_TechnicalSpecificaton" + (Model.IsTechnicalApproved ? "Disabled" : "") + "ProductsPartial", Model.TechnicalSpecificationVM.ProductVMs.OrderBy(o => o.Index).ToList())
+    @*@await Html.PartialAsync("_TechnicalSpecificatonProductsPartial", Model.TechnicalSpecificationVM.ProductVMs)*@
+</div>
+
+@await Html.PartialAsync("_ProductsSelectModalPartial")

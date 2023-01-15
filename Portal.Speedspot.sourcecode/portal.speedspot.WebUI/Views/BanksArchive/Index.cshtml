@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = SharedLocalizer["Banks"];
+    ViewData["Level1Section"] = SharedLocalizer["RecycleBin"];
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchBanks"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-2 table-customers-home">
+    <div class="card-body p-0" id="dataTable">
+        @await Html.PartialAsync("_TablePartial", new List<BankViewModel>())
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        deleteBank = function (id) {
+            showLoader();
+            $.ajax({
+                url: "/BanksArchive/Delete/" + id,
+                success: function () {
+                    $("#dataTable").load("/BanksArchive/LoadBanks", function () {
+                        initializeTable();
+                        hideLoader();
+                    })
+                },
+                error: function () {
+                    toastr.error(ITEM_NOT_DELETED);
+                    hideLoader();
+                }
+            })
+        }
+
+        initializeTable = function () {
+            initTable({
+                selector: ".table-banks",
+                stateLoadCallback: stateLoadParams
+            });
+            var dataTable = $(".table-banks").dataTable();
+
+            dataTable.fnFilter("");
+            $("#searchbox").keyup(function () {
+                dataTable.fnFilter(this.value);
+            });
+
+            var searchData = $("#searchbox").val();
+            dataTable.api().search(searchData).draw();
+
+            $(".table-banks").on('click', '.btn-delete', function (e) {
+                e.preventDefault();
+                $(this).confirmation({
+                    rootSelector: '[data-toggle=confirmation]',
+                    // other options
+                    popout: true,
+                    singleton: true,
+                    title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+                    btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+                    btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+                    onConfirm: function () {
+                        let id = $(this).data("id");
+                        deleteBank(id);
+                    }
+                });
+                $(this).confirmation('show');
+            });
+
+            $(".table-banks").on('click', 'a.show-loader', function () {
+                showLoader();
+            })
+        }
+
+        $(document).ready(function () {
+            showLoader();
+            $("#dataTable").load("/BanksArchive/LoadBanks", function () {
+                initializeTable();
+                hideLoader();
+            })
+        })
+    </script>
+}

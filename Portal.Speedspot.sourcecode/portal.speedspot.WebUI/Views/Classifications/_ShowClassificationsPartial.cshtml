@@ -1,0 +1,53 @@
+﻿
+@model List<ClassificationViewModel>
+
+<table class="table table-head-fixed table-classifications-home">
+    <thead>
+        <tr>
+            <th>@SharedLocalizer["Name"]</th>
+            <th>@SharedLocalizer["NameAr"]</th>
+            <th class="no-sort">@SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><span class="customer-name-details">@item.Name</span></td>
+                <td><span class="customer-name-details">@item.NameAr</span></td>
+                <td class="actions-table-btn">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Classifications.Details)).Succeeded)
+                    {
+                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader">
+                                <i class="fas fa-info"></i>
+                            </a>*@
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Classifications.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit btn-table-width show-loader-ajax" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Classifications.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete btn-table-width LookUps-confirm-delete"
+                               data-source="archiveClassifications"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader btn-table-width LookUps-confirm-delete" data-source="unArchiveClassifications" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

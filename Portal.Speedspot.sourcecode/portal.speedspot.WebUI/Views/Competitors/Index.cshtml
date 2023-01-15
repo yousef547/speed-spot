@@ -1,0 +1,48 @@
+@model List<CompetitorViewModel>
+@{
+    ViewData["Title"] = SharedLocalizer["Competitors"];
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+    bool canViewDetails = (await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Details)).Succeeded;
+    bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+@section HeaderActions{
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="fa@(isFavourite ? "s" : "r") fa-star"></i>
+    </button>
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewCompetitor"]
+        </a>
+    }
+}
+@section AdditionalHeaderContent{
+}
+<br />
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchCompetitors"]">
+        </div>
+    </div>
+</div>
+<div id="">
+    <div class="card">
+        <div class="card-body p-0" id="getCompetitors">
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/js/competitors.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getCompetitors();
+        })
+    </script>
+}

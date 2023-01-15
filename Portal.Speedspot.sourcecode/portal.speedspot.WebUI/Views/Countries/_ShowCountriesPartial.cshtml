@@ -1,0 +1,69 @@
+﻿
+
+@model List<CountryViewModel>
+
+
+<table class="table table-head-fixed table-country-home">
+    <thead>
+        <tr>
+            <th>
+                @SharedLocalizer["Name"]
+            </th>
+            <th>
+                @SharedLocalizer["NameAr"]
+            </th>
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td class="actions-table-btn">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Countries.Details)).Succeeded)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Countries.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader-ajax btn-table-width" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Countries.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete btn-table-width LookUps-confirm-delete"
+                               data-source="archiveCountries"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader btn-table-width LookUps-confirm-delete" data-source="unArchiveCountries" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

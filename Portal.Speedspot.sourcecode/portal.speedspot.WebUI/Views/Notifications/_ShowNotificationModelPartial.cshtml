@@ -1,0 +1,23 @@
+﻿@model NotificationUserViewModel
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <label class="modal-title">
+            @Model.CreatedByName
+        </label>
+        <label class="modal-contenttt">
+            <span>@(SharedLocalizer[$"{Model.NotificationType.ToString()}"])</span>
+        </label>
+    </div>
+    <div class="col-md-6">
+        <label class="modal-title">
+            @Model.Description
+        </label>
+        <label class="modal-contenttt">
+            <span>@Model.CreatedDate.ToString("dd/MM/yyyy") - @Model.CreatedDate.ToString("hh:mm tt")</span>
+        </label>
+    </div>
+</div>
+

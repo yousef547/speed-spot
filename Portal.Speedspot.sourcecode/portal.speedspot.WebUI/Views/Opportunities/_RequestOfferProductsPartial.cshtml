@@ -1,0 +1,43 @@
+﻿
+@model List<RequestOfferProductViewModel>
+
+@{
+    int i = 0;
+    if (Model.Count == 0)
+        Model.Add(new RequestOfferProductViewModel
+        {
+            ProductVM = new TechnicalSpecificationProductViewModel
+            {
+                ProductId = null
+            }
+        });
+}
+
+<div id="requestOfferProducts">
+    @foreach (var product in Model)
+    {
+        <div class="row">
+            <input id="roId_@i" asp-for="@product.Id" type="hidden" />
+            <input id="roRequestOfferId_@i" asp-for="@product.RequestOfferId" type="hidden" />
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="roProductId_@i" class="control-label">@SharedLocalizer["ProductId"]</label>
+                    <select asp-for="@Model[i].ProductId"
+                            id="roProductId_@i"
+                            onchange="getProductDetails('@i')"
+                            class="form-control"
+                            asp-items="@(new SelectList(ViewBag.ProductVMs as List<TechnicalSpecificationProductViewModel>, "Id", SharedLocalizer.IsRightToLeft()? "ProductSelectStrAr" : "ProductSelectStr"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div id="roProductDetails_@i">
+                    @await Html.PartialAsync("_ProductDetailsPartial", new TechnicalSpecificationProductDetailsViewModel { Index = i, VM = product.ProductVM })
+                </div>
+            </div>
+        </div>
+        i++;
+    }
+</div>

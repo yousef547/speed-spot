@@ -1,0 +1,134 @@
+﻿@model List<TechnicalSpecificationProductViewModel>
+
+<div class="row">
+    <div class="col-12">
+        <div class="top-add-new">
+            <h3 class="head-box">@SharedLocalizer["ProductList"]:</h3>
+        </div>
+        <div class="card card-overflow">
+            <table class="table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @SharedLocalizer["Number"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Item"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Quantity"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Description"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Origin"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Attachment"]
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int i = 0;
+                        foreach (var productVM in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @(i + 1)
+                                    <input type="hidden" value="@productVM.Id" name="TechnicalSpecificationVM.ProductVMs[@i].Id" />
+                                    <input type="hidden" value="@productVM.TechnicalSpecificationId" name="TechnicalSpecificationVM.ProductVMs[@i].TechnicalSpecificationId" />
+                                    <input type="hidden" value="@productVM.ProductName" name="TechnicalSpecificationVM.ProductVMs[@i].ProductName" />
+                                    <input type="hidden" value="@productVM.ProductNameAr" name="TechnicalSpecificationVM.ProductVMs[@i].ProductNameAr" />
+                                    <input type="hidden" value="@(productVM.Index == 0 ? i + 1 : productVM.Index)" name="TechnicalSpecificationVM.ProductVMs[@i].Index" />
+                                </td>
+                                <td>
+                                    <a class="select-item-product-list">
+                                        <p class="cat-name-prod">
+                                            <span>
+                                                @(SharedLocalizer.IsRightToLeft() ? productVM.ProductNameAr : productVM.ProductName)
+                                            </span>
+                                            @if (productVM.ProductVM != null)
+                                            {
+                                                @(SharedLocalizer.IsRightToLeft()? productVM.ProductVM.CategoryTreeAr : productVM.ProductVM.CategoryTree)
+                                            }
+                                        </p>
+                                    </a>
+                                    <input name="TechnicalSpecificationVM.ProductVMs[@i].ProductId"
+                                           type="hidden"
+                                           id="productId_@i"
+                                           value="@productVM.ProductId" />
+                                </td>
+                                <td>
+                                    <input value="@Model[i].Quantity" class="form-control inp-height" disabled />
+                                    <input name="TechnicalSpecificationVM.ProductVMs[@i].Quantity"
+                                           id="TechnicalSpecificationVM_ProductVMs[@i]_Quantity"
+                                           value="@Model[i].Quantity"
+                                           min="1"
+                                           type="hidden" />
+                                </td>
+                                <td>
+                                    <input value="@Model[i].Description" class="form-control inp-height" disabled />
+                                    <input name="TechnicalSpecificationVM.ProductVMs[@i].Description"
+                                           id="TechnicalSpecificationVM_ProductVMs[@i]_Description"
+                                           value="@Model[i].Description"
+                                           type="hidden" />
+                                </td>
+                                <td>
+                                    <input class="tsproduct-originstr"
+                                           type="hidden"
+                                           name="TechnicalSpecificationVM.ProductVMs[@i].RequestedOriginIdsStr"
+                                           id="TechnicalSpecificationVM_ProductVMs[@i]_RequestedOriginIdsStr"
+                                           value="@Model[i].RequestedOriginIdsStr" />
+                                    <select name="TechnicalSpecificationVM.ProductVMs[@i].RequestedOriginIds"
+                                            id="TechnicalSpecificationVM_ProductVMs[@i]_RequestedOriginIds"
+                                            asp-for="@Model[i].RequestedOriginIds"
+                                            class="form-control inp-height tsproduct-origin"
+                                            multiple disabled>
+                                        @foreach (var country in ViewData["CountryId"] as List<Country>)
+                                        {
+                                            <option value="@country.Id">@(SharedLocalizer.IsRightToLeft() ? country.NameAr : country.Name)</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td class="file-upload-and-show-files">
+                                    @if (Model[i].AttachmentId != null)
+                                    {
+                                        <div class="custom-label-upload">
+                                            <label>
+                                                <span class="upload-file-icons">
+                                                    <i class="fas fa-file-upload"></i>
+                                                </span>
+                                            </label>
+                                            <a class="one-line" href="/images/Opportunities/@Model[i].AttachmentPath" title="@Model[i].AttachmentTitle" target="_blank">@Model[i].AttachmentTitle</a>
+                                        </div>
+                                        <input class="tsproduct-attachmentid"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentId"
+                                               id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentId"
+                                               value="@Model[i].AttachmentId"
+                                               type="hidden" />
+                                        <input class="tsproduct-attachmentpath"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentPath"
+                                               id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentPath"
+                                               value="@Model[i].AttachmentPath"
+                                               type="hidden" />
+                                        <input class="tsproduct-attachmenttitle"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentTitle"
+                                               id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentTitle"
+                                               value="@Model[i].AttachmentTitle"
+                                               type="hidden" />
+                                    }
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="selected-supplier-ids">

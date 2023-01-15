@@ -1,0 +1,182 @@
+﻿@model ProjectViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+    ViewData["Level2Section"] = SharedLocalizer["Projects2"];
+    ViewData["Level2Url"] = Url.Action("Index", "Projects");
+    ViewData["Level3Section"] = SharedLocalizer["ProjectDetails"];
+}
+
+
+@section HeaderActions{
+    <ul class="export-table-data">
+        <li>
+            <a class="parent"> <i class="fas fa-download"></i>@SharedLocalizer["Export"]</a>
+            <ul class="child-exp">
+                <li class="pdf-text">@SharedLocalizer["ExportAs"]<span>PDF</span></li>
+                <li class="excel-text">@SharedLocalizer["ExportAs"] <span>XLS</span></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="dropdown ml-2">
+        <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-plus"></i> Add To Project <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="dropdown-menu dropdown-opportunities" aria-labelledby="dropdownMenuButton">
+            <a class="show-loader dropdown-item " title="Invoice">Invoice </a>
+            <a class="show-loader dropdown-item " title="Bill">Bill </a>
+            <a class="show-loader dropdown-item " title="Payment">Payment </a>
+            <a class="show-loader dropdown-item " title="Collection">Collection </a>
+        </div>
+    </div>
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="far fa-star"></i>
+    </button>
+}
+
+<div id="ProjectDetails">
+    <div class="row">
+        <div class="col-md-12 mb-5">
+            <div class="row">
+                <div class="col-md-2">
+                    <span class="d-block viewdata-second-header">
+                        Customer
+                    </span>
+                    <span class="title-any">
+                        @Model.CustomerName
+                    </span>
+                </div>
+                <div class="col-md-2">
+                    <span class="d-block viewdata-second-header">
+                        Project ID
+                    </span>
+                    <span class="title-any ">
+                        #BO - 015 -172
+                    </span>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="col-md-4 border-right-project">
+            <div class="row">
+                <div class="grid mt-2 col-md-1 p-0">
+                    <svg class="circle-chart" viewbox="0 0 33.83098862 33.83098862" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="circle-chart__background" stroke="#007F5F" stroke-width="2" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                        <circle class="circle-chart__circle" stroke="#E88A89" stroke-width="2" stroke-dasharray="50.0" stroke-linecap="round" fill="none" cx="16.91549431" cy="16.91549431" r="15.91549431" />
+                    </svg>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <ul class="details">
+                            <li class="p-green"><span>Collected</span> <span class="color-project1">Egp 265,500</span></li>
+                            <li class="p-red"><span>Paid</span> <span class="color-project2">Egp 265,500</span></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="pl-4">
+                <span class="d-block viewdata-second-header">
+                    Profit Margin
+                </span>
+                <span class="title-any ">
+                    53%
+                </span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="row">
+                <div class="col-md-5">
+                    <span class="d-block viewdata-second-header">
+                        Open
+                    </span>
+                    <span class="title-any">
+                        934,171,92 USD
+                    </span>
+                </div>
+                <div class="col-md-5">
+                    <span class="d-block color-project2r">
+                        Overdue!
+                    </span>
+                    <span class="color-project2">
+                        273,913,84 USD
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex mt-5">
+        <div class="col-md-4">
+            <div class="details-collected" onclick="toggleProject('details-collected')">
+                <div class="collected">
+                    <span class="d-block title">
+                        Collected
+                    </span>
+                    <span class="number">
+                        <img src="/images/collected.png" />
+                        934,171,92 USD
+                    </span>
+                </div>
+                <div class="w-100 text-center title"><i class="fas fa-angle-down"></i><i class="fas fa-angle-up d-none"></i></div>
+            </div>
+            <div class="card p-4 rounded-lg ">
+                <div class="border-bottom py-3 d-flex">
+                    <div class="w-50 font-weight-bold">Sales</div>
+                    <div class="w-50 text-right">934,171,92 USD</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="details-paid" onclick="toggleProject('details-paid')">
+                <div class="paid">
+                    <span class="d-block title">
+                        Paid
+                    </span>
+                    <span class="number">
+                        <img src="/images/paid.png" />
+                        762,134,05 USD
+                    </span>
+                </div>
+                <div class="w-100 text-center title"><i class="fas fa-angle-down"></i><i class="fas fa-angle-up d-none"></i></div>
+            </div>
+            <div class="card p-4 rounded-lg ">
+                <div class="border-bottom py-3 d-flex">
+                    <div class="w-50 font-weight-bold">Goods</div>
+                    <div class="w-50 text-right">934,171,92 USD</div>
+                </div>
+                <div class="border-bottom py-3 d-flex">
+                    <div class="w-50 font-weight-bold">Expense</div>
+                    <div class="w-50 text-right">934,171,92 USD</div>
+                </div>
+                <div class="border-bottom py-3 d-flex">
+                    <div class="w-50 font-weight-bold">Shipping</div>
+                    <div class="w-50 text-right">934,171,92 USD</div>
+                </div>
+                <div class="border-bottom py-3 d-flex">
+                    <div class="w-50 font-weight-bold">Taxes</div>
+                    <div class="w-50 text-right">934,171,92 USD</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="details-profit">
+                <div class="profit">
+                    <span class="d-block title">
+                        Profit
+                    </span>
+                    <span class="number">
+                        <img src="~/images/icon-profit.png" />
+                        288,912,87 USD
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/projects.js"></script>
+}

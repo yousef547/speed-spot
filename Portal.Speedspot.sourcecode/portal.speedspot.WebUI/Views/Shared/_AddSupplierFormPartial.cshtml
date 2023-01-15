@@ -1,0 +1,53 @@
+﻿@model CreateSupplierViewModel
+<form id="formSupplier">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="Name"></label>
+                <input class="form-control inp-height" asp-for="Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2 ">
+            <div class="form-group">
+                <label class="control-label" asp-for="SubName"></label>
+                <input class="form-control inp-height" asp-for="SubName" />
+                <span asp-validation-for="SubName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="NameAr"></label>
+                <input class="form-control inp-height" asp-for="NameAr" />
+                <span asp-validation-for="NameAr" class="text-danger"></span>
+            </div>
+        </div>
+
+
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="DepartmentIds"></label>
+                <select asp-for="DepartmentIds" class="form-control selectpicker select-multiple" id="DepartmentIdSupplier" onchange="changeProduct()" data-live-search="true" multiple>
+                    @foreach (var department in ViewData["DepartmentId"] as List<Department>)
+                    {
+                        <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="DepartmentIds"></span>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2">
+            <label> @SharedLocalizer["Products"]</label>
+            <div id="suppplierProduct">
+            @await Html.PartialAsync("_CategoriesSelectPartial", new List<IGrouping<string, ProductCategoryViewModel>>())
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-lg-6 mb-2">
+            <label> @SharedLocalizer["Services"]</label>
+            <div  id="suppplierServices">
+                @await Html.PartialAsync("_CategoriesSelectPartial", new List<IGrouping<string, ProductCategoryViewModel>>())
+            </div>
+        </div>
+    </div>
+</form>

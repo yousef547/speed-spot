@@ -1,0 +1,98 @@
+﻿@model PurchaseOrderViewModel
+
+
+
+<div>
+    <div class="text-danger field-validation-valid" asp-validation-summary="All"></div>
+
+    <input type="hidden" asp-for="CustomerPOVM.Id"/>
+
+    @*<input type="hidden" asp-for="PurchaseOrderId" value="@ViewData["index"]" />*@
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label label-sales-information" asp-for="CustomerPOVM.CustomerPONumber">@SharedLocalizer["CustomerPoNumber"]</label>
+                <input class="form-control inp-height setCustomer"
+                       onchange="setValueCustomer()"
+                       type="text"
+                       asp-for="CustomerPOVM.CustomerPONumber"
+                       id="CustomerPONumber">
+                <span class="text-danger" asp-validation-for="CustomerPOVM.CustomerPONumber"></span>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label label-sales-information">@SharedLocalizer["SupplierPoNumber"]</label>
+                <input class="form-control inp-height" id="SupplierPONumber" readonly>
+                <span class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <div class="customperPo-flex-centered">
+                    <p>@SharedLocalizer["QuotationNo"]:</p>
+                    <span>#@ViewData["quotationNo"]</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label label-sales-information" asp-for="CustomerPOVM.StartDate">@SharedLocalizer["DateFrom"]</label>
+                <input class="form-control inp-height" asp-for="CustomerPOVM.StartDate" id="customerpo-start-date" onchange="calculateEndDate('customerpo-start-date','customerpo-delivery-period','span-customerpo-end-date')">
+                <span class="text-danger" asp-validation-for="CustomerPOVM.StartDate"></span>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <div class="customperPo-flex-centered">
+                    <p>@SharedLocalizer["DeliveryRange"]:</p>
+                    <input type="hidden"
+                           asp-for="CustomerPOVM.DeliveryPeriod"
+                           value="@ViewData["DeliveryToDays"]"
+                           id="customerpo-delivery-period" />
+                    <span class="mx-1">@ViewData["DeliveryToDays"] @SharedLocalizer["Days"]</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <div class="customperPo-flex-centered">
+                    <p>@SharedLocalizer["ExpiryDate"]:</p>
+                    <span id="span-customerpo-end-date" class="mx-1">@ViewData["EndDate"]</span>
+                    @*<input type="hidden"
+                        asp-for="CustomerPOVM.EndDate"
+                        id="customerpo-end-date" />*@
+                    <span class="info"><i class="fas fa-info"></i></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-5">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="heading-upload-file">
+                        <h2>@SharedLocalizer["Attachment"]</h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="file file-upload-label" for="file-upload">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                <span class="span-upload">@SharedLocalizer["Upload"]</span>
+
+                            </label>
+                            <input class="d-none" id="file-upload" asp-for="CustomerPOVM.AllActtachment" multiple aria-label="File browser example">
+                            <span class="text-danger" asp-validation-for="CustomerPOVM.AllActtachment"></span>
+
+                            <span id="file-count-upload" class="file-custom"><br></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <partial name="_ProductCustomerPartial" model="new List<QuotationOfferProductViewModel>()" view-data='@new ViewDataDictionary(ViewData) { { "QuotationProducts", ViewData["products"] }}' />
+</div>

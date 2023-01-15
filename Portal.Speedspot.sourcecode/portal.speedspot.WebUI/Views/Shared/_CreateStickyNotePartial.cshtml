@@ -1,0 +1,58 @@
+﻿
+@model StickyNoteViewModel
+
+<div class="header-top-notes">
+    <span>@SharedLocalizer["Notes"]</span>
+    <div class="close-notes" onclick="closeNotes()"> <i class="fas fa-times"></i> </div>
+</div>
+<div class="hr-notes"></div>
+<div class="take-anotes">
+    <i class="fas fa-plus"></i>
+    <span onclick="showNote()">@SharedLocalizer["AddNote"]</span>
+</div>
+<div class="title-text-notes" id="displayNote">
+    <div>
+        <form id="note-data">
+            <input type="hidden"
+                   asp-for="PageAction"
+                   value="@ViewContext.RouteData.Values["Action"]" />
+            <input type="hidden"
+                   asp-for="PageController"
+                   value="@ViewContext.RouteData.Values["Controller"]" />
+            <div class="row">
+                <div class="col-12">
+                    <label class="control-label label-sales-information" asp-for="Title"></label>
+                    <input class="form-control" type="text" asp-for="Title" placeholder="">
+                    <span class="text-danger" asp-validation-for="Title"></span>
+
+                </div>
+                <div class="col-12">
+                    <label class="control-label label-sales-information" asp-for="Description"></label>
+                    <textarea class="form-control" rows="4" asp-for="Description"></textarea>
+                    <span class="text-danger" asp-validation-for="Description"></span>
+
+                </div>
+            </div>
+            <div class=" row">
+                <div class="form-check col-12 mx-2">
+                    <div class="check-done">
+                        <div class="icheck-primary">
+                            <input type="checkbox" asp-for="IsSaveUrl">
+                            <label asp-for="IsSaveUrl"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-12 mt-3">
+                <div class="actions-add-new-task">
+                    <button class="cancel" onclick="hideNote()">@SharedLocalizer["Cancel"] </button>
+                    <button class="update" onclick="AddNote()">
+                        <i class="fas fa-plus"></i>@SharedLocalizer["Add"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

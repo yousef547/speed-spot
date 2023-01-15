@@ -1,0 +1,53 @@
+﻿
+@model List<IGrouping<string, ProductCategoryViewModel>>
+
+<div class="category-dropdown">
+    <input type="text" id="searchText" class="form-control my-2">
+    @if (Model.Count > 0)
+    {
+        int i = 0;
+        <ul class="nav nav-pills nav-fill" id="departmentTab" role="tablist">
+            @foreach (var group in Model)
+            {
+                <li class="nav-item">
+                    <a class="nav-link @(i == 0 ? "active" : "")" id="tab_@i" data-toggle="tab" href="#department_@i" role="tab" aria-controls="department_@i" aria-selected="true">@group.Key</a>
+                </li>
+                i++;
+            }
+        </ul>
+        i = 0;
+        <div class="tab-content" id="departmentTabContent">
+            @foreach (var group in Model)
+            {
+                <div class="tab-pane fade @(i == 0 ? "show active" : "")" id="department_@i" role="tabpanel" aria-labelledby="tab_@i">
+                    @foreach (var category in group)
+                    {
+                        <ul class="list-parent-category" id="list-parent-category">
+                            <li class="name-category-parents first" id="item_@category.Id">
+                                <span class="view-caregory">@(SharedLocalizer.IsRightToLeft() ? category.NameAr : category.Name)</span>
+                                <span class="count-items">@(category.ProductVMs.Count + category.ChildVMs.Count)</span>
+                                <input class="inp-checked" type="checkbox" onclick="checkAllChilds(event, @category.Id, this)" id="category_@category.Id" />
+
+                                <ul class="list-category-child">
+                                    @await Html.PartialAsync("_ChildCategoriesPartial", category.ChildVMs)
+                                    <!-- <li class="item-category-child"></li> -->
+                                    @foreach (var product in category.ProductVMs)
+                                    {
+                                        <li class="item-category-child" data-categoryitem="@product.Id">
+                                            @(SharedLocalizer.IsRightToLeft() ? product.NameAr : product.Name)
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        </ul>
+                    }
+                </div>
+                i++;
+            }
+        </div>
+    }
+    else
+    {
+        @SharedLocalizer["NoProductsFound"]
+    }
+</div>

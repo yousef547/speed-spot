@@ -1,0 +1,54 @@
+﻿@model List<CityViewModel>
+
+<table class="table table-head-fixed table-cities-home">
+    <thead>
+        <tr>
+            <th> @SharedLocalizer["CountryId"]</th>
+            <th> @SharedLocalizer["Name"]</th>
+            <th> @SharedLocalizer["NameAr"]</th>
+            <th class="no-sort"> @SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="table-td">@(SharedLocalizer.IsRightToLeft() ? item.CountryNameAr : item.CountryName)</td>
+                <td class="table-td">@item.Name</td>
+                <td class="table-td">@item.NameAr</td>
+                <td class="actions-table-btn">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Cities.Details)).Succeeded)
+                    {
+                        @*<a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader">
+                                <i class="fas fa-info"></i>
+                            </a>*@
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Cities.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader-ajax btn-table-width" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Cities.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete btn-table-width LookUps-confirm-delete"
+                               data-source="archiveCities"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader btn-table-width LookUps-confirm-delete"  data-source="unArchiveCities" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

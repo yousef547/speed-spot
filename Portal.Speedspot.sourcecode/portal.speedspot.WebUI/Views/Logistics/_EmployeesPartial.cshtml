@@ -1,0 +1,154 @@
+﻿@model List<LogisticEmployeeViewModel>
+
+<div class="top-add-new">
+    <h3 class="head-box">@SharedLocalizer["Employees"]:</h3>
+    <a id="add-new-emp" class="btn btn-add-primary" onclick="addEmployee()">
+        <i class="fa fa-plus"></i>
+        @SharedLocalizer["AddEmployee"]
+    </a>
+</div>
+
+@if (Model.Count == 0)
+{
+    Model.Add(new LogisticEmployeeViewModel());
+}
+<div class="box employees-list">
+    <div class="header row">
+        <div class="col-2">
+            <label class="control-label">@SharedLocalizer["Name"]</label>
+        </div>
+        <div class="col-2">
+            <label class="control-label">@SharedLocalizer["DepartmentId"]</label>
+        </div>
+        <div class="col-2">
+            <label class="control-label">@SharedLocalizer["Position"]</label>
+        </div>
+        <div class="col-2">
+            <label class="control-label">@SharedLocalizer["Email"]</label>
+        </div>
+        <div class="col-3">
+            <label class="control-label">@SharedLocalizer["Phone"]</label>
+        </div>
+        <div class="col-1 invisible">
+            <label class="control-label">@SharedLocalizer["Phone"]</label>
+        </div>
+    </div>
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <div class="row box-content">
+            <input type="hidden"
+               value="@Model[i].Id"
+               class="employee-id"
+               name="EmployeeVMs[@i].Id"
+               id="EmployeeVMs[@i]_Id" />
+            <input type="hidden"
+               value="@Model[i].LogisticId"
+               class="employee-logisticid"
+               name="EmployeeVMs[@i].LogisticId"
+               id="EmployeeVMs[@i]_LogisticId" />
+            <input type="hidden"
+               value="@Model[i].EmployeeId"
+               class="employee-employeeid"
+               name="EmployeeVMs[@i].EmployeeId"
+               id="EmployeeVMs[@i]_EmployeeId" />
+            <input type="hidden"
+               value="@Model[i].EmployeeVM.Id"
+               class="employee-vm-id"
+               name="EmployeeVMs[@i].EmployeeVM.Id"
+               id="EmployeeVMs[@i]_EmployeeVM_Id" />
+
+            <div class="col-12 col-md-6 col-lg-2 item">
+                <div class="form-group">
+                    <input type="text"
+                       placeholder="@SharedLocalizer["Name"]"
+                       class="form-control employee-name"
+                       name="EmployeeVMs[@i].EmployeeVM.Name"
+                       id="EmployeeVMs[@i]_EmployeeVM_Name"
+                       value="@Model[i].EmployeeVM.Name" />
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2 item">
+                <div class="form-group">
+                    <input type="text"
+                       class="form-control employee-department"
+                       placeholder="@SharedLocalizer["DepartmentId"]"
+                       name="EmployeeVMs[@i].EmployeeVM.Department"
+                       id="EmployeeVMs[@i]_EmployeeVM_Department"
+                       value="@Model[i].EmployeeVM.Department" />
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2 item">
+                <div class="form-group">
+                    <input type="text"
+                       class="form-control employee-position"
+                       placeholder="@SharedLocalizer["Position"]"
+                       name="EmployeeVMs[@i].EmployeeVM.Position"
+                       id="EmployeeVMs[@i]_EmployeeVM_Position"
+                       value="@Model[i].EmployeeVM.Position" />
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-2 item">
+                <div class="form-group">
+                    <input type="email"
+                       class="form-control employee-email"
+                       placeholder="@SharedLocalizer["Email"]"
+                       name="EmployeeVMs[@i].EmployeeVM.Email"
+                       id="EmployeeVMs[@i]_EmployeeVM_Email"
+                       value="@Model[i].EmployeeVM.Email" />
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3 item">
+                <div class="form-group">
+                    <div class="inputs d-flex">
+                        <div class="flags-change">
+                            <ul>
+                                <li class="employee-country parent-list-country" data-country="CodeParent">
+                                    <img class="change-country" />
+                                    <ul class="sub-menu-country-img" data-selectedid="@Model[i].EmployeeVM.PhoneCodeId">
+                                        @foreach (var country in (List<Country>)ViewBag.CountryId)
+                                        {
+                                            <li class="@(country.Id == Model[i].EmployeeVM.PhoneCodeId ? "selected" : "")" data-countrychild="+@country.PhoneCode" data-id="@country.Id">
+                                                <img class="change-countryChild" src="/images/Flags/svg/@(country.Code2).svg" />
+                                                <span>@(SharedLocalizer.IsRightToLeft() ? country.NameAr : country.Name)</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </li>
+                            </ul>
+                            <input type="hidden" name="EmployeeVMs[@i].EmployeeVM.PhoneCodeId" id="EmployeeVMs[@i]_EmployeeVM_PhoneCodeId" class="id-country employee-phonecode">
+                            <span class="code-country"></span>
+                            <input name="EmployeeVMs[@i].EmployeeVM.Phone"
+                               id="EmployeeVMs[@i]_EmployeeVM_Phone"
+                               value="@Model[i].EmployeeVM.Phone"
+                               type="tel"
+                               class="country-number-inp employee-phone form-control"
+                               placeholder="xxxxxxxxxx">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-1 item">
+
+                <div class="actions">
+                    @if (Model[i].Id != 0)
+                    {
+                        <a onclick="deleteDbEmployee(@Model[i].EmployeeVM.Id, @i)">
+                            <i class="fa fa-trash-alt"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <a onclick="deleteEmployee(@i)">
+                            <i class="fa fa-trash-alt"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

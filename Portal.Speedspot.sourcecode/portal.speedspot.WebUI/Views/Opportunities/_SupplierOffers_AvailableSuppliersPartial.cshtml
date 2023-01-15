@@ -1,0 +1,42 @@
+﻿
+<div id="availableSuppliers" class="d-flex justify-content-center">
+    <input type="hidden" class="list-selected-id" onchange="getSupplierProducts()" id="soSupplierId" />
+    <ul class="custom-list" id="availableSuppliers">
+        @foreach (var supplier in ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>)
+        {
+            <li class="custom-list-item
+            @((ViewData["SupplierOffers"] as List<SupplierOfferViewModel>).Any(o => o.SupplierId == supplier.Id) ? "done" : "")"
+                data-itemid="@supplier.Id"
+                data-offer-count="@((ViewData["SupplierOffers"] as List<SupplierOfferViewModel>).Count(o=>o.SupplierId==supplier.Id))">
+                <div class="list-img-container">
+                    @if (supplier.LogoAttachmentPath != null)
+                    {
+                        <img class="list-img" src="/images/Suppliers/@supplier.LogoAttachmentPath" />
+                    }
+                    else
+                    {
+                        <img class="list-img" src="/images/01Umsco.png" />
+                    }
+                </div>
+                <div class="list-label" title="@(SharedLocalizer.IsRightToLeft()? supplier.NameAr : supplier.Name)">@(SharedLocalizer.IsRightToLeft()? supplier.NameAr : supplier.Name)</div>
+                <div class="list-dot"></div>
+            </li>
+        }
+    </ul>
+</div>
+
+
+
+@*<div class="row">
+        <div class="col-12 col-lg-3">
+            <div class="form-group">
+                <label class="control-label" for="soSupplierId">@SharedLocalizer["SupplierId"]</label>
+                <select class="form-control"
+                        id="soSupplierId"
+                        onchange="getSupplierProducts()"
+                        asp-items="@(new SelectList(ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+            </div>
+        </div>
+    </div>*@

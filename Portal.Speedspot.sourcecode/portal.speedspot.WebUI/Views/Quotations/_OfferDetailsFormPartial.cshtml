@@ -1,0 +1,262 @@
+﻿
+@model QuotationOfferVersionViewModel
+
+<div class="row mx-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="head-box">@SharedLocalizer["TechnicalOffer"]:</h3>
+            <br />
+            <div class="row">
+                <div class="col-12 col-lg-9">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Title"></label>
+                        <input class="form-control inp-height" asp-for="Title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="AttentionTo"></label>
+                        <input class="form-control inp-height" asp-for="AttentionTo" />
+                        <span asp-validation-for="AttentionTo" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CoverLetter"></label>
+                        <textarea class="form-control" rows="5" asp-for="CoverLetter"></textarea>
+                        <span asp-validation-for="CoverLetter" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group richText-QuotationsOffers">
+                        <label class="control-label" asp-for="TechnicalSpecifications"></label>
+                        <textarea class="form-control richText" rows="6" asp-for="TechnicalSpecifications"></textarea>
+                        <span asp-validation-for="TechnicalSpecifications" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CurrencyId"></label>
+                        <select class="form-control inp-height select-no-border-white" asp-for="CurrencyId">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="CurrencyId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="ValidityId"></label>
+                        <select class="form-control inp-height select-no-border-white" asp-for="ValidityId">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="ValidityId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DeliveryFromDays"></label>
+                        <input class="form-control inp-height" asp-for="DeliveryFromDays" min="1" value="1" />
+                        <span asp-validation-for="DeliveryFromDays" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DeliveryToDays"></label>
+                        <input class="form-control inp-height" asp-for="DeliveryToDays" min="1" value="1" />
+                        <span asp-validation-for="DeliveryToDays" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DeliveryPlaceId"></label>
+                        <select class="form-control inp-height select-no-border-white" asp-for="DeliveryPlaceId">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="DeliveryPlaceId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="OriginDocumentId"></label>
+                        <select class="form-control inp-height select-no-border-white" asp-for="OriginDocumentId">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="OriginDocumentId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CertificateIds"></label>
+                        <select class="form-control inp-height select-no-border-white" asp-for="CertificateIds" multiple>
+                        </select>
+                        <span asp-validation-for="CertificateIds" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <br />
+
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <input type="radio" name="deliveryguarantee" id="rbDelivery" checked />
+                                        </span>
+                                    </div>
+                                    <input class="form-control inp-height" asp-for="DeliveryGuaranteeMonths" min="0" value="0" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            @SharedLocalizer["Months"]
+                                        </span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="DeliveryGuaranteeMonths" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="forms-delivery-span">
+                                <span>@SharedLocalizer["FromDelivery"]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <input type="radio" name="deliveryguarantee" id="rbCommission" />
+                                        </span>
+                                    </div>
+                                    <input class="form-control inp-height" asp-for="CommissionGuaranteeMonths" min="0" value="0" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            @SharedLocalizer["Months"]
+                                        </span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="CommissionGuaranteeMonths" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="forms-delivery-span">
+                                <span>@SharedLocalizer["FromCommission"]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="DownPaymentPercentage"></label>
+                        <input class="form-control inp-height" asp-for="DownPaymentPercentage" />
+                        <span asp-validation-for="DownPaymentPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="UponDeliveryPercentage"></label>
+                        <input class="form-control inp-height" asp-for="UponDeliveryPercentage" />
+                        <span asp-validation-for="UponDeliveryPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="AfterInstallationPercentage"></label>
+                        <input class="form-control inp-height" asp-for="AfterInstallationPercentage" />
+                        <span asp-validation-for="AfterInstallationPercentage" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Notes"></label>
+                        <textarea class="form-control" rows="3" asp-for="Notes"></textarea>
+                        <span asp-validation-for="Notes" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-4 mb-4">
+    <div class="card w-100">
+        <div class="card-body">
+            <h3 class="head-box"> @SharedLocalizer["FinancialOffer"]:</h3>
+            <br />
+            <div class="row">
+                <div class="col-12 col-lg-3">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Factor"></label>
+                        <input class="form-control inp-height" asp-for="Factor" />
+                        <span asp-validation-for="Factor" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="head-box">@SharedLocalizer["Products"]:</h3>
+            <br />
+            @{
+                int i = 0;
+            }
+            @foreach (var item in Model.ProductVMs)
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-2">
+                        <label class="control-label one-line finan-product-name" title="@item.ProductName">
+                            @item.ProductName
+                            @*<span>@item.ProductName</span>*@
+                        </label>
+                        <div class="custom-control custom-switch d-table-cell align-middle check-products ">
+                            <input class="custom-control-input" id="itemIncluded_@i" type="checkbox">
+                            <label class="custom-control-label" for="itemIncluded_@i"></label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["Origin"]</label>
+                            <select class="form-control product-origin inp-height select-no-border-white" asp-for="@item.OriginIds" multiple></select>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["Price"]</label>
+                            <input class="form-control inp-height" asp-for="@item.UnitPrice" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["Quantity"]</label>
+                            <input class="form-control inp-height" asp-for="@item.Quantity" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["SubTotal"]</label>
+                            <input class="form-control inp-height" asp-for="@item.SubTotal" />
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <div class="form-group">
+                            <label class="control-label">@SharedLocalizer["Total"]</label>
+                            <input class="form-control inp-height" asp-for="@item.Total" />
+                        </div>
+                    </div>
+                </div>
+                i++;
+            }
+        </div>
+    </div>
+</div>

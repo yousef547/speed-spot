@@ -1,0 +1,51 @@
+﻿@model List<RejectReasonViewModel>
+
+
+<table class="table table-head-fixed table-RejectReason-home">
+    <thead>
+        <tr>
+            <th> @SharedLocalizer["Name"]</th>
+            <th> @SharedLocalizer["NameAr"]</th>
+            <th class="no-sort"> @SharedLocalizer["Actions"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td><span class="customer-name-details">@item.Name</span></td>
+                <td><span class="customer-name-details">@item.NameAr</span></td>
+                <td class="actions-table-btn">
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.RejectReasons.Edit)).Succeeded)
+                    {
+                        <a class="btn btn-edit show-loader-ajax btn-table-width" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.RejectReasons.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete btn-table-width LookUps-confirm-delete"
+                               data-source="archiveRejectReasons"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete-unarchive show-loader btn-table-width LookUps-confirm-delete"
+                               data-source="unArchiveRejectReasons" data-itemid="@item.Id"
+                               title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

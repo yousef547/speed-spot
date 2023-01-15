@@ -1,0 +1,56 @@
+﻿@model List<DepartmentDocumentViewModel>
+@inject ArabicLanguageHelper ArLangHelper
+
+<div class="card">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="table_decument" class="table">
+                <thead>
+                    <tr>
+                        <th>@SharedLocalizer["Title"]</th>
+                        <th>@SharedLocalizer["AlNumber"]</th>
+                        <th>@SharedLocalizer["IssueDate"]</th>
+                        <th>ِ@SharedLocalizer["ExpiryDate"]</th>
+                        <th>@SharedLocalizer["Attachment"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr class="font-weight-bold">
+                            <td class="light-blue-2 ">@item.Title</td>
+                            <td>@item.Number</td>
+                            <td class="light-blue">@item.IssueDate.ToString("dd/MM/yyyy")</td>
+                            <td class="light-blue exclamation">
+                                <i class="fas fa-exclamation myt @item.DaysRemainingClass" rel="tooltip"
+                                   title="@SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ?
+                                        ArLangHelper.GetDayStringByNumber(item.DaysRemaining.Value) : item.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)"></i>
+                                <span class="light-blue">
+                                    @item.ExpiryDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/images/documents/@item.FilePath" target="_blank">
+                                    <i class="fas fa-file-download download-icon"></i>
+                                    <span>@item.TitleImage</span>
+                                </a>
+
+                            </td>
+                            <td>
+                                <a class="btn btn-confirm-delete_department " title="" data-itemid="@item.Id" data-source="archiveDocument" data-original-title="Delete">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

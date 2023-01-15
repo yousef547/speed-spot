@@ -1,0 +1,246 @@
+﻿
+@model IList<TaskViewModel>
+@inject ArabicLanguageHelper ArLangHelper
+
+@inject ApplicationUserManager UserManager
+
+@{
+    string userId = UserManager.GetUserId(User);
+}
+
+
+<div class="justify-content-center filter-popup pending-popup" id="myTeamTask">
+    <div class="box-filter scroll-Custom">
+        <div class="content ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="myTeamTasksAssignedToFilter">@SharedLocalizer["Employees"]</label>
+                            <select class="form-control" id="myTeamTasksAssignedToFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @if (ViewData["MyEmployees"] != null)
+                                {
+                                    foreach (var employees in ViewData["MyEmployees"] as List<ApplicationUser>)
+                                    {
+                                        <option value="@employees.Id">@employees.FirstName @employees.LastName</option>
+                                    }
+                                }
+
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="myTeamTasksDepartmentFilter">@SharedLocalizer["DepartmentId"]</label>
+                            <select class="form-control" id="myTeamTasksDepartmentFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @if (ViewData["DepartmentId"] != null)
+                                {
+                                    @foreach (var department in ViewData["DepartmentId"] as List<Department>)
+                                    {
+                                        <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="myTeamTasksdeadlineFrom" class="control-label">@SharedLocalizer["DeadlineFrom"]</label>
+                            <input id="myTeamTasksdeadlineFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="myTeamTasksdeadlineTo" class="control-label">@SharedLocalizer["DeadlineTo"]</label>
+                            <input id="myTeamTasksdeadlineTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="myTeamTasksCreatedDateFrom" class="control-label">@SharedLocalizer["CreatedDateFrom"]</label>
+                            <input id="myTeamTasksCreatedDateFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="myTeamTasksCreatedDateTo" class="control-label">@SharedLocalizer["CreatedDateTo"]</label>
+                            <input id="myTeamTasksCreatedDateTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="card">
+    <div class="bg-full-custom d-none" id="mtt-spinner">
+        <div class="spinner-loading-custom" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="head-thing-to-be-done">
+                <h2>@SharedLocalizer["Tasks"]</h2>
+                <div class="">
+                    <a onclick="OpenModel('myTeamTask',event)" class="filter-open"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="myTeamtasks-show-filter-choose filter-row">
+                <div class="myTeamTasksAssignedTo-filter d-none select-filter"><span></span><i class="fas fa-times"></i></div>
+                <div class="myTeamTasksDepartment-filter d-none select-filter"><span></span><i class="fas fa-times"></i></div>
+                <div class="myTeamTasksDate-filter d-none date-filter"><span>@SharedLocalizer["Deadline"]: </span><span class="myTeamTasksDate-start"></span> - <span class="myTeamTasksDate-end"></span><i class="fas fa-times"></i></div>
+                <div class="myTeamTasksCreatedDate-filter d-none date-filter"><span>@SharedLocalizer["Date"]: </span><span class="myTeamTasksCreatedDate-start"></span> - <span class="myTeamTasksCreatedDate-end"></span><i class="fas fa-times"></i></div>
+                <div class="myTeamTasksResult-filter d-none result-filter"><span></span>&nbsp; @SharedLocalizer["Results"]</div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <table id="table_team_task" class="table">
+                <thead>
+                    <tr>
+                        <th class="">@SharedLocalizer["EmployeeId"]</th>
+                        <th>@SharedLocalizer["Priority"]</th>
+                        <th class="">@SharedLocalizer["Tasks"]</th>
+                        <th>@SharedLocalizer["Date"]</th>
+                        <th class="">ِ@SharedLocalizer["Deadline"]</th>
+                        <th>@SharedLocalizer["Status"]</th>
+                        <th class="no-sort" scope="col">@SharedLocalizer["Actions"]</th>
+                        <th class="d-none no-sort">DepartmentId</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="employee-name" data-label_table='@SharedLocalizer["EmployeeId"]'
+                                data-filter="@item.AssignedToId" data-sort="@item.AssignedToName">
+                                <div class="img-user-request">
+                                    @if (item.CreatedByProfilePicture != null)
+                                    {
+                                        <img src="/images/Users/@item.AssignedToProfilePicture" class="img-circle user-img" alt="">
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                    }
+                                    <span class="light-blue-2"> @item.AssignedToName</span>
+                                </div>
+                            </td>
+                            <td class="type-request" data-label_table='@SharedLocalizer["Priority"]'>
+                                <span class="light-blue">
+                                    @SharedLocalizer[item.PriorityLevel.ToString()]
+                                </span>
+                            </td>
+                            <td class="tasks" data-label_table='@SharedLocalizer["Tasks"]'>
+                                <span class="span-task">@item.Title</span>
+                            </td>
+                            <td class="date-request" data-label_table='@SharedLocalizer["Date"]'
+                                data-sort="@item.CreatedDate.ToString("yyyy-MM-dd HH:mm")" data-filter="@item.CreatedDate.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                                <p class="exclamation">
+                                    <span class="date">@item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                    <span class="time">@item.CreatedDate.ToString("hh:mm tt")</span>
+                                </p>
+                            </td>
+                            <td class="date-request" data-label_table='@SharedLocalizer["Deadline"]'
+                                data-sort="@item.Deadline.Value.ToString("yyyy-MM-dd HH:mm")" data-filter="@item.Deadline.Value.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                                <p class="exclamation">
+                                    @if (item.Deadline.Value >= DateTime.UtcNow)
+                                    {
+                                        <i class="fas fa-exclamation mtt @item.DaysRemainingClass"
+                                           rel="tooltip"
+                                           title="@SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ?
+                                    ArLangHelper.GetDayStringByNumber(item.DaysRemaining.Value) : item.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)"></i>
+                                    }
+                                    <span class="date">@item.Deadline?.ToString("dd/MM/yyyy")</span><br />
+                                    <span class="time">@item.Deadline?.ToString("hh:mm tt")</span>
+                                </p>
+                            </td>
+                            <td>
+                                @if (item.IsDone)
+                                {
+                                    <span class="btn my-tasks-done-btn-disabled disabled"><i class="fas fa-check"></i> @SharedLocalizer["Done"] </span>
+                                }
+                                else
+                                {
+                                    <div class="status-block pending">
+                                        <span class="status-label"> <i class="fas fa-history"></i> @SharedLocalizer["Pending"] </span>
+                                    </div>
+                                }
+                            </td>
+                            <td class="request-actions" data-label_table='@SharedLocalizer["Actions"]'>
+                                <button class="request-actions-info show-loader cursor-pointer" onclick="showTaskDetails(@item.Id)">
+                                    <i class="fas fa-info"></i>
+                                </button>
+                                @if (item.IsDone)
+                                {
+                                    if (item.CreatedById == userId)
+                                    {
+                                        <button class="request-actions-info" onclick="unDoTask(@item.Id)"><i class="fas fa-undo"></i></button>
+                                    }
+                                }
+                                else
+                                {
+                                    if (item.CreatedById == userId)
+                                    {
+                                        <button class="request-actions-info" onclick="taskReminder(@item.Id)">
+                                            <i class="far fa-bell"></i>
+                                        </button>
+                                        <button class="request-actions-info show-loader" title="@SharedLocalizer["Edit"]" onclick="editDetailsTask(@item.Id)">
+                                            <i class="far fa-edit"></i>
+                                        </button>
+                                    }
+                                }
+                                @if (item.CreatedById == userId)
+                                {
+                                    <button class="request-actions-info btn-confirm-delete" title="@SharedLocalizer["Delete"]" data-itemid="@item.Id" data-source="myTeamTask">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                }
+                                @if (item.PagePath != null)
+                                {
+                                    <a class="request-actions-link" href="@item.PagePath" target="_blank" title="@SharedLocalizer["GoToLink"]">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                }
+                            </td>
+                            <td class="d-none">@item.AssignedToDepartmentId</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

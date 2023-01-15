@@ -1,0 +1,115 @@
+﻿
+@model List<SupplierOfferViewModel>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="row justify-content-end mt-3">
+        <div class="mx-3">
+            <div class="icheck-primary">
+                <input type="checkbox" onclick="showHideCIF()" id="isAllCIF" />
+                <label for="isAllCIF">@SharedLocalizer["AllCIF"]</label>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>@SharedLocalizer["SupplierId"]</th>
+                        <th>@SharedLocalizer["CurrencyId"]</th>
+                        <th>@SharedLocalizer["DeliveryTypeId"]</th>
+                        <th>@SharedLocalizer["DeliveryRange"]</th>
+                        <th class="wocif">@SharedLocalizer["Price"]</th>
+                        <th class="wocif">
+                            @SharedLocalizer["Price"] (@(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol))
+                        </th>
+                        <th class="wcif d-none">@SharedLocalizer["Price"]</th>
+                        <th class="wcif d-none">
+                            @SharedLocalizer["Price"] (@(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol))
+                        </th>
+                        <th>@SharedLocalizer["PaymentTypeId"]</th>
+                        @*<th>@SharedLocalizer["Actions"]</th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (SupplierOfferViewModel offer in Model)
+                    {
+
+
+                        <tr>
+                            <td>
+                                @if (offer.IsAccepted)
+                                {
+                                    <i class="far fa-check-square"></i>
+                                }
+                            </td>
+                            <td>
+                                <p class="items-supp">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.SupplierNameAr : offer.SupplierName)
+                                </p>
+                            </td>
+                            <td>
+                                <p class="items-supp">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.CurrencyNameAr : offer.CurrencyName)
+                                </p>
+                            </td>
+                            <td>
+                                <p class="items-supp">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.DeliveryTypeNameAr : offer.DeliveryTypeName)
+                                </p>
+                            </td>
+                            <td>
+                                <p class="items-supp">
+                                    @SharedLocalizer["From"] @offer.DeliveryRangeFrom.Value @SharedLocalizer["To"] @offer.DeliveryRangeTo @SharedLocalizer["Days"]
+                                </p>
+                            </td>
+                            <td class="wocif">
+                                <p class="items-supp">
+                                    @offer.TotalPrice.ToString("#,###.##") @offer.CurrencySymbol
+                                </p>
+                            </td>
+                            <td class="wocif">
+                                <p class="items-supp">
+                                    @offer.LocalTotalPrice.ToString("#,###.##") @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </p>
+                            </td>
+                            <td class="wcif d-none">
+                                <p class="items-supp">
+                                    @offer.TotalPriceWCIF.ToString("#,###.##") @offer.CurrencySymbol
+                                </p>
+                            </td>
+                            <td class="wcif d-none">
+                                <p class="items-supp">
+                                    @offer.LocalTotalPriceWCIF.ToString("#,###.##") @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </p>
+                            </td>
+                            <td>
+                                <p class="items-supp">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.PaymentTypeNameAr : offer.PaymentTypeName)
+                                </p>
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12 mt-3 mx-3">
+            @SharedLocalizer["AddedSuppliersOffersMSG"]
+        </div>
+    </div>
+}

@@ -1,0 +1,81 @@
+﻿
+@model IList<UserDepartmentViewModel>
+
+@{
+    ApplicationUser user = ViewData["UserObj"] as ApplicationUser;
+}
+
+<div class="nav-item">
+    <div class="avatar-user">
+        <div class="user-panel d-flex">
+            @if (user.ProfilePicture != null)
+            {
+                <img src="/images/Users/@user.ProfilePicture" class="img-circle" alt="">
+            }
+            else
+            {
+                <div class="nameUserProfile-small">
+                </div>
+            }
+            <input type="hidden" id="FirstNameuser" value="@user.FirstName" />
+            <input type="hidden" id="LastNameuser" value="@user.LastName" />
+            <div class="info">
+                <a class="d-block">@user.FirstName @user.LastName</a>
+            </div>
+        </div>
+        <div class="dropdown-menu-setting">
+            <div class="dw-user-box">
+                <div class="u-img">
+                    @if (user.ProfilePicture != null)
+                    {
+                        <img src="/images/Users/@user.ProfilePicture" class="img-circle" alt="">
+                    }
+                    else
+                    {
+                        <div class="nameUserProfile-small">
+                        </div>
+                    }
+                </div>
+                <div class="u-text">
+                    <h4 class="name-user">@user.FirstName @user.LastName</h4>
+                    <p class="text-muted">@user.Email</p>
+                    <a asp-action="Profile" asp-controller="Account" class="btn btn-rounded">@SharedLocalizer["ViewProfile"]</a>
+                </div>
+            </div>
+            <ul>
+                @*<li class="item">
+                        <a class="settings">
+                            <span class="fas fa-cog"></span> <span>@SharedLocalizer["Settings"]</span>
+                        </a>
+                    </li>*@
+                @*<li class="item">
+                        <a class="">
+                            <span class="logo-umsco">
+                                <img src="/images/01Umsco.png" />
+                            </span> <span><strong>umsco</strong> Profile</span>
+                        </a>
+                    </li>*@
+                @*<div class="divider"></div>*@
+
+                @*<li class="item switchdepartment">
+                    <a class="">
+                        <span class="fa fa-sync-alt"></span> <span>@SharedLocalizer["SwitchDepartment"]</span>
+                    </a>
+                    <ul class="list-menu-switchdepartment">
+                        @foreach (var userDepartment in Model)
+                        {
+                            <li data-department="@userDepartment.DepartmentId" class="@(userDepartment.IsActive ? "active" : "")">@(SharedLocalizer.IsRightToLeft() ? userDepartment.DepartmentNameAr : userDepartment.DepartmentName)</li>
+                        }
+                    </ul>
+                </li>*@
+
+                <li class="item">
+                    <a class="" asp-area="" asp-controller="Account" asp-action="Logout">
+                        <span class="fas fa-sign-out-alt"></span> <span>@SharedLocalizer["Logout"]</span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>

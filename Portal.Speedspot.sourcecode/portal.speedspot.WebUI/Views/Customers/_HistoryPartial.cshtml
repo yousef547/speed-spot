@@ -1,0 +1,104 @@
+﻿
+
+    <ul class="nav nav-pills" id="mainTab" role="tablist">
+        <li class="tabs-link-outline-blue-bg-white">
+            <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                @SharedLocalizer["Opportunities"]
+            </a>
+        </li>
+        <li class="tabs-link-outline-blue-bg-white">
+            <a class="nav-link" id="tss-tab" data-toggle="tab" onclick="GetQuotations()" href="#tss" role="tab" aria-controls="tss" aria-selected="false">
+                @SharedLocalizer["Quotations"]
+            </a>
+        </li>
+        <li class="tabs-link-outline-blue-bg-white">
+            <a class="nav-link" id="soo-tab" data-toggle="tab" href="#soo" role="tab" aria-controls="soo" aria-selected="false">
+                @SharedLocalizer["NotJoin"]
+            </a>
+        </li>
+        <li class="tabs-link-outline-blue-bg-white">
+            <a class="nav-link" id="fss-tab" data-toggle="tab" href="#fss" role="tab" aria-controls="fss" aria-selected="false">
+                @SharedLocalizer["PurchasingOrders"]
+            </a>
+        </li>
+    </ul>
+    <br />
+    <div class="tab-content px-2 sales-informations-tab-content" id="mainTabContent">
+        <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+            <div class="card" id="historyOpportunities">
+                
+                @await Html.PartialAsync("_HistoryOpportunitiesPartial", new List<OpportunityViewModel>())
+
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tss" role="tabpanel" aria-labelledby="tss-tab">
+            <div class="card">
+                <div class="card-body" id="historyQuotations">
+                    @await Html.PartialAsync("_HistoryQuotationPartial", new List<QuotationViewModel>())
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="soo" role="tabpanel" aria-labelledby="soo-tab">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table customers-details-visit text-center">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name">Offer Remote wireless</td>
+                                <td>11/1/2022</td>
+                                <td class="actions-table-btn">
+                                    <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-delete" href="#">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="fss" role="tabpanel" aria-labelledby="fss-tab">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table customers-details-visit text-center">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="">3/12/2021</td>
+                                <td class="">3/12/2021</td>
+                                <td class="">Direct Pro</td>
+                                <td>$5485</td>
+                                <td class="actions-table-btn">
+                                    <a class="btn btn-delete" href="#">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                    <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+

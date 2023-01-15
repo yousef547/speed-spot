@@ -1,0 +1,35 @@
+﻿
+@model FinancialAccountViewModel
+
+<div class="view-box-chart">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name"></label>
+                        <span>@Model.Name</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <span>@Model.NameAr</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Code"></label>
+                        <span>@Model.Code</span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="GeneratedCode"></label>
+                        <span>@Model.GeneratedCode</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

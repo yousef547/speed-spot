@@ -1,0 +1,12 @@
+﻿@*_ShowCustomerPartial*@
+@model OpportunityViewModel
+<label asp-for="CustomerId" class="control-label label-sales-information"></label>
+<select asp-for="CustomerId"
+        data-live-search="true"
+        class="form-control inp-height"
+        asp-items="@(new SelectList(ViewBag.CustomerId as List<Customer>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name",ViewData["SelectedCustomerId"]))"
+        onchange="customerChanged()">
+    <option value="">@SharedLocalizer["Select"]</option>
+    <option value="modal" class="dropdown-item-add">@SharedLocalizer["NewCustomer"]</option>
+</select>
+<span asp-validation-for="CustomerId" class="text-danger"></span>

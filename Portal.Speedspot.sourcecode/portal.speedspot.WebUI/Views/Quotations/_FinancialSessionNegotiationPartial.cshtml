@@ -1,0 +1,190 @@
+﻿
+@model QuotationViewModel
+
+@{
+    CustomerInfoViewModel CustomerInfo = ViewBag.CustomerInfo as CustomerInfoViewModel;
+}
+
+<div class="conversation-parent">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="head">
+                <div class="logo-name">
+                    <img src="/images/Customers/@CustomerInfo.LogoPath" alt="logo" />
+                    <p class="select-send-message">@(SharedLocalizer.IsRightToLeft()? CustomerInfo.NameAr : CustomerInfo.Name)</p>
+                </div>
+                <div class="list-choise-show-message">
+                    <ul>
+                        <li class="parent-list">
+                            <a class="">@SharedLocalizer["All"]</a>
+                            <ul class="sub-menu">
+                                <li onclick="emptyCustomerrDateNegotiation()" class="all">@SharedLocalizer["All"]</li>
+                                <li>
+                                    <input type="date" id="dateMessageCustomerNegotiation" onchange="getNegotiationCutomersMassages()" class="dateMessage" title="DatePicker" />
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="box-conversation scroll-Custom" id="customer-msg-negotiation">
+                @await Html.PartialAsync("_CustomerNegotiationPartial", ViewData["customerNegotiation"] as List<CustomerNegotiationViewModel>)
+            </div>
+        </div>
+
+        @*//supplier massage*@
+        <div class="col-md-6">
+            <div class="head">
+                <div class="logo-name">
+                    <img src="/images/01Umsco.png" alt="logo" id="logoSupplierNegotiation" />
+                    <select title="" class="select-send-message" id="conversationSuppliersNegotiation" onchange="getNegotiationSupplierMassages()">
+                        @foreach (var item in ViewBag.Suppliers)
+                        {
+                            <option value="@item.Id" data-image="/images/Suppliers/@item.LogoAttachmentPath">@(SharedLocalizer.IsRightToLeft() ? item.NameAr : item.Name)</option>
+                        }
+                    </select>
+                </div>
+                <div class="list-choise-show-message">
+                    <ul>
+                        <li class="parent-list">
+                            <a class="">@SharedLocalizer["All"]</a>
+                            <ul class="sub-menu">
+                                <li onclick="emptysupplierDateNegotiation()" class="all">@SharedLocalizer["All"]</li>
+                                <li>
+                                    <input type="date" class="dateMessage" id="dateMessageNegotiation" onchange="getNegotiationSupplierMassages()" title="DatePicker" />
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="box-conversation scroll-Custom" id="supplier-msg-negotiation">
+                @await Html.PartialAsync("_SupplierNegotiationPartial", Model.SupplierNegtiationVMs
+               .Where(c => c.SupplierId == (ViewBag.Suppliers as List<SupplierViewModel>).FirstOrDefault().Id).ToList())
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <a class="add-primary-main mt-3" asp-action="NegotiationResults" asp-route-id="@Model.Id">@SharedLocalizer["Results"]</a>
+    </div>
+</div>
+
+
+
+
+
+@* Modal Add Negotiation Supplier *@
+<div class="modal fade modal-add-message" id="modalAddNegotiationSupplier" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <span class="p-2">@SharedLocalizer["Supplierconversation"]</span>
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">@SharedLocalizer["AddMessage"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="addMessageDetails">
+                @await Html.PartialAsync("_CreateNegotiationSupplierPartial", new SupplierNegotiationViewModel() { QuotationId = Model.Id})
+
+            </div>
+            <div class="modal-footer">
+                <div class="action action-modal">
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                    <a onclick="CreateNegotiationSupplier()" class="btn-update">
+                        @SharedLocalizer["Save"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal Add Negotiation Customer *@
+<div class="modal fade modal-add-message" id="modalAddNegotiationCustomer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <span class="p-2">@SharedLocalizer["CustomerConversation"]</span>
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">@SharedLocalizer["AddMessage"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="addMessageDetails">
+                @await Html.PartialAsync("_CreateNegotiationCustomerPartial", new CustomerNegotiationViewModel() { QuotationId=Model.Id})
+            </div>
+            <div class="modal-footer">
+                <div class="action action-modal">
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                    <a class="btn-update" onclick="CreateNegotiationCustomer()">
+                        @SharedLocalizer["Save"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal Edit Negotiation Supplier *@
+<div class="modal fade modal-add-message" id="modalEditNegotiationSupplier" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <span class="p-2">@SharedLocalizer["Supplierconversation"]</span>
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">@SharedLocalizer["EditMassage"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editNegotiationSupplier">
+
+            </div>
+            <div class="modal-footer">
+                <div class="action action-modal">
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                    <a onclick="updateNegotiationSupplier()" class="btn-update">
+                        @SharedLocalizer["Save"]
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal Edit Negotiation Customer *@
+<div class="modal fade modal-add-message" id="modalEditNegotiationCustomer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <span class="p-2">@SharedLocalizer["CustomerConversation"]</span>
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">@SharedLocalizer["EditMassage"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editNegotiationCustomer">
+
+            </div>
+            <div class="modal-footer">
+                <div class="action action-modal">
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                    <a class="btn-update" onclick="updateNegotiationCustomer()">
+                        @SharedLocalizer["Save"]
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

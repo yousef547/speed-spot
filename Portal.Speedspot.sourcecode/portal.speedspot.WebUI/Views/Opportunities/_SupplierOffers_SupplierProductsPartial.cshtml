@@ -1,0 +1,69 @@
+﻿
+@model List<SupplierOfferProductViewModel>
+
+@for (int i = 0; i < Model.Count; i++)
+{
+    <tr>
+        <td class="id-details">
+            @(i + 1)
+            <input class="soproductid" type="hidden" value="@Model[i].Id" name="SupplierOfferVMs[@i].Id" />
+            <input class="soproductofferid" type="hidden" value="@Model[i].OfferId" name="SupplierOfferVMs[@i].OfferId" />
+            <input class="sotsproductid" type="hidden" value="@Model[i].TechnicalSpecificationProductId" name="SupplierOfferVMs[@i].TechnicalSpecificationProductId" />
+        </td>
+        <td class="name-details">@(SharedLocalizer.IsRightToLeft() ? Model[i].ProductVM.ProductNameAr : Model[i].ProductVM.ProductName)</td>
+        <td>
+            <div class="input-group input-price">
+                <div class="input-group-prepend">
+                    <span class="input-group-text currencySymbol">
+                        @ViewBag.CurrencySymbol
+                    </span>
+                </div>
+                <input type="number" min="0" class="form-control inp-height soproductprice" value="@Model[i].Price" onchange="this.value = Math.abs(this.value); calculateSupplierOfferTotal(); calculateDetailsSupplierOfferTotal();" oninput="" />
+            </div>
+        </td>
+        <td class="name-details">@Model[i].ProductVM.Description</td>
+        <td class="name-details soproductqty">@Model[i].ProductVM.Quantity</td>
+        <td class="name-details">
+            <span class="soproducttotal">@Model[i].TotalPrice</span>
+            <span class="currencySymbol">
+                @ViewBag.CurrencySymbol
+            </span>
+        </td>
+        <td class="name-details">@(SharedLocalizer.IsRightToLeft() ? Model[i].ProductVM.RequestedOriginsStrAr : Model[i].ProductVM.RequestedOriginsStr)</td>
+        <td class="file-upload-and-show-files">
+            <input class="soproductattachmentid" type="hidden" value="@Model[i].AttachmentId" name="SupplierOfferVMs[@i].AttachmentId" />
+            @if (Model[i].AttachmentId != null)
+            {
+                <div class="custom-label-upload">
+                    <label class="" for="soproductattachment_@i">
+                        <span class="upload-file-icons">
+                            <i class="fas fa-file-upload"></i>
+                        </span>
+                    </label>
+                    <label class="file-upload-label">
+                        <a class="span-upload one-line " href="/images/Opportunities/@Model[i].AttachmentPath" title="" target="_blank">
+                            @Model[i].AttachmentTitle
+                        </a>
+                    </label>
+                    <input id="soproductattachment_@i" name="soproductattachment" type="file" class="custom-file-input sup-offer-attachment-input d-none soproductattachment">
+                </div>
+            }
+            else
+            {
+                @* Else Attach *@
+                <div class="custom-file">
+                    <label class="file file-upload-label" for="soproductattachment_@i">
+                        <span class="upload-file-icons">
+                            <i class="fas fa-file-upload"></i>
+                        </span>
+                        <span class="span-upload" id="spanUploadAttachmentProd">
+                            @SharedLocalizer["Upload"]
+                        </span>
+                    </label>
+                    <input id="soproductattachment_@i" type="file" class="custom-file-input d-none attachmentProdList soproductattachment">
+
+                </div>
+            }
+        </td>
+    </tr>
+}

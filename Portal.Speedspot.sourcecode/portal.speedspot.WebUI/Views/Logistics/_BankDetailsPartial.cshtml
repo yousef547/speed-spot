@@ -1,0 +1,127 @@
+﻿
+@model LogisticViewModel
+
+<input type="hidden" asp-for="Id" />
+<div class="details-bank">
+    <div class="row mt-4" id="bankviewmode">
+        <div class="header">
+            <div class="details-content">
+                <p class="name-beneficiary">@SharedLocalizer["BeneficiaryName"]</p>
+                <p class="name-customer" id="BeneficiaryNameView">
+                    @(Model.BeneficiaryName ?? Model.Name)
+                </p>
+            </div>
+
+            <div class="details-content">
+                <p class="name-beneficiary">@SharedLocalizer["BeneficiaryAddress"]</p>
+                <p class="name-customer" id="BeneficiaryAddressView">
+                    @(Model.BeneficiaryAddress ?? Model.AddressVM?.BillingAddress)
+                </p>
+            </div>
+        </div>
+
+        <button class="edit-bank-details" type="button" onclick="editBeneficiaryDetails()">
+            <i class="far fa-edit"></i>
+        </button>
+    </div>
+
+    <div class="row d-none mt-4" id="bankeditmode">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="BeneficiaryName">@SharedLocalizer["BeneficiaryName"]</label>
+                <input class="form-control inp-height"
+                       type="text"
+                       id="BeneficiaryName"
+                       name="BeneficiaryName"
+                       value="@(Model.BeneficiaryName ?? Model.Name)">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="BeneficiaryAddress">@SharedLocalizer["BeneficiaryAddress"]</label>
+                <input class="form-control inp-height"
+                       type="text"
+                       id="BeneficiaryAddress"
+                       name="BeneficiaryAddress"
+                       value="@(Model.BeneficiaryAddress ?? Model.AddressVM?.BillingAddress)">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="actions-edit-bank-details">
+                <button class="btn cancel" type="button" onclick="cancelBeneficiaryDetails()">@SharedLocalizer["Cancel"]</button>
+                <button class="btn add" type="button" onclick="saveBeneficiaryDetails()">@SharedLocalizer["Save"]</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row mt-3 mx-3">
+        <div class="col-12 mt-3">
+            <div class="add-bank">
+                <button onclick="showAddBankform()" id="btnAddBank">
+                    <i class="fa fa-plus"></i>@SharedLocalizer["AddBank"]
+                </button>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="hidden-table-bank">
+                <input type="hidden" id="LogisticBankId" />
+                <div class="card p-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="control-label" for="BankId">@SharedLocalizer["BankId"] </label>
+                                <select class="form-control inp-height"
+                                        type="text"
+                                        id="BankId"
+                                        name="BankId"
+                                        asp-items="@(new SelectList(ViewBag.BankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                                        onchange="bankChanged()">
+                                    <option value="">@SharedLocalizer["Select"]</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-9" id="bankBranches">
+                            @await Html.PartialAsync("_BankBranchesPartial")
+                        </div>
+                    </div>
+
+                    @* Row Currency *@
+
+                    <div id="bankcurrencies">
+                        @await Html.PartialAsync("_CurrenciesPartial", new List<LogisticBankCurrencyViewModel>())
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mt-3">
+                            <div class="add-Currency">
+                                <button onclick="addCurrency()">
+                                    <i class="fa fa-plus"></i>@SharedLocalizer["AddCurrency"]
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="actions-bank-details">
+                            <button type="button" class="btn cancel" onclick="cancelAddBankForm()">@SharedLocalizer["Cancel"]</button>
+                            <button id="btnAdd" type="button" class="add" onclick="addLogisticBank()"><i class="fas fa-plus"></i>@SharedLocalizer["Add"]</button>
+                            <button id="btnUpdate" type="button" class="update d-none" onclick="updateLogisticBank()"><i class="far fa-edit"></i>@SharedLocalizer["Update"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4 mx-2">
+        <div class="col-12">
+            <div class="card" id="logisticBanks">
+                @await Html.PartialAsync("_BanksPartial", Model.BankVMs)
+            </div>
+        </div>
+    </div>
+</div>

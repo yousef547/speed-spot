@@ -1,0 +1,222 @@
+﻿
+@model SupplierOfferViewModel
+
+<div class="card">
+    <div class="add-offers-suppliers">
+        <h3 class="head-box">@SharedLocalizer["EditSupplierOffer"]:</h3>
+        <input type="hidden" id="soDOfferId" value="@Model.Id" />
+        <div class="row">
+            <div class="col-12 content-offer">
+                <div class="header row">
+                    <div class="col-12" id="soEditAvailableSuppliers">
+                        @await Html.PartialAsync("_SupplierOffers_AvailableSuppliersEditPartial", Model.SupplierId)
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-lg-3 mb-2">
+                        <div class="form-group">
+                            <label class="control-label" for="soDCurrencyId">
+                                @SharedLocalizer["Currency"]
+                            </label>
+                            <select id="soDCurrencyId"
+                                    onchange="dCurrencyChanged()"
+                                    class="form-control"
+                                    data-live-search="true"
+                                    asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model.CurrencyId))">
+                            </select>
+                            <input type="hidden" id="soDCurrencySymbol" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 col-lg-3 mb-2">
+                        <div class="form-group">
+                            <label class="control-label" for="soDExchangeRate">
+                                @SharedLocalizer["ExchangeRate"]
+                            </label>
+                            <div class="input-group input-price">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text localCurrency">
+                                        @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" + Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                    </span>
+                                </div>
+                                <input type="number" min="0" step="0.01" class="form-control inp-height" id="soDExchangeRate" value="@Model.ExchangeRate" onchange="this.value = Math.abs(this.value); calculateDetailsSupplierOfferTotal()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="prod-list">
+                    <h3 class="head-box">@SharedLocalizer["ProductList"]:</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>@SharedLocalizer["Number"]</th>
+                                <th>@SharedLocalizer["Item"]</th>
+                                <th>@SharedLocalizer["Price"]</th>
+                                <th>@SharedLocalizer["Description"]</th>
+                                <th>@SharedLocalizer["Quantity"]</th>
+                                <th>@SharedLocalizer["Total"]</th>
+                                <th>@SharedLocalizer["Origin"]</th>
+                                <th>@SharedLocalizer["Attachment"]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="soDSupplierProducts">
+                            @await Html.PartialAsync("_SupplierOffers_SupplierProductsPartial", Model.ProductVMs.OrderBy(o => o.ProductIndex).ToList())
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td colspan="3">
+                                    <div class="total-budget">
+                                        <div class="form-group">
+                                            <span class="additional">@SharedLocalizer["Additional"]:</span>
+                                            <div class="input-group input-price">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text currencySymbol">
+                                                        $
+                                                    </span>
+                                                </div>
+                                                <input type="number" min="0" id="soDAdditionalCost" class="form-control inp-height" value="@Model.AdditionalCost" onchange="this.value = Math.abs(this.value); calculateDetailsSupplierOfferTotal()" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <div class="total-price mb-3">
+                                                <span>@SharedLocalizer["TotalBudget"]: </span>
+                                                <div>
+                                                    <span class="currencySymbol">$</span>
+                                                    <span id="soDTotalPrice">0</span>
+                                                </div>
+                                            </div>
+                                            <div class="total-eg">
+                                                <span class="invisible">@SharedLocalizer["TotalBudget"]: </span>
+                                                <div>
+                                                    <span>
+                                                        @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" + Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                                    </span>
+                                                    <span id="soDTotalPriceLocal">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-xs-12 col-sm-6 col-lg-3 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDPaymentTypeId">
+                        @SharedLocalizer["PaymentType"]
+                    </label>
+                    <select class="form-control"
+                            id="soDPaymentTypeId"
+                            asp-items="@(new SelectList(ViewBag.PaymentTypeId as List<PaymentType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model.PaymentTypeId))">
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-3 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDDeliveryTypeId">
+                        @SharedLocalizer["DeliveryType"]
+                    </label>
+                    <select class="form-control"
+                            id="soDDeliveryTypeId"
+                            onchange="soDDeliveryTypeChanged()"
+                            asp-items="@(new SelectList(ViewBag.DeliveryTypeId as List<DeliveryType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model.DeliveryTypeId))">
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-2 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDCIFCost">
+                        @SharedLocalizer["CIFCost"]
+                    </label>
+                    <div class="input-group input-price">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text currencySymbol">
+                                @Model.CurrencySymbol
+                            </span>
+                        </div>
+                        <input type="number" min="0" class="form-control inp-height" id="soDCIFCost" value="@Model.CIFCost" onchange="this.value = Math.abs(this.value)" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-lg-2 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDDeliveryRangeFrom">
+                        @SharedLocalizer["DeliveryRangeFrom"]
+                    </label>
+                    <div class="input-group input-price">
+                        <input id="soDDeliveryRangeFrom" type="number" class="form-control inp-height" value="@Model.DeliveryRangeFrom" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                @SharedLocalizer["Days"]
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-4 col-lg-2 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDDeliveryRangeTo">
+                        @SharedLocalizer["To"]
+                    </label>
+                    <div class="input-group input-price">
+                        <input id="soDDeliveryRangeTo" type="number" class="form-control inp-height" value="@Model.DeliveryRangeTo" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                @SharedLocalizer["Days"]
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-3 mb-2">
+                <div class="form-group">
+                    <label class="control-label" for="soDAttachments">
+                        @SharedLocalizer["AttachmentFiles"]
+                    </label>
+                    <div class="custom-file">
+                        <label class="file file-upload-label tsproduct-attachment-label" for="soDAttachments">
+                            <span class="upload-file-icons">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            <span class="span-upload">
+                                @SharedLocalizer["Upload"]
+                            </span>
+                        </label>
+                        <input id="soDAttachments" type="file" class="custom-file-input sup-offer-attachment-input d-none" multiple>
+                    </div>
+                </div>
+                @if (Model.AttachmentVMs != null && Model.AttachmentVMs.Count > 0)
+                {
+                    <table class="w-100">
+                        <tbody>
+                            @foreach (var attachment in Model.AttachmentVMs)
+                            {
+                                <tr id="offerAttachment_@attachment.Id">
+                                    <td>
+                                        <a class="attashment-title-supp one-line" href="/images/Opportunities/@attachment.AttachmentPath" target="_blank">@attachment.AttachmentTitle</a>
+                                    </td>
+                                    <td class="float-right">
+                                        <button class="btn" type="button" onclick="deleteOfferAttachment('@attachment.Id')">
+                                            <i class="fa fa-times icon-close"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="actions-supp">
+                    <button type="button" class="btn cancel" onclick="cancelDSupplierOfferClicked()">@SharedLocalizer["Cancel"]</button>
+                    <button type="button" class="btn btn-outline-success" onclick="updateSupplierOffer()"><i class="fas fa-check"></i> @SharedLocalizer["Save"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

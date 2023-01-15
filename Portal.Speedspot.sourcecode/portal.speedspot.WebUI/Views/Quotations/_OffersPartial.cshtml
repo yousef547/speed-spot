@@ -1,0 +1,153 @@
+
+@model IList<QuotationOfferViewModel>
+
+@{
+    bool showFinishButton = (bool)ViewData["ShowFinishButton"];
+}
+
+<div class="row">
+    <div class="card w-100">
+        <table class="table offers table-offers">
+            <thead>
+                <tr>
+                    <th class="no-sort"></th>
+                    <th class="no-sort"></th>
+                    <th class="no-sort">@SharedLocalizer["ID"]</th>
+                    <th class="no-sort">@SharedLocalizer["Title"]</th>
+                    <th class="no-sort">@SharedLocalizer["AttentionTo"]</th>
+                    <th class="no-sort">@SharedLocalizer["ItemsNo"]</th>
+                    <th class="no-sort">@SharedLocalizer["TotalPrice"]</th>
+                    <th class="no-sort">@SharedLocalizer["CreatedById"]</th>
+                    <th class="no-sort">@SharedLocalizer["Version"]</th>
+                    <th class="no-sort">@SharedLocalizer["Alternate"]</th>
+                    <th class="no-sort">@SharedLocalizer["Actions"]</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var offer in Model)
+                {
+                    if (offer.IsTwoEnvelopes)
+                    {
+                        foreach (var version in offer.VersionVMs)
+                        {
+                            <tr id="@version.Id">
+                                <td class="dt-control "></td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" id="isSelectedT_@version.Id" @(version.IsSelected ? "checked disabled" : "") onclick="changeSelectedOffer('@offer.QuotationId', '@version.Id')" />
+                                        <label for="isSelectedT_@version.Id"></label>
+                                    </div>
+                                </td>
+                                <td>@(offer.Code + "-" + "T" + "-" + $"{version.Version:00}")</td>
+                                <td>@version.Title</td>
+                                <td>@version.AttentionTo</td>
+                                <td>@version.ProductVMs.Count(p => p.IsIncluded)</td>
+                                <td>@version.TotalPrice</td>
+                                <td>@version.CreatedByName</td>
+                                <td>@version.Version</td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddAlternateVersion" asp-route-versionid="@version.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddAlternate"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddOfferVersion" asp-route-offerid="@offer.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddVersion"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <a asp-action="PrintTechnicalOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="false" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["Print"]">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    <a asp-action="PrintTechnicalOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="true" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["PrintMail"]">
+                                        <i class="fas fa-at"></i>
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <tr id="@version.Id">
+                                <td class="dt-control "></td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" id="isSelectedF_@version.Id" @(version.IsSelected ? "checked disabled" : "") onclick="changeSelectedOffer('@offer.QuotationId', '@version.Id')" />
+                                        <label for="isSelectedF_@version.Id"></label>
+                                    </div>
+                                </td>
+                                <td>@(offer.Code + "-" + "F" + "-" + $"{version.Version:00}")</td>
+                                <td>@version.Title</td>
+                                <td>@version.AttentionTo</td>
+                                <td>@version.ProductVMs.Count(p => p.IsIncluded)</td>
+                                <td>@version.TotalPrice</td>
+                                <td>@version.CreatedByName</td>
+                                <td>@version.Version</td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddAlternateVersion" asp-route-versionid="@version.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddAlternate"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddOfferVersion" asp-route-offerid="@offer.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddVersion"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <a asp-action="PrintFinancialOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="false" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["Print"]">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    <a asp-action="PrintFinancialOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="true" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["PrintMail"]">
+                                        <i class="fas fa-at"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        foreach (var version in offer.VersionVMs)
+                        {
+                            <tr id="@version.Id">
+                                <td class="dt-control"></td>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" id="isSelectedTF_@version.Id" @(version.IsSelected ? "checked disabled" : "") onclick="changeSelectedOffer('@offer.QuotationId', '@version.Id')" />
+                                        <label for="isSelectedTF_@version.Id"></label>
+                                    </div>
+                                </td>
+                                <td>@(offer.Code + "-" + "TF" + "-" + $"{version.Version:00}")</td>
+                                <td>@version.Title</td>
+                                <td>@version.AttentionTo</td>
+                                <td>@version.ProductVMs.Count(p => p.IsIncluded)</td>
+                                <td>@version.TotalPrice</td>
+                                <td>@version.CreatedByName</td>
+                                <td>@version.Version</td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddAlternateVersion" asp-route-versionid="@version.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddAlternate"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                </td>
+                                <td class="actions-table-btn">
+                                    <a asp-action="AddOfferVersion" asp-route-offerid="@offer.Id" class="btn btn-add my-1" target="_blank" title="@SharedLocalizer["AddVersion"]">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <a asp-action="PrintOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="false" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["Print"]">
+                                        <i class="fas fa-print"></i>
+                                    </a>
+                                    <a asp-action="PrintOffer" asp-route-offerVersionId="@version.Id" asp-route-isEmail="true" class="btn btn-print my-1" target="_blank" title="@SharedLocalizer["PrintMail"]">
+                                        <i class="fas fa-at"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (showFinishButton)
+{
+    <div class="row">
+        <div class="col-12">
+            <a asp-action="Details" asp-route-id="@Model[0].QuotationId" class="btn btn-primary float-right">@SharedLocalizer["Finish"]</a>
+        </div>
+    </div>
+}

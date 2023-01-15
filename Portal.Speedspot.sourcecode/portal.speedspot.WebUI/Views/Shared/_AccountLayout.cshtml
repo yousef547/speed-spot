@@ -1,0 +1,54 @@
+﻿
+@{
+    bool isRTL = SharedLocalizer.IsRightToLeft();
+}
+
+<!DOCTYPE html>
+<html lang="@(isRTL? "" : "en")">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"] - @SharedLocalizer["AppTitle"]</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @if (isRTL)
+    {
+        <link rel="stylesheet" href="~/css/site-rtl.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/site.css" />
+    }
+    <link href="~/css/common.css" rel="stylesheet" />
+    <link href="~/css/shared.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/adminlte/dist/css/adminlte.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/lib/icheck-bootstrap/icheck-bootstrap.min.css">
+    @if (isRTL)
+    {
+        <link rel="stylesheet" href="https://cdn.rtlcss.com/bootstrap/v4.2.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="~/lib/adminlte/dist/css/custom.css" />
+    }
+</head>
+<body class="hold-transition login-page">
+    <div class="bg-full d-none" id="global-spinner">
+        <div class=" spinner-loading" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    @RenderBody()
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/adminlte/dist/js/adminlte.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

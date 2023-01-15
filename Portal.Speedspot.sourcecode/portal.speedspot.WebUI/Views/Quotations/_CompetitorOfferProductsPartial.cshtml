@@ -1,0 +1,94 @@
+
+@model List<CompetitorOfferViewModel>
+
+@{
+    int i = 0;
+    int num = 1;
+}
+
+@foreach (var Versions in Model)
+{
+    <h1 class="title-heade-second-header one-line" title="@SharedLocalizer["Offer"] #@num">
+        @SharedLocalizer["Offer"] #@num
+    </h1>
+
+    foreach (var products in Versions.ProductVMs)
+    {
+        <div class="row item-row" id="item_@i">
+            <input type="hidden" name="ProductVMs[@i].Id" value="@products.Id" />
+            <input type="hidden" name="ProductVMs[@i].OfferId" value="@products.OfferId" />
+            <input type="hidden" name="ProductVMs[@i].ProductId" value="@products.ProductId" />
+            <div class="col-xs-12 col-lg-2">
+                <label class="control-label one-line finan-product-name" title="@products.ProductVM.ProductVM.NameAr">
+                    @products.ProductVM.ProductVM.NameAr
+                </label>
+                <div class="custom-control custom-switch d-table-cell align-middle check-products ">
+                    <input class="custom-control-input"
+                           id="itemIncluded_@i" type="checkbox"
+                           name="ProductVMs[@i].IsIncluded"
+                           asp-for="@products.IsIncluded"
+                           onchange="isIncludedChangedCompetitor('@i')">
+                    <label class="custom-control-label" for="itemIncluded_@i"></label>
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-4 include-item-@i">
+                <div class="form-group">
+                    <label class="control-label">@SharedLocalizer["SelectedOrigins"]</label>
+                    <select class="form-control product-origin inp-height select-no-border-white"
+                            data-dropup-auto="false" data-size="5"
+                            name="ProductVMs[@i].OriginIds"
+                            asp-for="@products.OriginIds"
+                            multiple>
+                        @foreach (var origin in ViewData["Origins"] as List<Country>)
+                        {
+
+                            if (products.OriginVMs.Any(o => o.CountryId == origin.Id))
+                            {
+                                <option value="@origin.Id" selected>@(SharedLocalizer.IsRightToLeft() ? origin.NameAr : origin.Name)</option>
+                            }
+                            else
+                            {
+                                <option value="@origin.Id">@(SharedLocalizer.IsRightToLeft() ? origin.NameAr : origin.Name)</option>
+                            }
+                        }
+                    </select>
+                    <span asp-validation-for="@products.OriginIds" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-2 include-item-@i">
+                <div class="form-group">
+                    <label class="control-label">@SharedLocalizer["Price"]</label>
+                    <input class="form-control inp-height product-price product-UnitPrice"
+                           name="ProductVMs[@i].UnitPrice"
+                           value="@products.UnitPrice"
+                           onchange="priceChanged(@i)" />
+                    <span asp-validation-for="@products.UnitPrice" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-lg-1 include-item-@i">
+                <div class="form-group">
+                    <label class="control-label">@SharedLocalizer["Quantity"]</label>
+                    <input type="hidden"
+                           class="form-control inp-height item-quantity"
+                           name="ProductVMs[@i].Quantity"
+                           value="@products.Quantity" />
+                    <input class="form-control inp-height item-quantity" value="@products.Quantity" disabled />
+                </div>
+            </div>
+            <div class="col-xs-12 col-lg-3 include-item-@i">
+                <div class="form-group">
+                    <label class="control-label">@SharedLocalizer["TotalPrice"]</label>
+                    <input type="hidden" class="product-total" />
+                    <input class="form-control inp-height product-total" disabled />
+                </div>
+            </div>
+        </div>
+
+        i++;
+    }
+    <hr />
+
+    num++;
+
+}

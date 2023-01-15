@@ -1,0 +1,120 @@
+@model List<SupplierViewModel>
+
+<table class="table table-head-fixed table-suppliers">
+    <thead>
+        <tr>
+            <th class="no-sort"></th>
+            <th>
+                @SharedLocalizer["ID"]
+            </th>
+            <th>
+                @SharedLocalizer["Name"]
+            </th>
+            <th>
+                @SharedLocalizer["NameAr"]
+            </th>
+            <th>
+                @SharedLocalizer["Products"]
+            </th>
+            <th>
+                @SharedLocalizer["CountryId"]
+            </th>
+            <th>
+                @SharedLocalizer["LastOrder"]
+            </th>
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr id="@item.Id">
+                <td class="@(item.ChildVMs.Count > 0 ? "dt-control" : "")"></td>
+                <td class="id">
+                    @item.Id
+                </td>
+                <td title="@item.Name">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                    @if (item.IsAgency)
+                    {
+                        if (item.CompetitorId != null)
+                        {
+                            <p class="agency-supplier red" data-agency="red">
+                                @(SharedLocalizer.IsRightToLeft() ? item.CompetitorNameAr : item.CompetitorName)
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="agency-supplier green" data-agency="red">
+                                @(SharedLocalizer.IsRightToLeft() ?
+                            (ViewBag.CompanyData as CompanyDataViewModel).NameAr : (ViewBag.CompanyData as CompanyDataViewModel).Name)
+                            </p>
+                        }
+                    }
+                </td>
+                <td title="@item.NameAr">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td>
+                    <span class="name-details one-line">
+                        @(SharedLocalizer.IsRightToLeft() ? item.ProductsStrAr : item.ProductsStr)
+                    </span>
+                </td>
+                <td>
+                    <span class="name-details one-line">
+                        @(item.AddressVM != null ? (SharedLocalizer.IsRightToLeft() ? item.AddressVM.CountryNameAr : item.AddressVM.CountryName) : "")
+                    </span>
+                </td>
+                <td>
+                    <span class="date-details one-line">
+                        No Orders
+                    </span>
+                </td>
+                <td class="actions-table-btn min-w-250">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.Details)).Succeeded)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader-ajax">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    <button type="button" class="btn btn-fav my-1" onclick="favourite(@item.Id)">
+                        <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star"></i>
+                    </button>
+                    <a href="@item.WebsiteUrl" target="_blank" class="btn website-link ">
+                        <span>@SharedLocalizer["Website"]</span>
+                    </a>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.Edit)).Succeeded)
+                    {
+                        <a class="btn show-loader" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                            <i class="far fa-edit"></i>
+                        </a>
+                    }
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.Delete)).Succeeded)
+                    {
+                        if (!item.IsArchived)
+                        {
+                            <a data-toggle="confirmation"
+                               class="btn btn-delete suppliers-confirm-delete"
+                               data-source="archiveSuppliers"
+                               data-itemid="@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-delete-unarchive show-loader suppliers-confirm-delete" data-source="unArchiveSuppliers" data-itemid="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

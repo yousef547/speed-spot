@@ -1,0 +1,314 @@
+﻿
+@using static portal.speedspot.Models.Constants.ApplicationEnums
+
+@model IList<PendingRequestViewModel>
+
+@inject ArabicLanguageHelper ArLangHelper
+@inject ApplicationUserManager UserManager
+@{
+    string userId = UserManager.GetUserId(User);
+}
+
+@*Start Filter Popup*@
+
+@*End Filter Popup*@
+<div class="justify-content-center filter-popup pending-popup" id="pendingOnTeam">
+    <div class="box-filter scroll-Custom">
+        <div class="content ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="pendingOnTeamPendingOn">@SharedLocalizer["PendingOn"]</label>
+                            <select class="form-control" id="pendingOnTeamPendingOn" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @if (ViewData["MyEmployees"] != null)
+                                {
+                                    foreach (var employees in ViewData["MyEmployees"] as List<ApplicationUser>)
+                                    {
+                                        <option value="@employees.Id">@employees.FirstName @employees.LastName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-6"></div>
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="pendingOnTeamDeadlineFrom" class="control-label">@SharedLocalizer["DeadlineFrom"]</label>
+                            <input id="pendingOnTeamDeadlineFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="pendingOnTeamDeadlineTo" class="control-label">@SharedLocalizer["DeadlineTo"]</label>
+                            <input id="pendingOnTeamDeadlineTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="pendingOnTeamCreatedDateFrom" class="control-label">@SharedLocalizer["CreatedDateFrom"]</label>
+                            <input id="pendingOnTeamCreatedDateFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="pendingOnTeamCreatedDateTo" class="control-label">@SharedLocalizer["CreatedDateTo"]</label>
+                            <input id="pendingOnTeamCreatedDateTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card ">
+    <div class="bg-full-custom d-none" id="pot-spinner">
+        <div class="spinner-loading-custom" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="head-thing-to-be-done">
+                <h2>@SharedLocalizer["PendingOnMyTeam"]</h2>
+
+                <a class="filter-open" onclick="OpenModel('pendingOnTeam',event)"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+            </div>
+        </div>
+
+
+        <div class="col-12">
+            <div class="pendingOnTeam-show-filter-choose filter-row">
+                <div class="pendingOnTeamCreatedBy-filter d-none select-filter"><span></span><i class="fas fa-times"></i></div>
+                <div class="pendingOnTeamCreatedDate-filter d-none date-filter"><span>@SharedLocalizer["Date"]: </span><span class="pendingOnTeamCreatedDate-start"></span> - <span class="pendingOnTeamCreatedDate-end"></span><i class="fas fa-times"></i></div>
+                <div class="pendingOnTeamDate-filter d-none date-filter"><span>@SharedLocalizer["Deadline"]: </span><span class="pendingOnTeamDate-start"></span> - <span class="pendingOnTeamDate-end"></span><i class="fas fa-times"></i></div>
+                <div class="pendingOnTeamResult-filter d-none result-filter"><span></span>&nbsp; @SharedLocalizer["Results"]</div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div>
+                <table class="table PendingRequest" id="table_team_pending">
+                    <thead>
+                        <tr>
+                            <th scope="col">@SharedLocalizer["TypeId"]</th>
+                            <th scope="col">@SharedLocalizer["PendingOn"]</th>
+                            <th scope="col">@SharedLocalizer["CreatedById"]</th>
+                            <th scope="col">@SharedLocalizer["Date"]</th>
+                            <th scope="col">@SharedLocalizer["Deadline"]</th>
+                            <th scope="col">@SharedLocalizer["StatusId"]</th>
+                            <th class="no-sort" scope="col">@SharedLocalizer["Actions"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="type-request" scope="row" data-label_table='@SharedLocalizer["TypeId"]'>
+                                    <span class="light-blue">@SharedLocalizer[item.Source.ToString()]</span>
+                                </td>
+                                <td class="employee-name" data-label_table='@SharedLocalizer["PendingOn"]'
+                                    data-sort="@item.PendingOnName" data-filter="@item.PendingOnUserId">
+                                    <div class="img-user-request">
+                                        @if (item.PendingOnProfilePicture != null)
+                                        {
+                                            <img src="/images/Users/@item.PendingOnProfilePicture" class="img-circle user-img" alt="">
+                                        }
+                                        else
+                                        {
+                                            <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                        }
+                                        <span class="light-blue-2">@item.PendingOnName</span>
+                                    </div>
+                                </td>
+                                <td class="employee-name" data-label_table='@SharedLocalizer["CreatedById"]'>
+                                    <div class="img-user-request">
+                                        @if (item.RequestedByProfilePicture != null)
+                                        {
+                                            <img src="/images/Users/@item.RequestedByProfilePicture" class="img-circle user-img" alt="">
+                                        }
+                                        else
+                                        {
+                                            <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                        }
+                                        <span class="light-blue-2">@item.RequestedByName</span>
+                                    </div>
+                                </td>
+                                <td class="date-request" data-label_table='@SharedLocalizer["Date"]'
+                                    data-sort="@item.RequestedDate.ToString("yyyy-MM-dd HH:mm")" data-filter="@item.RequestedDate.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                                    <p class="exclamation">
+                                        <span class="date">@item.RequestedDate.ToString("dd/MM/yyyy")</span>
+                                        <span class="time">@item.RequestedDate.ToString("hh:mm tt")</span>
+                                    </p>
+                                </td>
+                                <td class="date-request" data-label_table='@SharedLocalizer["Deadline"]'
+                                    data-sort="@item.Deadline.Value.ToString("yyyy-MM-dd HH:mm")" data-filter="@item.Deadline.Value.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                                    <p class="exclamation">
+                                        @if (item.Deadline.Value >= DateTime.UtcNow)
+                                        {
+                                            <i class="fas fa-exclamation pot @item.DaysRemainingClass"
+                                               rel="tooltip"
+                                               title="@SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ?
+                                        ArLangHelper.GetDayStringByNumber(item.DaysRemaining.Value) : item.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)"></i>
+
+                                        }
+                                        <span class="date">@item.Deadline?.ToString("dd/MM/yyyy")</span><br />
+                                        <span class="time">@item.Deadline?.ToString("hh:mm tt")</span>
+                                    </p>
+                                </td>
+                                <td data-label_table='@SharedLocalizer["StatusId"]'
+                                    data-sort="@((int)item.Status)">
+                                    @if (item.Status == ApplicationEnums.RequestStatusEnum.Pending)
+                                    {
+                                        <div class="status-block pending">
+                                            <div class="info-popup invisible">
+                                                i
+                                            </div>
+                                            <span class="status-label"> <i class="fas fa-history"></i> @SharedLocalizer["Pending"] </span>
+                                        </div>
+
+                                    }
+                                    else if (item.Status == ApplicationEnums.RequestStatusEnum.Approved)
+                                    {
+                                        <div class="status-block approved">
+                                            <div class="info-popup">
+                                                i
+                                                <div class="show-action-popup">
+                                                    <div class="parents">
+                                                        @if (item.Source != ApplicationEnums.PendingRequestSourceEnum.GeneralRequest)
+                                                        {
+                                                            <div class="child-status">
+                                                                @if (item.SentByProfilePicture != null)
+                                                                {
+                                                                    <img src="/images/Users/@item.SentByProfilePicture" class="img-circle user-img" alt="">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                                                }
+                                                                <div class="sent">
+                                                                    <p>@item.SentByName</p>
+                                                                    <span class="sent"> <i class="fas fa-check"></i> @SharedLocalizer["Sent"]</span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        <div class="child-status">
+                                                            @if (item.StatusByProfilePicture != null)
+                                                            {
+                                                                <img src="/images/Users/@item.StatusByProfilePicture" class="img-circle user-img" alt="">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                                            }
+                                                            <div class="approved">
+                                                                <p>@item.StatusByName</p>
+                                                                <span class="approved"> <i class="fas fa-check"></i> @SharedLocalizer["Approved"]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="status-label"><i class="fas fa-check"></i>  @SharedLocalizer["Approved"]</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="status-block rejected">
+                                            <div class="info-popup">
+                                                i
+                                                <div class="show-action-popup">
+                                                    <div class="parents">
+                                                        @if (item.Source != ApplicationEnums.PendingRequestSourceEnum.GeneralRequest)
+                                                        {<div class="child-status">
+                                                                @if (item.SentByProfilePicture != null)
+                                                                {
+                                                                    <img src="/images/Users/@item.SentByProfilePicture" class="img-circle user-img" alt="">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                                                }
+                                                                <div class="sent">
+                                                                    <p>@item.SentByName</p>
+                                                                    <span class="sent"> <i class="fas fa-check"></i> @SharedLocalizer["Sent"]</span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        <div class="child-status">
+                                                            @if (item.StatusByProfilePicture != null)
+                                                            {
+                                                                <img src="/images/Users/@item.StatusByProfilePicture" class="img-circle user-img" alt="">
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="/images/default-user.png" class="img-circle user-img" alt="">
+                                                            }
+                                                            <div class="rejected">
+                                                                <p>@item.StatusByName</p>
+                                                                <span class="rejected"> <i class="fas fa-times"></i> @SharedLocalizer["Rejected"]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span class="status-label"> <i class="fas fa-times"></i> @SharedLocalizer["Rejected"] </span>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="request-actions" data-label_table='@SharedLocalizer["Actions"]'>
+                                    @if (item.Status == ApplicationEnums.RequestStatusEnum.Pending)
+                                    {
+                                        @if (item.RequestedById == userId)
+                                        {
+                                            <button class="request-actions-info" onclick="requestkReminder(@item.Id)">
+                                                <i class="far fa-bell"></i>
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button class="request-actions-info btn-confirm-delete" title="@SharedLocalizer["Delete"]" data-itemid="@item.Id" data-source="pendingOnTeam" data-request-source="@item.Source">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
+                                    @if (item.Source == ApplicationEnums.PendingRequestSourceEnum.GeneralRequest)
+                                    {
+                                        <button class="request-actions-info" onclick="getDatails(@item.Id)">
+                                            <i class="fas fa-info-circle"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

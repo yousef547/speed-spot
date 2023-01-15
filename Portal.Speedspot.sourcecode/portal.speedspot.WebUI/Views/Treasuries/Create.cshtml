@@ -1,0 +1,114 @@
+﻿
+@model TreasuryViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Create"].Value + " " + SharedLocalizer["Treasury"].Value;
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+    ViewData["Level2Section"] = SharedLocalizer["Treasuries"];
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Create"].Value + " " + SharedLocalizer["Treasury"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm()">
+        <i class="fas fa-plus"></i> @SharedLocalizer["Add"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form id="treasuryForm" asp-action="Create">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label asp-for="DepartmentId" class="control-label label-sales-information"></label>*
+                <select asp-for="DepartmentId"
+                        class="form-control inp-height"
+                        data-live-search="true"
+                        onchange="departmentChanged()"
+                        asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+                <span asp-validation-for="DepartmentId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-2 d-flex align-items-start mt-5">
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" type="radio" id="rbBankAccount" asp-for="Type" value="0" onchange="typeChanged()" checked>
+                <label for="rbBankAccount" class="custom-control-label cursor-pointer">@SharedLocalizer["BankAccount"]</label>
+            </div>
+        </div>
+        <div class="col-12 col-lg-2 d-flex align-items-start mt-5">
+            <div class="custom-control custom-radio">
+                <input class="custom-control-input" type="radio" id="rbCash" asp-for="Type" value="1" onchange="typeChanged()">
+                <label for="rbCash" class="custom-control-label cursor-pointer">@SharedLocalizer["Cash"]</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-4 type-bank">
+            <div class="form-group">
+                <label asp-for="BankId" class="control-label label-sales-information"></label>*
+                <select class="form-control inp-height"
+                        asp-for="BankId"
+                        data-live-search="true"
+                        asp-items="@(new SelectList(ViewData["BankId"] as IList<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                    <option value="">@SharedLocalizer["Select"]</option>
+                </select>
+                <span asp-validation-for="BankId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4 type-cash d-none">
+            <div class="form-group">
+                <label asp-for="Name" class="control-label label-sales-information"></label>*
+                <input asp-for="Name" class="form-control inp-height" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label asp-for="CurrencyId" class="control-label label-sales-information"></label>*
+                <select asp-for="CurrencyId"
+                        class="form-control inp-height"
+                        data-live-search="true"
+                        asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", "Symbol"))">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+                <span asp-validation-for="CurrencyId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4 type-bank d-none">
+            <div class="form-group">
+                <label asp-for="AccountNo" class="control-label label-sales-information"></label>*
+                <input asp-for="AccountNo" class="form-control inp-height" />
+                <span asp-validation-for="AccountNo" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label asp-for="OpeningBalance" class="control-label label-sales-information">@SharedLocalizer["OpeningBalance"]</label>*
+                <input asp-for="OpeningBalance" class="form-control inp-height" />
+                <span asp-validation-for="OpeningBalance" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/js/treasuries.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        typeChanged();
+    })
+    </script>
+}

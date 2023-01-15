@@ -1,0 +1,148 @@
+﻿@model RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_AccountLayout";
+    var returnUrl = @Context.Request.Query["returnurl"];
+}
+
+<div class="register-box">
+    <div class="register-logo">
+        <a class="show-loader" asp-controller="Home" asp-action="Index">
+             <img src="~/lib/adminlte/dist/img/Logo.svg" />
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body register-card-body">
+            <p class="login-box-msg">@SharedLocalizer["RegisterMessage"]</p>
+
+            <form enctype="multipart/form-data" method="post" asp-action="Register" asp-route-returnurl="@returnUrl" id="form">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input asp-for="ProfileImage" class="custom-file-input" id="customFile">
+                        <label class="custom-file-label" for="customFile">@SharedLocalizer["ChooseFile"]</label>
+                    </div>
+                    <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="FirstName" class="form-control" placeholder="@SharedLocalizer["FirstName"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-file-signature"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="LastName" class="form-control" placeholder="@SharedLocalizer["LastName"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-file-signature"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="Email" class="form-control" placeholder="@SharedLocalizer["Email"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-envelope"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="@SharedLocalizer["PhoneNumber"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" placeholder="@SharedLocalizer["Password"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group">
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="@SharedLocalizer["ConfirmPassword"]">
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="row justify-content-center">
+                    @*<div class="col-8">
+                            <div class="icheck-primary">
+                                <input type="checkbox" id="agreeTerms" name="terms" value="agree">
+                                <label for="agreeTerms">
+                                    I agree to the <a href="#">terms</a>
+                                </label>
+                            </div>
+                        </div>*@
+                    <!-- /.col -->
+                    <div class="col-4">
+                        <input type="button" class="btn btn-primary btn-block btn-flat show-loader" value="@SharedLocalizer["Register"]" />
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </form>
+
+            <div class="social-auth-links">
+                @*<p>- OR -</p>
+                    <a href="#" class="btn btn-block btn-primary">
+                        <i class="fab fa-facebook mr-2"></i>
+                        Sign up using Facebook
+                    </a>
+                    <a href="#" class="btn btn-block btn-danger">
+                        <i class="fab fa-google-plus mr-2"></i>
+                        Sign up using Google+
+                    </a>*@
+            </div>
+            <p class="forget-pass">
+                <a class="" asp-action="Login" class="text-center show-loader" asp-route-returnurl="@returnUrl">@SharedLocalizer["HaveMembership"]</a>
+            </p>
+         </div>
+        <!-- /.form-box -->
+    </div><!-- /.card -->
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        // Add the following code if you want the name of the file appear on select
+        $(".custom-file-input").on("change", function () {
+            var fileName = $(this).val().split("\\").pop();
+            $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+        });
+    </script>
+}  

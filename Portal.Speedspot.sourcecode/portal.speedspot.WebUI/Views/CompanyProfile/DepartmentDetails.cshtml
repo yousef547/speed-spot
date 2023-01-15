@@ -1,0 +1,254 @@
+﻿@model DepartmentViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["CompanyProfile"];
+    ViewData["Level1Url"] = Url.Action("Index", "CompanyProfile");
+    ViewData["Level2Section"] = SharedLocalizer["DepartmentDetails"];
+    ViewData["PartnerLogo"] = "/images/Departments/" + (Model.Image != null ? Model.Image : "instagram.png");
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+
+        <li class="nav-item">
+            <a class="nav-link @(@ViewBag.isActive == true ? "" :"active" )" id="Scope-tab" data-toggle="tab" href="#Scope" role="tab" aria-controls="Scope" aria-selected="true">@SharedLocalizer["Scope"]</a>
+        </li>
+
+        <li class="nav-item ">
+            <a class="nav-link " id="Agencies-tab" data-toggle="tab" href="#Agencies" role="tab" aria-controls="Agencies" aria-selected="false">@SharedLocalizer["Agencies"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(@ViewBag.isActive == true ? "active" :"" )" id="LegalDocument-tab" data-toggle="tab" href="#LegalDocument" role="tab" aria-controls="LegalDocument" aria-selected="false">@SharedLocalizer["LegalDocument"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link " id="Banks-tab" data-toggle="tab" href="#Banks" role="tab" aria-controls="Banks" aria-selected="false">@SharedLocalizer["Banks"]</a>
+        </li>
+    </ul>
+}
+<input type="hidden" value="@Model.Id"id="departmentId"/>
+
+<div class="container-fluid py-3">
+    <div class="tab-content">
+
+        <div class="tab-pane fade @(@ViewBag.isActive == true ? "" :"show active" ) " id="Scope" role="tabpanel" aria-labelledby="Scope-tab">
+
+        </div>
+        <div class="tab-pane fade" id="Agencies" role="tabpanel" aria-labelledby="Agencies-tab">
+            Agencies
+        </div>
+        <div class="tab-pane fade @(@ViewBag.isActive == true ? "show active" :"" ) " id="LegalDocument" role="tabpanel" aria-labelledby="LegalDocument-tab">
+            <div id="table-document" class="">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-xl-6 my-2">
+                        <h3>@SharedLocalizer["Documents"]</h3>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-xl-6 my-2 second-header-button-and-start flex-grow-1">
+
+                        <ul class="export-table-data">
+                            <li>
+                                <a class="parent"> <i class="fas fa-download"></i>Export</a>
+                                <ul class="child-exp">
+                                    <li class="pdf-text">Export as<span>PDF</span></li>
+                                    <li class="excel-text">Export as <span>XLS</span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <button type="button" class="btn btn-search-top-header" onclick="showSectionEdit()">
+                            <i class="far fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-search-top-header" onclick="favourite(@Model.Id)">
+                            <i id="favouriteIcon_@Model.Id" class="fa@(Model.IsFavourite ?"s":"r") fa-star"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+                <div id="departmentDocuments">
+                    @await Html.PartialAsync("_ShowDepartmentDocumentasPartial", Model.DepartmentDocumentVMs)
+                </div>
+            </div>
+            <div class="d-none" id="table-document-inputs">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-xl-6 my-2">
+                        <h3>@SharedLocalizer["Documents"]</h3>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-6 col-xl-6 my-2 second-header-button-and-start flex-grow-1">
+                        <a class="light-blue font-weight-bold" onclick="addDocument()">+@SharedLocalizer["AddDocument"]</a>
+                    </div>
+                </div>
+                <div id="addNewDocument">
+                    @await Html.PartialAsync("_AddNewDocumentPartial", Model.DepartmentDocumentVMs)
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="Banks" role="tabpanel" aria-labelledby="Banks-tab">
+            <input type="hidden" asp-for="Id" />
+            <div class="details-bank">
+                <div class="row mt-4" id="bankviewmode">
+                    <div class="header">
+                        <div class="details-content">
+                            <p class="name-beneficiary">@SharedLocalizer["BeneficiaryName"]</p>
+                            <p class="name-customer" id="BeneficiaryNameView">
+                                @Model.BeneficiaryName
+                            </p>
+                        </div>
+
+                        <div class="details-content">
+                            <p class="name-beneficiary">@SharedLocalizer["BeneficiaryAddress"]</p>
+                            <p class="name-customer" id="BeneficiaryAddressView">
+                                @Model.BeneficiaryAddress
+                            </p>
+                        </div>
+                    </div>
+
+                    <button class="edit-bank-details" type="button" onclick="editBeneficiaryDetails()">
+                        <i class="far fa-edit"></i>
+                    </button>
+                </div>
+
+                <div class="row d-none mt-4" id="bankeditmode">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="BeneficiaryName">@SharedLocalizer["BeneficiaryName"]</label>
+                            <input class="form-control inp-height"
+                                   type="text"
+                                   id="BeneficiaryName"
+                                   name="BeneficiaryName"
+                                   value=" @Model.BeneficiaryName">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="BeneficiaryAddress">@SharedLocalizer["BeneficiaryAddress"]</label>
+                            <input class="form-control inp-height"
+                                   type="text"
+                                   id="BeneficiaryAddress"
+                                   name="BeneficiaryAddress"
+                                   value="@Model.BeneficiaryAddress">
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="actions-edit-bank-details">
+                            <button class="btn cancel" type="button" onclick="cancelBeneficiaryDetails()">@SharedLocalizer["Cancel"]</button>
+                            <button class="btn add" type="button" onclick="saveBeneficiaryDetails()">@SharedLocalizer["Save"]</button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mt-3 mx-3">
+                    <div class="col-12 mt-3">
+                        <div class="add-bank">
+                            <button onclick="showAddBankform()" id="btnAddBank">
+                                <i class="fa fa-plus"></i>@SharedLocalizer["AddBank"]
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="hidden-table-bank">
+                            <input type="hidden" id="departmentBankId" />
+                            <div class="card p-4">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label" for="BankId">@SharedLocalizer["BankId"] </label>
+                                            <select class="form-control inp-height"
+                                                    type="text"
+                                                    id="BankId"
+                                                    name="BankId"
+                                                    asp-items="@(new SelectList(ViewBag.BankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))"
+                                                    onchange="bankChanged()">
+                                                <option value="">@SharedLocalizer["Select"]</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-9" id="bankBranches">
+                                        @await Html.PartialAsync("_BankBranchesPartial")
+                                    </div>
+                                </div>
+
+                                @* Row Currency *@
+
+                                <div id="bankcurrencies">
+                                    @await Html.PartialAsync("_CurrenciesPartial", new List<DepartmentBankCurrencyViewModel>())
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 mt-3">
+                                        <div class="add-Currency">
+                                            <button onclick="addCurrency()">
+                                                <i class="fa fa-plus"></i>@SharedLocalizer["AddCurrency"]
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="actions-bank-details">
+                                        <button type="button" class="btn cancel" onclick="cancelAddBankForm()">@SharedLocalizer["Cancel"]</button>
+                                        <button id="btnAdd" type="button" class="add" onclick="addDepartmentBank()"><i class="fas fa-plus"></i>@SharedLocalizer["Add"]</button>
+                                        <button id="btnUpdate" type="button" class="update d-none" onclick="updateDepartmentBank()"><i class="far fa-edit"></i>@SharedLocalizer["Update"]</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4 mx-2">
+                    <div class="col-12">
+                        <div class="card" id="DepartmentBanks">
+                            @await Html.PartialAsync("_BanksPartial", Model.DepartmentBankVMs)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/companyprofile.js"></script>
+    <script>
+       $(document).ready(function () {
+           $("[rel=tooltip]").tooltip({ placement: '@(SharedLocalizer.IsRightToLeft()? "left" : "right")' });
+
+           var buttonOptions = [
+               {
+                   extend: 'excel',
+                   exportOptions: {
+                       columns: [0, 1, 2, 3, 4, 5]
+                   }
+               },
+               {
+                   extend: 'print',
+                   orientation: 'landscape',
+                   exportOptions: {
+                       columns: [0, 1, 2, 3, 4, 5]
+                   },
+               }
+           ];
+
+           var dataTable =handleDataTable({
+               selector: "#table_decument",
+               buttons: buttonOptions
+           });
+
+           $('.pdf-text').on('click', function () {
+               dataTable.api().button('.buttons-print').trigger('click');
+               $(this).parent().toggleClass("open");
+           });
+
+           $('.excel-text').on('click', function () {
+               dataTable.api().button('.buttons-excel').trigger('click');
+               $(this).parent().toggleClass("open");
+           });
+       })
+    </script>
+
+}
+

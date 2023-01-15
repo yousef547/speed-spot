@@ -1,0 +1,50 @@
+﻿@model SupplierViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Create"].Value + " " + SharedLocalizer["Supplier"].Value;
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+    ViewData["Level2Section"] = SharedLocalizer["Suppliers"];
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Create"].Value + " " + SharedLocalizer["Supplier"].Value;
+}
+@section HeaderActions{
+<button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm('Add')">
+    <i class="fas fa-check"></i> @SharedLocalizer["Add"]
+</button>
+<button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm('Save')">
+    <i class="fas fa-check"></i> @SharedLocalizer["Save"]
+</button>
+
+<a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+    <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+</a>
+}
+
+<form enctype="multipart/form-data" method="post" asp-action="Create" class="d-inline" id="supplierForm">
+    <div class="partial-edit mx-4">
+        <div class="card-body">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input name="actionType" id="actionType" value="Add" type="hidden" />
+
+            @await Html.PartialAsync("_SupplierDataPartial", Model)
+        </div>
+    </div>
+</form>
+
+@await Html.PartialAsync("_MapsModalPartial")
+
+@section Scripts{
+    <script src="~/js/maps.js"></script>
+    <script src="~/js/suppliers.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            checkIsSubCompany();
+            checkIsAgency();
+            initView();
+            initDropDownCountry(".parent-list-country");
+            $("#AddressVM.CountryId,#CompetitorId,#DepartmentId,#ClassificationId,#OrganizationTypeId,#ActivityTypeId,#addressCountry")
+                .selectpicker();
+        })
+    </script>
+}

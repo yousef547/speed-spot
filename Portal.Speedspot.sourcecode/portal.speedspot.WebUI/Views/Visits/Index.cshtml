@@ -1,0 +1,128 @@
+﻿
+@model List<VisitViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Visits"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+}
+
+@section HeaderActions{
+    <ul class="export-table-data">
+        <li>
+            <a class="parent"> <i class="fas fa-download"></i>@SharedLocalizer["Export"]</a>
+            <ul class="child-exp">
+                <li class="pdf-text">@SharedLocalizer["ExportAs"]<span>PDF</span></li>
+                <li class="excel-text">@SharedLocalizer["ExportAs"] <span>XLS</span></li>
+            </ul>
+        </li>
+    </ul>
+    <div class="second-header-button-and-start">
+        <a asp-action="Create" class="btn btn-add-primary visits show-loader"
+           title="@SharedLocalizer["Create"] @SharedLocalizer["Visit"]">
+            <i class="fas fa-plus"></i>
+        </a>
+        <div class="vertical-split"></div>
+
+        <button type="button" class="btn btn-search-top-header visits" onclick="favourite('')" title="@SharedLocalizer["Favourite"]">
+            <i id="favouriteIcon_" class="far fa-star"></i>
+        </button>
+
+        <a href="#" class="btn btn-action visits" title="@SharedLocalizer["Print"]">
+            <i class="fas fa-print"></i>
+        </a>
+    </div>
+}
+
+@*Start Filter Popup*@
+
+<div class="justify-content-center filter-popup">
+    <div class="box-filter scroll-Custom">
+        <div class="content ">
+            <div class="row">
+                <div class="col-12">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">@SharedLocalizer["Departments"]</label>
+                            <select class="form-control selectpicker select-multiple" id="departmentFilter" data-live-search="true" multiple>
+                                @foreach (var department in ViewData["Departments"] as List<Department>)
+                                {
+                                    <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">@SharedLocalizer["DateFrom"]</label>
+                            <input id="dueDateFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">@SharedLocalizer["DateTo"]</label>
+                            <input id="dueDateTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*End Filter Popup*@
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-9">
+        <div class="input-group mb-3 justify-content-start">
+            <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchVisits"]">
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="show-filter-choose">
+            <div class="date-filter d-none"><span class="date-start"></span> - <span class="date-end"></span><i class="fas fa-times"></i></div>
+            <div class="departments-filter d-none"><span class="one-line"></span><i class="fas fa-times"></i></div>
+            <div class="result-filter d-none"><span></span>&nbsp; @SharedLocalizer["Results"]</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card mx-3">
+            <div class="card-body p-0" id="getVisits">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@await Html.PartialAsync("_VisitDetailsModalPartial")
+
+@section Scripts{
+    <script src="~/js/visits.js"></script>
+    <script>
+        $("#departmentFilter").selectpicker();
+        $(document).ready(function () {
+            getVisits();
+        })
+    </script>
+}

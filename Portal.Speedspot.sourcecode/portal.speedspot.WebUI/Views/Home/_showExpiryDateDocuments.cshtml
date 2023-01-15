@@ -1,0 +1,13 @@
+﻿@model List<DepartmentDocumentViewModel>
+@inject ArabicLanguageHelper ArLangHelper
+
+@foreach (var item in Model)
+{
+    <div>
+        <span><i class="fas fa-exclamation-circle text-danger"></i> <a asp-controller="CompanyProfile" asp-action="DepartmentDetails" asp-route-isActive="true" target="_blank" asp-route-id="@item.DepartmentId" class="light-blue-2 ">@item.Title</a>  </span>
+        <span class="text-danger">
+            @SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ?
+                                        ArLangHelper.GetDayStringByNumber(item.DaysRemaining.Value) : item.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)
+        </span>
+    </div>
+}

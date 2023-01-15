@@ -1,0 +1,81 @@
+﻿
+@model BookTenderRequestViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Opportunities"];
+    ViewData["Level1Section"] = SharedLocalizer["PrintBookTenderRequest"];
+}
+
+<style type="text/css" media="print">
+    @@page {
+        size: auto; /* auto is the initial value */
+        margin: 0mm; /* this affects the margin in the printer settings */
+    }
+</style>
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="printBidbond();">
+        @SharedLocalizer["Print"]
+    </button>
+}
+
+<div class="header-print-pdf">
+    <img src="/images/umsco01.png" />
+    <div class="qrcode" id="qrcode"></div>
+</div>
+<div class="print-table">
+    <div class="head-print-table">
+            <h3>@SharedLocalizer["BookTenderRequest"]</h3>
+    </div>
+    <div class="content-body-table">
+        <div class="item-box">
+            <p>@SharedLocalizer["CustomerName"]</p>
+            <span>@(SharedLocalizer.IsRightToLeft() ? Model.CustomerNameAr : Model.CustomerName)</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["Address"]</p>
+            <span>@(Model.Address)</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["Tender"]</p>
+            <span>@(Model.TenderDescription)</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["AssignedToId"]</p>
+            <span>@Model.BookTenderVM.AssignedToName</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["BookTenderFees"]</p>
+            <span>@Model.BookTenderVM.Fees</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["VAT"]</p>
+            <span>@Model.BookTenderVM.VAT %</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["Total"]</p>
+            <span>@Model.BookTenderVM.TotalFees</span>
+        </div>
+        <div class="item-box">
+            <p>@SharedLocalizer["Date"]</p>
+            <span>@DateTime.Now.ToString("dd/MM/yyyy")</span>
+        </div>
+        </div>
+    </div>
+
+@section Scripts{
+    <script src="~/js/opportunities.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var qrcode = new QRCode("qrcode");
+            qrcode.makeCode(window.location.href);
+
+            $("#ready-spinner").fadeOut(function () {
+                printBookTender();
+
+                //$(this).remove(); // Optional if it's going to only be used once.
+            });
+        })
+    </script>
+}

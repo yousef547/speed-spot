@@ -1,0 +1,8 @@
+﻿@{
+    Layout = "_Layout";
+
+    var opportunityTypes = (await OpportunityTypesBiz.GetAllUnarchivedAsync()).ToList();
+    List<string> opportunityTypeSettings = new List<string>();
+    Configuration.GetSection("AppSettings:AllowedOpportunityTypes").Bind(opportunityTypeSettings);
+    ViewData["OpportunityTypes"] = opportunityTypes.Where(t => opportunityTypeSettings.Contains(t.EnumValue.ToString())).ToList();
+}

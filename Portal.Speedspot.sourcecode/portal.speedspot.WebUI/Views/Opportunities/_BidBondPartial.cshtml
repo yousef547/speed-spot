@@ -1,0 +1,384 @@
+﻿
+@model OpportunityViewModel
+
+@if (Model.BidBondVM == null)
+{
+    Model.BidBondVM = new BidBondViewModel();
+}
+
+@{
+    bool canSend = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.SendBidBond)).Succeeded;
+    bool canApprove = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ApproveBidBond)).Succeeded;
+    bool canPrint = (await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.PrintBidBond)).Succeeded;
+    bool disableFields = Model.BidBondVM.IsApproved || Model.BidBondVM.IsRejected;
+}
+
+<div class="col-12 col-lg-8" id="bidBondBlock">
+    <h5><strong>@SharedLocalizer["BidBond"]:</strong></h5>
+
+    <input asp-for="BidBondVM.Id" type="hidden" />
+    <input asp-for="BidBondVM.OpportunityId" type="hidden" />
+
+    @if (Model.BidBondVM.RequestVM != null)
+    {
+        <input asp-for="BidBondVM.RequestVM.Id" type="hidden" />
+        <input asp-for="BidBondVM.RequestVM.RequestedById" type="hidden" />
+        <input asp-for="BidBondVM.RequestVM.RequestedDate" type="hidden" value="@Model.BidBondVM.RequestVM.RequestedDate.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+
+        <input asp-for="BidBondVM.RequestVM.Status" type="hidden" />
+        if (Model.BidBondVM.RequestVM.Status != ApplicationEnums.RequestStatusEnum.Pending)
+        {
+            <input asp-for="BidBondVM.RequestVM.StatusById" type="hidden" />
+            <input asp-for="BidBondVM.RequestVM.StatusDate" type="hidden" value="@Model.BidBondVM.RequestVM.StatusDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+
+        <input asp-for="BidBondVM.RequestVM.IsSent" type="hidden" />
+        if (Model.BidBondVM.RequestVM.IsSent)
+        {
+            <input asp-for="BidBondVM.RequestVM.SentById" type="hidden" />
+            <input asp-for="BidBondVM.RequestVM.SentDate" type="hidden" value="@Model.BidBondVM.RequestVM.SentDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+
+        <input asp-for="BidBondVM.RequestVM.IsPrinted" type="hidden" />
+        if (Model.BidBondVM.RequestVM.IsPrinted)
+        {
+            <input asp-for="BidBondVM.RequestVM.PrintedById" type="hidden" />
+            <input asp-for="BidBondVM.RequestVM.PrintedDate" type="hidden" value="@Model.BidBondVM.RequestVM.PrintedDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+        }
+    }
+
+    <input asp-for="BidBondVM.IsRequested" type="hidden" />
+    <input asp-for="BidBondVM.IsSent" type="hidden" />
+    <input asp-for="BidBondVM.IsApproved" type="hidden" />
+    <input asp-for="BidBondVM.IsRejected" type="hidden" />
+    <input asp-for="BidBondVM.IsPrinted" type="hidden" />
+
+    <div class="card Opportunities-sections-details">
+        <div class="card-body">
+            <div class="row position-relative">
+                <div class="position-absolute w-100 h-100 bg-white overlay-block disableBidBond @(!disableFields ? "d-none" : "")">
+
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="BidBondVM.Amount" class="control-label label-sales-information"></label>
+                        <input asp-for="BidBondVM.Amount" class="form-control inp-height" onchange="calculateHoldAmount()" />
+                        <span asp-validation-for="BidBondVM.Amount" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group ">
+                        <label asp-for="BidBondVM.AssignedToId" class="control-label label-sales-information"></label>
+                        <select asp-for="BidBondVM.AssignedToId" data-size="5" data-live-search="true" class="form-control inp-height" asp-items="@(new SelectList(ViewBag.AssignedToId as List<UserViewModel>, "Id", "Name"))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.BidBondVM.IsRequested && canSend)
+            {
+                @* (Requested & Can Send) *@
+                <div class="row mb-3 position-relative">
+                    <div class="position-absolute w-100 h-100 bg-white overlay-block disableBidBond @(!disableFields ? "d-none" : "")">
+
+                    </div>
+
+                    <div class="col-12 col-lg-4 d-table">
+                        <div class="custom-control custom-switch d-table-cell align-middle">
+                            <input class="custom-control-input" asp-for="BidBondVM.CashType" onchange="showHideSections()">
+                            <label asp-for="BidBondVM.CashType" class="custom-control-label label-sales-information"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 bidbondon">
+                        <div class="d-table h-100">
+                            <div class="custom-control custom-switch d-table-cell align-middle">
+                                <input class="custom-control-input" asp-for="BidBondVM.BidBondOn_IsCredit" onchange="getBankDetails()">
+                                <label asp-for="BidBondVM.BidBondOn_IsCredit" class="custom-control-label label-sales-information"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 bidbondon">
+                        <select asp-for="BidBondVM.BidBondOn_NoOfPeriods"
+                                class="form-control inp-height"
+                                asp-items="@(new SelectList(ViewBag.Periods as List<Period>, "Value", "Text"))"
+                                onchange="calculateExpiryDate()"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 bidbondon position-relative">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disableBidBond @(!disableFields ? "d-none" : "")">
+
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="BidBondVM.BidBondOn_BankId" class="control-label label-sales-information"></label>
+                            <select asp-for="BidBondVM.BidBondOn_BankId"
+                                    class="form-control inp-height"
+                                    asp-items="@(new SelectList(ViewBag.BankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))"
+                                    onchange="getBankDetails()">
+                                <option value="" selected>@SharedLocalizer["Select"]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    @if (Model.BidBondVM.IsPrinted)
+                    {
+                        @* (Printed) *@
+                        <div class="col-12 col-lg-6 bidbondff">
+                            <div class="form-group label-sales-information">
+                                <label asp-for="BidBondVM.BidBondOff_ReceiptNo" class="control-label"></label>
+                                <input asp-for="BidBondVM.BidBondOff_ReceiptNo" class="form-control inp-height" />
+                            </div>
+                        </div>
+                    }
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewBidBondTotals)).Succeeded)
+                    {
+                        <div class="col-12 col-lg-6 bidbondon">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="label-sales-information">@SharedLocalizer["Percentage"]</label>
+                                    <br />
+                                    <input asp-for="BidBondVM.BidBondOn_Percentage" type="hidden" />
+                                    <p id="lbl_BidBondOn_Percentage">@Model.BidBondVM.BidBondOn_Percentage</p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="label-sales-information">@SharedLocalizer["HoldAmount"]</label>
+                                    <br />
+                                    <input asp-for="BidBondVM.BidBondOn_HoldAmount" type="hidden" />
+                                    <p id="lblBidBondOn_HoldAmount">@Model.BidBondVM.BidBondOn_HoldAmount</p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="label-sales-information">@SharedLocalizer["BankFees"]</label>
+                                    <br />
+                                    <input asp-for="BidBondVM.BidBondOn_Fees" type="hidden" />
+                                    <p id="lblBidBondOn_Fees">@Model.BidBondVM.BidBondOn_Fees</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 bidbondon position-relative">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disableBidBond @(!disableFields ? "d-none" : "")">
+
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="BidBondVM.BidBondOn_BankBranch" class="control-label label-sales-information"></label>
+                            <input asp-for="BidBondVM.BidBondOn_BankBranch" class="form-control inp-height" />
+                        </div>
+                    </div>
+
+                    @if (Model.BidBondVM.IsPrinted)
+                    {
+                        @* (Printed) *@
+                        <div class="col-12 col-lg-6 bidbondon">
+                            <div class="form-group">
+                                <label asp-for="BidBondVM.BidBondOn_BidBondNo" class="control-label label-sales-information"></label>
+                                <input asp-for="BidBondVM.BidBondOn_BidBondNo" class="form-control inp-height" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.BidBondVM.IsPrinted)
+                {
+                    @* (Printed) *@
+                    <div class="row">
+                        <div class="col-12 col-lg-6 bidbondon">
+                            <div class="form-group">
+                                <label asp-for="BidBondVM.BidBondOn_IssueDate" class="control-label label-sales-information"></label>
+                                <input asp-for="BidBondVM.BidBondOn_IssueDate" class="form-control inp-height" onchange="calculateExpiryDate()" />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 bidbondff">
+                            <div class="form-group">
+                                <label asp-for="BidBondVM.BidBondOff_PaymentDate" class="control-label label-sales-information"></label>
+                                <input asp-for="BidBondVM.BidBondOff_PaymentDate" class="form-control inp-height" />
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-lg-6 bidbondon">
+                            <div class="form-group">
+                                <label asp-for="BidBondVM.BidBondOn_ExpiryDate" class="control-label label-sales-information"></label>
+                                <input asp-for="BidBondVM.BidBondOn_ExpiryDate" class="form-control inp-height" readonly />
+                                @*<input asp-for="BidBondVM.BidBondOn_ExpiryDate" class="form-control" hidden />*@
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label asp-for="BidBondVM.Description" class="control-label label-sales-information"></label>
+                            <textarea asp-for="BidBondVM.Description" class="form-control" rows="4"></textarea>
+                        </div>
+                    </div>
+
+                    @if (Model.BidBondVM.IsPrinted)
+                    {
+                        @* (Printed) *@
+                        <div class="col-12 col-lg-6">
+                            <div class="form-group">
+                                <label class="control-label label-sales-information" asp-for="BidBondVM.BidBondFile">@SharedLocalizer["BidBondFile"]</label>
+
+
+                                <div class="custom-label-upload">
+                                    <label class="" asp-for="BidBondVM.BidBondFile" for="BidBondFile">
+                                        <span class="upload-file-icons">
+                                            <i class="fas fa-file-upload"></i>
+                                        </span>
+                                    </label>
+                                    @if (Model.BidBondVM.BidBondAttachmentId != null)
+                                    {
+                                        <a class="one-line" href="/images/Opportunities/@Model.BidBondVM.BidBondAttachmentPath" title="@Model.BidBondVM.BidBondAttachmentTitle" target="_blank">@Model.BidBondVM.BidBondAttachmentTitle</a>
+                                    }
+                                    else
+                                    {
+                                        <label class="file-name one-line" asp-for="BidBondVM.BidBondFile" for="BidBondFile">
+                                            @SharedLocalizer["Upload"]
+                                        </label>
+                                    }
+                                    <input id="BidBondFile" asp-for="BidBondVM.BidBondFile" class="custom-file-input d-none">
+                                </div>
+                                @if (Model.BidBondVM.BidBondAttachmentId != null)
+                                {
+                                    <input asp-for="BidBondVM.BidBondAttachmentId" type="hidden" />
+                                }
+                                <span asp-validation-for="BidBondVM.BidBondFile" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (!Model.BidBondVM.IsRequested)
+            {
+                @* Request Bidbond (Not Requested) *@
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <button type="button" class="btn btn-request" onclick="requestBidBond(this)">
+                        @SharedLocalizer["Request"]
+                    </button>
+                    <div class="d-none" id="bidbondPendingFinancialMSG">
+                        <i class="fas fa-history"></i>
+                        @SharedLocalizer["PendingSaveMSG"]
+                    </div>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsRequested && !Model.BidBondVM.IsSent && !canSend)
+            {
+                @* (Requested & Cannot Send) *@
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <i class="fas fa-history"></i>
+                    <p class="PendingFinancialMSG">@SharedLocalizer["PendingFinancialMSG"]</p>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsRequested && !Model.BidBondVM.IsSent && canSend)
+            {
+                @* Send Bidbond (Requested & Not Sent & Can Send) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-send" onclick="sendBidBond(this)">
+                        @SharedLocalizer["Send"]
+                    </button>
+                    <div class="d-none" id="bidbondPendingManagerMSG">
+                        <i class="fas fa-history"></i>
+                        <span class="font-size-action">
+                            @SharedLocalizer["PendingSaveMSG"]
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsSent && !(Model.BidBondVM.IsApproved || Model.BidBondVM.IsRejected) && !canApprove)
+            {
+                @* (Sent & Not Approved & Cannot Approve) *@
+                <div class="row justify-content-end mx-1">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingManagerMSG"]
+                    </span>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsSent && !(Model.BidBondVM.IsApproved || Model.BidBondVM.IsRejected) && canApprove)
+            {
+                @* Approve / Reject Bidbond (Sent & Not Approved & Can Approve or Reject) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-approve mx-1" id="btnBidbondApprove" onclick="approveBidBond()">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Approve"]
+                    </button>
+                    <div class="d-none mx-1 approvedBlock" id="approvedBidbondBlock">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelBidbondApproval()">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-reject" id="btnBidbondReject" onclick="rejectBidBond()">
+                        <i class="fas fa-times"></i>
+                        @SharedLocalizer["Reject"]
+                    </button>
+                    <div class="d-none rejectedBlock" id="rejectedBidbondBlock">
+                        <i class="fas fa-times"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelBidbondRejection()">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsApproved && !Model.BidBondVM.IsPrinted && canPrint)
+            {
+                @* Print Bidbond (Approved & Can Print) *@
+                <div class="row justify-content-end mx-1 ">
+                    <button type="button" class="btn btn-approve mx-1" id="btnBidbondPrint" onclick="printBidBondPage('@Model.BidBondVM.RequestVM.Id')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Print"]
+                    </button>
+                    <div class="d-none mx-1 printedBlock" id="printedBidbondBlock">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsRejected)
+            {
+                <div class="row justify-content-end">
+                    <div class="mx-1">
+                        <i class="fas fa-times"></i>
+                        <span class="font-size-action">@SharedLocalizer["RejectedBy"] @Model.BidBondVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.BidBondVM.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success mx-1">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["DoneBy"] @Model.BidBondVM.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["ApprovedBy"] @Model.BidBondVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+﻿@model CompanyDataViewModel
+
+@{
+    ViewData["Title"] = @SharedLocalizer["About"].Value + " " + (SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name);
+    ViewData["SubTitle"] = SharedLocalizer["EditCompanyInfo"].Value;
+    ViewData["Level1Section"] = SharedLocalizer["CompanyProfile"];
+    ViewData["Level2Section"] = @SharedLocalizer["About"].Value + " " + (SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name);
+    ViewData["Level2Url"] = Url.Action("Index");
+}
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="editCompanyForm">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" type="hidden" />
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="logo-company">
+                    @if (Model.ImagePath == null || Model.ImagePath == "")
+                    {
+                        <img class="img-fluid" id="img-src-upload" src="/images/01Umsco.png" />
+                    }
+                    else
+                    {
+                        <input type="hidden" asp-for="ImagePath" />
+                        <img class="navbar-umsco-img img-fluid" id="img-src-upload" src="/images/Company/@Model.ImagePath" />
+                    }
+                    <div class="contant-customer-logo">
+                        <p>@SharedLocalizer["CompanyLogoSizeNote"]</p>
+                        <div class="btns-customers-edit">
+                            <label for="upload-img-logo-edit-customer">
+                                <span>@SharedLocalizer["ChangeImage"]</span>
+                                <input asp-for="LogoFile" class="d-none" type="file" value="Upload Image" id="upload-img-logo-edit-customer" accept="image/x-png,image/gif,image/jpeg" />
+                            </label>
+                            <a href="#" class="search-logo-edit-customers">
+                                <span>@SharedLocalizer["SearchForImage"]</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Name"></label>
+                            <input class="form-control" asp-for="Name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="NameAr"></label>
+                            <input class="form-control" asp-for="NameAr" />
+                            <span asp-validation-for="NameAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Description"></label>
+                            <textarea class="form-control" asp-for="Description" rows="5"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="DescriptionAr"></label>
+                            <textarea class="form-control" asp-for="DescriptionAr" rows="5"></textarea>
+                            <span asp-validation-for="DescriptionAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Email"></label>
+                            <input class="form-control" asp-for="Email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Website"></label>
+                            <input class="form-control" asp-for="Website" />
+                            <span asp-validation-for="Website" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Mobile"></label>
+                            <input class="form-control" asp-for="Mobile" />
+                            <span asp-validation-for="Mobile" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Telephone"></label>
+                            <input class="form-control" asp-for="Telephone" />
+                            <span asp-validation-for="Telephone" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Fax"></label>
+                            <input class="form-control" asp-for="Fax" />
+                            <span asp-validation-for="Fax" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="DefaultOfferNotes"></label>
+                            <textarea class="form-control" asp-for="DefaultOfferNotes" rows="5"></textarea>
+                            <span asp-validation-for="DefaultOfferNotes" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="DefaultOfferNotesAr"></label>
+                            <textarea class="form-control" asp-for="DefaultOfferNotesAr" rows="5"></textarea>
+                            <span asp-validation-for="DefaultOfferNotesAr" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="DefaultOfferTechnicalNotes"></label>
+                            <textarea class="form-control" asp-for="DefaultOfferTechnicalNotes" rows="5"></textarea>
+                            <span asp-validation-for="DefaultOfferTechnicalNotes" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="DefaultOfferTechnicalNotesAr"></label>
+                            <textarea class="form-control" asp-for="DefaultOfferTechnicalNotesAr" rows="5"></textarea>
+                            <span asp-validation-for="DefaultOfferTechnicalNotesAr" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="Address"></label>
+                            <textarea class="form-control" asp-for="Address" rows="2"></textarea>
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-end company-actions">
+            <a asp-action="Index" asp-route-id="@Model.Id" class="btn-cancel mx-2 show-loader">
+                @SharedLocalizer["Cancel"]
+            </a>
+
+            <button type="button" class="btn-update mx-2" onclick="updateCompanyData()">
+                @SharedLocalizer["Update"]
+            </button>
+        </div>
+    </div>
+</form>
+
+
+@section Scripts{
+    <script>
+        var uploadImgLogoEditCustomer = document.querySelector("#upload-img-logo-edit-customer")
+        if (uploadImgLogoEditCustomer != null) {
+            uploadImgLogoEditCustomer.addEventListener('change', function (e) {
+                const [file] = uploadImgLogoEditCustomer.files
+                if (file) {
+                    var blah = document.querySelector('#img-src-upload');
+                    blah.src = URL.createObjectURL(file)
+                    blah.classList.add('uploaded-cust')
+                }
+            })
+        }
+
+        updateCompanyData = function () {
+            var isFormValid = $("#editCompanyForm").valid();
+            if (isFormValid) {
+                showLoader();
+                $("#editCompanyForm").submit();
+            }
+        }
+    </script>
+
+
+}

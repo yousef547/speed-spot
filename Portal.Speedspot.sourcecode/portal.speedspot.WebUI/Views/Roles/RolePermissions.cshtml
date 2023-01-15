@@ -1,0 +1,64 @@
+﻿
+@model PermissionViewModel
+
+@{
+    bool isRTL = SharedLocalizer.IsRightToLeft();
+    if (isRTL)
+    {
+        ViewData["Title"] = "صلاحيات " + Model.RoleNameAr;
+    }
+    else
+    {
+        ViewData["Title"] = Model.RoleName + " Permissions";
+    }
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global show-loader" value="@SharedLocalizer["Save"]" onclick="savePermissions()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Save"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+
+<form method="post" asp-action="UpdatePermissions" class="d-inline" id="permissionsForm">
+    <input asp-for="RoleId" type="hidden" />
+
+    <div class="form-global-inp mx-4">
+        <div class="">
+            <div class="list-group list-group-flush">
+                @for (int i = 0; i < Model.RolePermissionsVM.Count; i++)
+                {
+                    <div class="card list-group-item-roles">
+                        <h5 class="roles-permission-head">
+                            <input asp-for="RolePermissionsVM[i].Module" type="hidden" />
+                            @(SharedLocalizer[Model.RolePermissionsVM[i].Module])
+                        </h5>
+                        <div class="list-roles-permission">
+                            @for (int j = 0; j < Model.RolePermissionsVM[i].PermissionVMs.Count; j++)
+                            {
+                                <div class="inputs-label">
+                                    <input asp-for="RolePermissionsVM[i].PermissionVMs[j].Selected" class="form-check-input" />
+                                    <input asp-for="RolePermissionsVM[i].PermissionVMs[j].Type" type="hidden" />
+                                    <input asp-for="RolePermissionsVM[i].PermissionVMs[j].Value" type="hidden" />
+                                    <label asp-for="RolePermissionsVM[i].PermissionVMs[j].Selected" class="roles-permission-label">
+                                        @(SharedLocalizer[Model.RolePermissionsVM[i].PermissionVMs[j].Value.Split('.')[2]])
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/js/roles.js"></script>
+}

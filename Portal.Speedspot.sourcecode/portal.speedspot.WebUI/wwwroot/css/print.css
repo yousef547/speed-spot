@@ -1,0 +1,546 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+#pageCounter {
+    counter-reset: pageTotal;
+}
+
+    #pageCounter span {
+        counter-increment: pageTotal;
+    }
+
+#pageNumbers {
+    counter-reset: currentPage;
+}
+
+    #pageNumbers div:before {
+        counter-increment: currentPage;
+        content: counter(currentPage) "/";
+    }
+
+    #pageNumbers div:after {
+        content: counter(pageTotal);
+    }
+
+table, table tr, table tr td {
+    /*border: 1px solid;*/
+    vertical-align: middle;
+}
+
+.print-table {
+    margin: auto;
+    width: 100%;
+}
+
+    .print-table tr {
+        height: 60px;
+    }
+
+.header-print-pdf {
+    display: none
+}
+
+.page-header, .page-header-space {
+    display: none;
+    min-height: 245px;
+}
+
+.page-footer, .page-footer-space {
+    display: none;
+    min-height: 90px;
+    max-height: 237px;
+}
+
+.page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid black
+}
+
+.page-header {
+    position: fixed;
+    top: 0mm;
+    width: 100%;
+}
+
+.page {
+    page-break-after: always;
+}
+
+.mt-5p {
+    margin-top: 5px !important
+}
+
+/*Print Style */
+.paper-a4 .logo-qrcode-a4 .height-in-mail-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.paper-a4 .logo-qrcode-a4 .logo {
+    /*width: 200px;*/
+    height: 85px;
+}
+
+.paper-a4 .logo-qrcode-a4 .qrcode {
+    /*width: 100px;*/
+    height: 85px;
+}
+
+.paper-a4 .title-print-tables {
+    width: fit-content;
+    margin: 0 auto;
+    /*border: 2px solid #000;*/
+    padding: 5px;
+    font-family: monospace;
+    position: relative;
+    /*top: 5px;*/
+}
+
+    .paper-a4 .title-print-tables p {
+        margin: 0;
+        font-weight: 800;
+        font-size: 18px;
+    }
+
+.paper-a4 .tables-heade-all-print {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.tables-heade-all-print {
+    /*border: 1px solid #000;*/
+    border-bottom: 1px solid #000;
+    border-left: 1px solid #000;
+    border-top: 1px solid #000;
+    max-width: 210mm;
+    font-family: monospace;
+}
+
+.tables-print {
+    padding: 0 10px
+}
+
+.m-1 {
+    margin: 5px
+}
+
+.tables-heade-all-print .parent-tables {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tables-heade-all-print .title-tables-print {
+    display: flex;
+    /* padding: 5px 0 0 4px; */
+    flex: 1.5;
+}
+
+    .tables-heade-all-print .title-tables-print .titlle-head-data {
+        text-align: left;
+        flex: 2;
+    }
+
+    .tables-heade-all-print .title-tables-print .titles-head {
+        text-align: left;
+        flex: 1;
+        gap: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .tables-heade-all-print .title-tables-print .titles-head p {
+            font-size: 14px;
+            font-weight: 400;
+            font-family: cairo;
+        }
+
+    .tables-heade-all-print .title-tables-print .titlle-head-data p {
+        font-size: 14px;
+        font-weight: 800;
+        font-family: cairo;
+    }
+
+.tables-heade-all-print .title-tables-print-data {
+    /*border: 1px solid #000;*/
+    border-right: 0 solid transparent;
+    border-top: 0 solid transparent;
+    border-bottom: 0 solid transparent;
+    border-collapse: collapse;
+    flex: 2;
+}
+
+    .tables-heade-all-print .title-tables-print-data table,
+    .tables-heade-all-print .title-tables-print-data table tr,
+    .tables-heade-all-print .title-tables-print-data table td {
+        border: 1px solid #000;
+        border-collapse: collapse;
+        padding: 9.5px 0;
+        min-width: 85px;
+    }
+
+.one-line-print {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical;
+    border: 0;
+    font-family: -webkit-body;
+}
+
+.td-table-cover-height {
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tables-heade-all-print .title-tables-print-data table {
+    height: 100%;
+    text-align: center;
+    width: 100%;
+}
+
+.bold {
+    font-weight: bold
+}
+
+.table-content-print, .table-main {
+    width: 100%;
+}
+
+    .table-content-print,
+    .table-content-print tr,
+    .table-content-print td {
+        border: 1px solid #000;
+        border-collapse: collapse;
+        padding: 5px;
+        text-align: center;
+        margin: 10px 0;
+    }
+
+.text-left {
+    text-align: left !important
+}
+
+.paper-a4 .second-tables table {
+    width: 100%;
+}
+
+    /*    .paper-a4 .second-tables table tr,
+    .paper-a4 .second-tables table td,
+    .paper-a4 .second-tables table {
+        border: 2px solid #000;
+        border-collapse: collapse;
+    }
+*/
+    .paper-a4 .second-tables table td {
+        padding: 2px;
+    }
+
+.paper-a4 .second-tables table {
+    font-size: 12px;
+    color: #000;
+}
+
+p.BestRegards {
+    margin: 10px 25px;
+    font-size: 14px;
+    color: #686868;
+    font-weight: 600;
+}
+
+footer.footer-paper-a4 {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+    footer.footer-paper-a4 .manager p {
+        margin: 8px 0;
+        font-weight: 600;
+        font-size: 11px;
+        gap: 5px;
+    }
+
+    footer.footer-paper-a4 .content-footer p {
+        margin: 0 0;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+p.text-blue-print {
+    display: flex;
+    align-items: center;
+}
+
+
+.parent-tables p {
+    margin: 0 0 5px;
+}
+
+.titles-head p:last-of-type {
+    margin: 0;
+}
+
+.visible-hidden {
+    visibility: hidden;
+}
+
+.phoneTwo {
+    display: flex;
+    flex-direction: column;
+}
+
+.paper-a4-contacts .manager p {
+    flex-direction: row-reverse;
+    display: flex;
+    gap: 10px;
+}
+
+.title-print-tables-notes p {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: left;
+    margin: 0
+}
+
+.paper-layout {
+    max-width: 208mm;
+}
+
+.paper-a4-contacts {
+    display: flex;
+    justify-content: space-around;
+    direction: ltr;
+}
+
+    .paper-a4-contacts .manager {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+        .paper-a4-contacts .manager p {
+            margin: 0;
+        }
+
+.coverLetter {
+    font-size: 18px;
+    line-height: 2;
+}
+
+.qrcode img {
+    width: 80px;
+    position: relative;
+    top: 2px;
+}
+
+.tables-heade-all-print .title-tables-print-data table tr:last-of-type td {
+    /* padding: 5px 0; */
+    font-size: 11px;
+}
+
+
+.titles-head ul li {
+    display: flex;
+    align-items: center;
+    margin: 2px;
+    gap: 15px;
+    height: 32px;
+}
+
+    .titles-head ul li p:first-of-type {
+        width: 30%;
+    }
+
+    .titles-head ul li p:last-of-type {
+        width: 70%;
+    }
+
+.titles-head ul {
+    margin: 0;
+    padding: 0 5px;
+}
+
+.text-left {
+    text-align: left !important
+}
+
+.space-heading {
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.height-in-mail-header {
+    height: 100px;
+}
+
+.mr-top-space {
+    margin-top: 90px;
+}
+
+@media print {
+    @page {
+        max-width: 208mm;
+        margin: 5mm
+    }
+
+    body {
+        font-family: 'Mulish', sans-serif !important;
+    }
+
+    .page-header, .page-header-space {
+        display: block;
+    }
+
+    .page-footer, .page-footer-space {
+        display: block;
+    }
+
+    .content-wrapper, .wrapper.overflow-wrapper, .content {
+        background: #fff !important;
+    }
+
+    .container-fluid, .content-wrapper, .content {
+        margin-top: 0 !important
+    }
+
+    .print-table {
+        max-width: 800px !important
+    }
+
+    /*  .print-table th {
+            width: 250px !important;
+        }
+
+        .print-table td {
+            width: 150px !important;
+        }*/
+
+    .second-header, .main-footer, .open-sidebar-right-toggle, .sidebar-right-toggle {
+        display: none !important
+    }
+
+    .header-print-pdf {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+        .header-print-pdf .qrcode,
+        .header-print-pdf .logo {
+            height: 85px;
+        }
+
+            .header-print-pdf .qrcode img {
+                width: 100px;
+                height: 100px;
+            }
+
+    .print-table, .print-table tr, .print-table td {
+        border: 1px solid #333
+    }
+
+    .print-table {
+        text-align: center;
+    }
+
+        .print-table thead {
+            background-color: #333;
+            color: #fff;
+        }
+
+    .table-content-print thead {
+        font-weight: 400;
+        font-size: 14px;
+    }
+
+    .table-content-print tbody {
+        font-weight: 400;
+        font-size: 12px;
+        color: #000;
+    }
+
+    .table-content-print .tfoot {
+        padding: 0 !important;
+        font-size: 12px;
+    }
+
+    footer.footer-paper-a4 .content-footer {
+        position: relative;
+        top: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    button {
+        display: none;
+    }
+
+    body {
+        margin: 0;
+    }
+
+
+    .TechnicalOffer {
+        position: relative;
+        top: 20px;
+    }
+
+    .tables-heade-all-print .title-tables-print-data table {
+        height: 100%
+    }
+
+    .parent-tables p.mailTwo {
+        margin: 10px 0
+    }
+
+    .print-table .content-body-table {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .print-table .content-body-table .item-box {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+        }
+
+            .print-table .content-body-table .item-box p {
+                border: 1px solid;
+                height: 60px;
+                margin: 0;
+                width: 50%;
+                line-height: 50px;
+            }
+
+            .print-table .content-body-table .item-box span {
+                border: 1px solid;
+                height: 60px;
+                width: 50%;
+                line-height: 50px;
+            }
+
+    .show-language-in-phone {
+        display: none
+    }
+}

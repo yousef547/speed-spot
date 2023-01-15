@@ -1,0 +1,268 @@
+﻿
+@{
+    List<UserActivityViewModel> teamActivities = ViewData["TeamActivities"] as List<UserActivityViewModel>;
+}
+
+<div class="wedgets">
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-2">
+            <div class="item-wedget">
+                <div class="inner">
+                    <p>Opportunities</p>
+                    <span>@ViewData["OpportunitiesCount"]</span>
+                </div>
+                <div class="box-content">
+                    <i class="fas fa-bullhorn"></i>
+                    <p>@((ViewData["OpportunitiesTotal"] as decimal?).Value.ToString("#,##0.00"))</p>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-3 col-md-6 mb-2">
+            <div class="item-wedget">
+                <div class="inner">
+                    <p>Quotations</p>
+                    <span>@ViewData["QuotationsCount"]</span>
+                </div>
+                <div class="box-content">
+                    <i class="fas fa-file-signature"></i>
+                    <p>@((ViewData["QuotationsTotal"] as decimal?).Value.ToString("#,##0.00"))</p>
+                </div>
+            </div>
+        </div>
+        @*<div class="col-lg-3 col-md-6 mb-2">
+                <div class="item-wedget">
+                    <div class="inner">
+                        <p>Purchase orders</p>
+                        <span>11</span>
+                    </div>
+                    <div class="box-content">
+                        <i class="fas fa-shopping-cart"></i>
+                        <p>$390,10,343</p>
+                    </div>
+                </div>
+            </div>*@
+        @*<div class="col-lg-3 col-md-6 mb-2">
+                <div class="item-wedget">
+                    <div class="inner">
+                        <p>Under Collections</p>
+                        <span>6</span>
+                    </div>
+                    <div class="box-content">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <p>$120,900,30</p>
+                    </div>
+                </div>
+            </div>*@
+    </div>
+</div>
+@*<div class="charts-calendar mt-5">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card w-100">
+                            <div>
+                                <canvas id="myChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-5">
+                        <div class="card">
+                            <table class="table table-business-overview">
+                                <thead>
+                                    <tr>
+                                        <th>@SharedLocalizer["Employee"]</th>
+                                        <th>@SharedLocalizer["Department"]</th>
+                                        <th>@SharedLocalizer["Date"]</th>
+                                        <th>@SharedLocalizer["Time"]</th>
+                                        <th>@SharedLocalizer["Activity"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="employee-name">
+                                            <div class="img-user-request">
+                                                <img src="/images/default-user.png" class="" alt="">
+                                                <span class="light-blue-2">Muhammed Hamdi</span>
+                                            </div>
+                                        </td>
+                                        <td class="type-request">
+                                            <span class="light-blue">IT</span>
+                                        </td>
+                                        <td class="date-request"> <span class="date">3/12/2021</span></td>
+                                        <td class="date-request"> <span class="time">5:12 AM</span></td>
+                                        <td class="activity">
+                                            <span class="succ">
+                                                Delete Offer Remote Wirele...
+                                                Qoutation
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="employee-name">
+                                            <div class="img-user-request">
+                                                <img src="/images/default-user.png" class="" alt="">
+                                                <span class="light-blue-2">Muhammed Hamdi</span>
+                                            </div>
+                                        </td>
+                                        <td class="type-request">
+                                            <span class="light-blue">IT</span>
+                                        </td>
+                                        <td class="date-request"> <span class="date">3/12/2021</span></td>
+                                        <td class="date-request"> <span class="time">5:12 AM</span></td>
+                                        <td class="activity">
+                                            <span class="rej">
+                                                Delete Offer Remote Wirele...
+                                                Qoutation
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="calendar">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h2 class="head-box-dashboard">@SharedLocalizer["MyCalendar"]</h2>
+                                    <ul class="month-calendar">
+                                        <li>
+                                            <span></span>
+                                            <ul id="child-month"></ul>
+                                        </li>
+                                    </ul>
+                                    <div id='calendarDash'></div>
+                                    <div class="events-content">
+                                        <div class="event-head">
+                                            <p class="title">@SharedLocalizer["Events"]</p>
+                                            <p class="date-events">1 Jan, 2022</p>
+                                        </div>
+
+                                        <div class="box">
+                                            <div class="item">
+                                                <h2>Financial Session</h2>
+                                                <p>Offer Remote Wireless</p>
+                                            </div>
+                                            <a class="link-go" href="#">
+                                                <i class="fas fa-long-arrow-alt-right"></i>
+                                            </a>
+                                        </div>
+                                        <div class="box">
+                                            <div class="item">
+                                                <h2>Supplier Delivery</h2>
+                                                <p>Inventory</p>
+                                            </div>
+                                            <a class="link-go" href="#">
+                                                <i class="fas fa-long-arrow-alt-right"></i>
+                                            </a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-widjects">
+                                <div class="head">
+                                    <h2>@SharedLocalizer["Announcements"]</h2>
+                                    <div class="add">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                </div>
+                                <div class="dashboard-widjects-content">
+                                    <div class="box">
+                                        <div class="item">
+                                            <h2>Online Meeting - 1 hour</h2>
+                                            <p>Offer remote wireless</p>
+                                        </div>
+                                        <div class="date">21 Apr,2022</div>
+                                    </div>
+                                    <div class="box">
+                                        <div class="item">
+                                            <h2>Kick starter workshop - 3 Days</h2>
+                                            <p>IT Interns </p>
+                                        </div>
+                                        <div class="date">21 Apr,2022</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="dashboard-widjects bg-white">
+                                <div class="head">
+                                    <h2>@SharedLocalizer["UpcomingEvents"]</h2>
+                                </div>
+                                <div class="dashboard-widjects-content">
+                                    <div class="box">
+                                        <div class="item">
+                                            <h2>Online Meeting - 1 hour</h2>
+                                            <p>Offer remote wireless</p>
+                                        </div>
+                                        <div class="date">21 Apr,2022</div>
+                                    </div>
+                                    <div class="box">
+                                        <div class="item">
+                                            <h2>Kick starter workshop - 3 Days</h2>
+                                            <p>IT Interns </p>
+                                        </div>
+                                        <div class="date">21 Apr,2022</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="dashboard-widjects bg-white">
+            <div class="head">
+                <h2>@SharedLocalizer["TeamActivity"]</h2>
+            </div>
+            <div class="dashboard-widjects-content">
+                <table class="table border-left border-right border-bottom" id="table_useractivties">
+                    <thead>
+                        <tr>
+                            <th>@SharedLocalizer["EmployeeId"]</th>
+                            <th>@SharedLocalizer["DepartmentId"]</th>
+                            <th>@SharedLocalizer["Date"]</th>
+                            <th>@SharedLocalizer["Time"]</th>
+                            <th class="no-sort">@SharedLocalizer["Activity"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var activity in teamActivities)
+                        {
+                            <tr>
+                                <td class="activity-user">
+                                    <img class="img-circle user-img" src="/images/Users/@activity.UserProfilePicture" />
+                                    @activity.UserName
+                                </td>
+                                <td class="activity-department">@(SharedLocalizer.IsRightToLeft() ? activity.DepartmentNameAr : activity.DepartmentName)</td>
+                                <td class="activity-date"
+                                    data-sort="@activity.CreatedDateTime.ToString("yyyy-MM-dd")">
+                                    @activity.CreatedDateTime.ToString("dd/MM/yyyy")
+                                </td>
+                                <td class="activity-time"
+                                    data-sort="@activity.CreatedDateTime.ToString("HH:mm")">
+                                    @activity.CreatedDateTime.ToString("hh:mm tt")
+                                </td>
+                                <td>
+                                    <span class="activity-user one-line">@activity.Activity</span>
+                                    <span class="activity-department one-line">@activity.Description</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+﻿
+@model BankBranchViewModel
+
+<form id="branchInfoForm">
+    <input type="hidden" id="branchId" asp-for="Id" />
+    <input type="hidden" id="branchBankId" asp-for="BankId" />
+
+    <div class="row justify-content-center  modal-supp">
+        <div class="col-12 ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name"></label>
+                        <input class="form-control inp-height" id="branchName" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <input class="form-control inp-height" id="branchNameAr" asp-for="NameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Address"></label>
+                        <input class="form-control inp-height" asp-for="Address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="SwiftCode"></label>
+                        <input class="form-control inp-height" asp-for="SwiftCode" />
+                        <span asp-validation-for="SwiftCode" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-6">
+            <div class="action action-modal">
+                <button class="btn" type="button" id="btnCreateBranch" onclick="createBranch()">
+                    <i class="fas fa-plus"></i> @SharedLocalizer["Add"]
+                </button>
+                <button class="btn d-none" type="button" id="btnUpdateBranch" onclick="updateBranch()">
+                    <i class="fas fa-edit"></i> @SharedLocalizer["Update"]
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

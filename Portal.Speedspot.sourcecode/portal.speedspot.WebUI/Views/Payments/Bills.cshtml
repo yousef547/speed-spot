@@ -1,0 +1,150 @@
+﻿@{
+    ViewData["Title"] = SharedLocalizer["Bills"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+}
+
+
+@section HeaderActions{
+    <a class="btn btn-primary text-white" onclick="addParentAccount()">
+        @SharedLocalizer["NewBill"]
+    </a>
+    <button type="button" class="btn btn-search-top-header visits" onclick="favourite('')">
+        <i id="favouriteIcon_" class="far fa-star"></i>
+    </button>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mx-4 mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-controller="Payments" asp-action="Index">@SharedLocalizer["Payments"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link"
+               asp-controller="Payments" asp-action="Insurance">@SharedLocalizer["TenderInsurance"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active"
+               asp-controller="Payments" asp-action="Bills">@SharedLocalizer["Bills"]</a>
+        </li>
+    </ul>
+}
+<br>
+<div class="row mx-2 justify-content-end">
+    <div class="col-12 col-md-9">
+        <div class="input-group mb-3 justify-content-start">
+            <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchOpportunities"]">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-4">
+        <div class="bills-requested active" onclick="openTablePayment(this,'RequestedBills')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    Requested Bills
+                </span>
+                <span class="total-number">
+                    <img src="/images/paid.png">
+                    500,650,940
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="bills-inprogress d-flex flex-row justify-content-between" onclick="openTablePayment(this,'InprogressBills')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    Inprogress Bills
+                </span>
+                <span class="total-number">
+                    <img src="/images/inprogress.png">
+                    124,45,6789
+                </span>
+            </div>
+            <div class="d-flex flex-column justify-content-center">
+                <span class="over-due-title">Overdue</span>
+                <span class="over-due-number">70,430,230</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="bills-paid" onclick="openTablePayment(this,'PaidBills')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    Paid
+                </span>
+                <span class="total-number">
+                    <img src="/images/collected.png">
+                    500,650,940
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-pills mainTab-details mt-4" id="mainTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active"
+          data-toggle="tab">@SharedLocalizer["Projects"]</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link"
+          data-toggle="tab">@SharedLocalizer["Expenses"]</a>
+    </li>
+</ul>
+<div class="card mb-4">
+    <div class="card-body p-0">
+        <div id="RequestedBills">
+            @await Html.PartialAsync("_RequestedBillsPartial")
+        </div>
+        <div id="InprogressBills" class="d-none">
+            @await Html.PartialAsync("_InprogressBillsPartial")
+        </div>
+        <div id="PaidBills" class="d-none">
+            @await Html.PartialAsync("_PaidBillsPartial")
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/payments.js"></script>
+    <script>
+        $(document).ready(function () {
+            handleDataTable({
+                selector: "#tableRequestedBills",
+                stateloadcallback: stateLoadParams
+            });
+            handleDataTable({
+                selector: "#tablePaidBills",
+                stateloadcallback: stateLoadParams
+            });
+            handleDataTable({
+                selector: "#tableInprogressBills",
+                stateloadcallback: stateLoadParams
+            });
+
+
+        })
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+
+    </script>
+}

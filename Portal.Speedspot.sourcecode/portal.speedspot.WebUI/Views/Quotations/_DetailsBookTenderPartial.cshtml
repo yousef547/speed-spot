@@ -1,0 +1,166 @@
+﻿
+@model BookTenderViewModel
+
+@if (Model.IsRequested)
+{
+    <h5><strong>@SharedLocalizer["BookTender"]:</strong></h5>
+
+    <div class="card Opportunities-sections-details">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label class="control-label">@SharedLocalizer["AssignedTo"]</label>
+                        <br />
+                        <p>@Model.AssignedToName</p>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="Fees" class="control-label"></label>
+                                <br />
+                                <p>@Model.Fees.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="VAT" class="control-label">VAT (%)</label>
+                                <br />
+                                <p>@Model.VAT.Value%</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="TotalFees" class="control-label"></label>
+                                <br />
+                                <p>@Model.TotalFees.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.IsPrinted)
+                {
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ReceiptNo" class="control-label"></label>
+                            <br />
+                            <p>@Model.ReceiptNo</p>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label asp-for="ReceiptDate" class="control-label"></label>
+                            <br />
+                            @if (Model.ReceiptDate != null)
+                            {
+                                <p>@Model.ReceiptDate.Value.ToString("dd/MM/yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>@SharedLocalizer["NotSpecified"]</p>
+                            }
+                        </div>
+                    </div>
+
+                    @if (Model.ReceiptAttachmentId != null)
+                    {
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="control-label" asp-for="ReceiptAttachmentFile"></label>
+                                <br />
+                                <div class="custom-label-upload">
+                                    <label class="" for="">
+                                        <span class="upload-file-icons">
+                                            <i class="fas fa-file-upload"></i>
+                                        </span>
+                                    </label>
+                                    <a class="one-line"
+                                       href="/images/Opportunities/@Model.ReceiptAttachmentPath"
+                                       target="_blank"
+                                       title="@Model.ReceiptAttachmentTitle">
+                                        @Model.ReceiptAttachmentTitle
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+
+                <div class="col-12">
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <br />
+                        <p>@Model.Description</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (!Model.IsSent)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingFinancialMSG"]
+                    </span>
+                </div>
+            }
+            else
+            {
+                if (!Model.IsRejected)
+                {
+                    if (!Model.IsApproved)
+                    {
+                        <div class="row justify-content-end mx-1 align-items-center">
+                            <i class="fas fa-history"></i>
+                            <span class="font-size-action">
+                                @SharedLocalizer["PendingManagerMSG"]
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        if (!Model.IsPrinted)
+                        {
+                            <div class="row justify-content-end mx-1 align-items-center">
+                                <i class="fas fa-history"></i>
+                                <span class="font-size-action">
+                                    @SharedLocalizer["PendingFinancialMSG"]
+                                </span>
+                            </div>
+                        }
+                    }
+                }
+            }
+
+            @if (Model.IsRejected)
+            {
+                <div class="row justify-content-end align-items-center">
+                    <div class="mx-2">
+                        <i class="fas fa-times"></i>
+                        <span class="font-size-action">@SharedLocalizer["RejectedBy"] @Model.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success mx-2">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["DoneBy"] @Model.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["ApprovedBy"] @Model.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

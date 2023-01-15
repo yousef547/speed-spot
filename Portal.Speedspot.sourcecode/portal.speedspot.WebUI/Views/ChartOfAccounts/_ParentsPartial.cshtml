@@ -1,0 +1,45 @@
+
+@model List<FinancialAccountViewModel>
+
+<div class="all-box">
+    @foreach (var item in Model)
+    {
+        <div class="box" id="account_@item.Id">
+            <i class="fas fa-ellipsis-v setting-tree-box-finan setting-tree-box-finan" onclick="openMenu(event , this)"></i>
+            <div class="setting-box">
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Create)).Succeeded)
+                {
+                    <button type="button" onclick="addAccount('@item.Id', @((int)item.Type))"><i class="fas fa-plus"></i> <span>@SharedLocalizer["Add"]</span></button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Edit)).Succeeded)
+                {
+                    <button type="button" onclick="editAccount('@item.Id')"><i class="far fa-edit"></i><span>@SharedLocalizer["Edit"]</span></button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Details)).Succeeded)
+                {
+                    <button type="button" onclick="viewAccount('@item.Id')"><i class="far fa-eye"></i><span>@SharedLocalizer["View"]</span></button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Report)).Succeeded)
+                {
+                    <a asp-action="Report" asp-route-id="@item.Id"><i class="fas fa-play"></i><span>@SharedLocalizer["Run"]</span></a>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Delete)).Succeeded)
+                {
+                    <button type="button" onclick="deleteAccount('@item.Id', '@item.DepartmentId', @((int)item.Type))"><i class="far fa-trash-alt"></i><span>@SharedLocalizer["Delete"]</span></button>
+                }
+            </div>
+            <p>@(SharedLocalizer.IsRightToLeft() ? item.NameAr : item.Name)</p>
+            <p class="price">
+                @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol) @item.Price
+            </p>
+            <div class="toggle-down" data-activeToggle="toggle-down-@item.Id">
+                <span>@item.ChildsCount</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="boxes-child d-none">
+                @await Html.PartialAsync("_ChildsPartial", item.UnarchivedChildVMs)
+            </div>
+        </div>
+    }
+</div>

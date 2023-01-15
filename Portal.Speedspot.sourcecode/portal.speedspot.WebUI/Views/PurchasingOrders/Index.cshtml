@@ -1,0 +1,524 @@
+@model List<PurchaseOrderViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["PurchasingOrders"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    bool canViewDetails = (await AuthorizationService.AuthorizeAsync(User, Permissions.PurchasingOrders.Details)).Succeeded;
+
+    //bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+@section HeaderActions{
+
+    <div id="changeableActions">
+    </div>
+
+
+    <div class="btn-actions-header-second d-flex">
+
+        @*<a class="btn btn-action show-loader">
+            <i class="fas fa-plus"></i>
+            </a>*@
+
+        <div class="vertical-split"></div>
+
+        @*<button type="button" class="btn btn-action">
+            <i id="favouriteIcon" class="far fa-star"></i>
+            </button>*@
+
+        @*<a href="#" class="btn btn-action">
+            <i class="fas fa-print"></i>
+            </a>*@
+
+        @*<a href="#" class="btn btn-action">
+            <i class="fas fa-ellipsis-h"></i>
+            </a>*@
+    </div>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item ">
+            <a class="nav-link active" id="proj-tab" data-toggle="tab" href="#projects" role="tab" aria-controls="projects" aria-selected="true">@SharedLocalizer["Projects2"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="si-tab" data-toggle="tab" href="#si" role="tab" aria-controls="si" aria-selected="true">@SharedLocalizer["Customers"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="ts-tab" data-toggle="tab" href="#ts" role="tab" aria-controls="ts" aria-selected="false">@SharedLocalizer["Suppliers"]</a>
+        </li>
+
+    </ul>
+}
+
+<br />
+
+<div class="tab-content" id="mainTabContent">
+
+    @*Start Projects Sec*@
+    <div class="tab-pane fade show active" id="projects" role="tabpanel" aria-labelledby="proj-tab">
+        @* Start Filter Popup *@
+        <div class="mx-4 justify-content-center filter-popup">
+            <div class="box-filter scroll-Custom">
+                <div class="content ">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityTypesFilter">Type</label>
+                            <select class="form-control" id="opportunityTypesFilter">
+                                <option value="">All</option>
+                                <option value="6">Direct Offer</option>
+                                <option value="7">Envelope</option>
+                                <option value="8">Two Envelopes</option>
+                                <option value="9">Auction</option>
+                                <option value="10">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityStatusesFilter">Status</label>
+                            <select class="form-control" id="opportunityStatusesFilter">
+                                <option value="">All</option>
+                                <option value="1">Sales Information</option>
+                                <option value="2">Technical Specifications</option>
+                                <option value="3">Supplier Offers</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">Departments</label>
+                            <div class="dropdown bootstrap-select show-tick form-control select-multiple">
+                                <select class="form-control selectpicker select-multiple" id="departmentFilter" multiple="" tabindex="-98">
+                                    <option value="1">constructions</option>
+                                    <option value="2">IT</option>
+                                    <option value="4">Engineering Services	</option>
+                                    <option value="5">MPG (Euro)</option>
+                                    <option value="6">Mena tec (Euro)</option>
+                                    <option value="7">PEISCO</option>
+                                    <option value="8">Prodynmics </option>
+                                    <option value="9">Otor-Umsco</option>
+                                    <option value="10">EAST WORLD- UMSCO</option>
+                                    <option value="11">Etec - Umsco</option>
+                                    <option value="12">Test Department</option>
+                                </select><button type="button" class="btn dropdown-toggle btn-light bs-placeholder" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" data-id="departmentFilter" title="Nothing selected"><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Nothing selected</div></div> </div></button><div class="dropdown-menu "><div class="inner show" role="listbox" id="bs-select-1" tabindex="-1" aria-multiselectable="true"><ul class="dropdown-menu inner show" role="presentation"></ul></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">Date From</label>
+                            <input id="dueDateFrom" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">Date To</label>
+                            <input id="dueDateTo" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* End Filter Popup *@
+        <div class="row mx-4 justify-content-end">
+            <div class="col-12 col-md-9">
+                <div class="input-group mb-3 justify-content-start">
+                    <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>Filter</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <div class="input-group mb-3 justify-content-end">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchPurchaseOrders"]">
+                </div>
+            </div>
+
+        </div>
+
+        <div id="" class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-PurchasingOrders">
+                        <thead class="purchasing-thead">
+                            <tr>
+                                <th>@SharedLocalizer["QuotationNo"]</th>
+                                <th>@SharedLocalizer["Customer"]</th>
+                                <th>@SharedLocalizer["Status"]</th>
+                                <th>@SharedLocalizer["CustomerPoNumber"]</th>
+                                <th>@SharedLocalizer["SupplierPoNumber"]</th>
+                                <th>@SharedLocalizer["LastUpdatedBy"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="purchasing-customer">#@item.QuotationNo</td>
+                                    <td class="purchasing-customer">@(SharedLocalizer.IsRightToLeft() ? item.CustomerNameAr : item.CustomerName)</td>
+                                    <td class="purchasing-status @(item.Status == ApplicationEnums.PurchaseOrderStatus.Completed ? "color-complet" : "color-new")">@SharedLocalizer[item.Status.ToString()]</td>
+                                    <td class="purchasing-po">@(item.CustomerPOVM != null?"#":"")@item.CustomerPOVM?.CustomerPONumber </td>
+                                    <td class="purchasing-po">
+                                        @(string.Join(", ", item.SupplierPOVMs.Select(x=> "#"+x.SupplierPONumber)))
+                                    </td>
+                                    <td class="purchasing-status complet">@item.LastUpdatedByName</td>
+                                    <td class="purchasing-status color-date">@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="actions-table-btn min-w-250" data-label_table="@SharedLocalizer["Actions"]">
+                                        @if (item.Type == null)
+                                        {
+                                            <a class="btn " onclick="showModelFunded(@item.Id)">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-edit show-loader" title="Edit" asp-action="Create" asp-route-id="@item.Id" asp-route-type="@item.Type">
+                                                <i class="far fa-edit"></i>
+                                            </a>
+                                        }
+
+
+                                        @if (item.CustomerPOVM?.CustomerPONumber != null)
+                                        {
+                                            <a class="btn btn-info info-details my-1 show-loader-ajax" asp-action="ProjectDetails" asp-route-id="@item.Id">
+                                                <i class="fas fa-info"></i>
+                                            </a>
+                                        }
+                                        @*<a href="#" class="btn btn-fav ">
+                                                                                asp-action="Create" asp-route-id="@item.Id"
+                                                <a asp-action="Create" asp-route-id="@item.Id" onclick="$("#modalAdd").modal('show');"  class="btn">
+
+
+                                            <i id="favouriteIcon" class="far fa-star"></i>
+                                            </a>
+                                            <a class="btn btn-delete show-loader" title="Unarchive" href="#">
+                                            <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-dote my-1">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                            </a>*@
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Start Customers Sec*@
+    <div class="tab-pane fade" id="si" role="tabpanel" aria-labelledby="si-tab">
+        @* Start Filter Popup *@
+        <div class="mx-4 justify-content-center filter-popup">
+            <div class="box-filter scroll-Custom">
+                <div class="content ">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityTypesFilter">Type</label>
+                            <select class="form-control" id="opportunityTypesFilter">
+                                <option value="">All</option>
+                                <option value="6">Direct Offer</option>
+                                <option value="7">Envelope</option>
+                                <option value="8">Two Envelopes</option>
+                                <option value="9">Auction</option>
+                                <option value="10">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityStatusesFilter">Status</label>
+                            <select class="form-control" id="opportunityStatusesFilter">
+                                <option value="">All</option>
+                                <option value="1">Sales Information</option>
+                                <option value="2">Technical Specifications</option>
+                                <option value="3">Supplier Offers</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">Departments</label>
+                            <div class="dropdown bootstrap-select show-tick form-control select-multiple">
+                                <select class="form-control selectpicker select-multiple" id="departmentFilter" multiple="" tabindex="-98">
+                                    <option value="1">constructions</option>
+                                    <option value="2">IT</option>
+                                    <option value="4">Engineering Services	</option>
+                                    <option value="5">MPG (Euro)</option>
+                                    <option value="6">Mena tec (Euro)</option>
+                                    <option value="7">PEISCO</option>
+                                    <option value="8">Prodynmics </option>
+                                    <option value="9">Otor-Umsco</option>
+                                    <option value="10">EAST WORLD- UMSCO</option>
+                                    <option value="11">Etec - Umsco</option>
+                                    <option value="12">Test Department</option>
+                                </select><button type="button" class="btn dropdown-toggle btn-light bs-placeholder" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" data-id="departmentFilter" title="Nothing selected"><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Nothing selected</div></div> </div></button><div class="dropdown-menu "><div class="inner show" role="listbox" id="bs-select-1" tabindex="-1" aria-multiselectable="true"><ul class="dropdown-menu inner show" role="presentation"></ul></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">Date From</label>
+                            <input id="dueDateFrom" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">Date To</label>
+                            <input id="dueDateTo" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @* End Filter Popup *@
+        <div class="row mx-4 justify-content-end">
+            <div class="col-12 col-md-9">
+                <div class="input-group mb-3 justify-content-start">
+                    <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>Filter</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <div class="input-group mb-3 justify-content-end">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input class="form-control" type="text" id="searchboxcustomer" placeholder="@SharedLocalizer["SearchCustomers"]">
+                </div>
+            </div>
+
+        </div>
+
+        <div id="" class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-customerPo">
+                        <thead class="purchasing-thead">
+                            <tr>
+                                <th>@SharedLocalizer["PoNumber"]</th>
+                                <th>@SharedLocalizer["Customer"]</th>
+                                <th>@SharedLocalizer["Code"]</th>
+                                <th>@SharedLocalizer["Status"]</th>
+                                <th>@SharedLocalizer["Quotation"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Select(x => x.CustomerPOVM))
+                            {
+                                @if (item != null)
+                                {
+                                    <tr>
+
+                                        <td class="purchasing-customer">@item.CustomerPONumber</td>
+                                        <td class="purchasing-customer">@(SharedLocalizer.IsRightToLeft() ? item.PurchaseOrder.CustomerNameAr : item.PurchaseOrder.CustomerName)</td>
+                                        <td class="purchasing-code">@item.Code</td>
+                                        <td class="purchasing-status @(item.PurchaseOrder.Status == ApplicationEnums.PurchaseOrderStatus.Completed ? "color-complet" : "color-new")">@SharedLocalizer[item.PurchaseOrder.Status.ToString()]</td>
+                                        <td class="purchasing-quotation">@item.PurchaseOrder.SerialStr</td>
+                                        <td class="purchasing-status color-date">@item.StartDate?.ToString("dd/MM/yyyy")</td>
+                                        <td class="clickable-row-actions" data-label="Actions">
+                                            <a href="#" class="btn btn-fav ">
+                                                <i id="favouriteIcon" class="far fa-star"></i>
+                                            </a>
+                                            <a class="btn btn-delete show-loader" title="Unarchive" href="#">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-dote my-1">
+                                                <i class="fas fa-ellipsis-h"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*Start Suppliers Sec*@
+    <div class="tab-pane fade" id="ts" role="tabpanel" aria-labelledby="ts-tab">
+        <div class="row mx-4">
+            <div class="col-sm-12 col-md-6">
+                <div class="select-Competitors">
+                    <i class="fas fa-sliders-h"></i>
+                    <p>@SharedLocalizer["Type"]</p>
+                    <select id="AddressVM_CityId" name="AddressVM.CityId" class="form-control">
+                        <option value="">Offere</option>
+                        <option value="">Remote wireless</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-6 search-Competitors">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input class="form-control" type="text" id="searchboxsupplier" placeholder="@SharedLocalizer["SearchSupplier"]">
+                </div>
+            </div>
+        </div>
+        <div id="" class="col-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <table class="table table-supplierPo">
+                        <thead class="purchasing-thead">
+                            <tr>
+                                <th>@SharedLocalizer["PoNumber"]</th>
+                                <th>@SharedLocalizer["Supplier"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Type"]</th>
+                                <th>@SharedLocalizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Select(x => x.SupplierPOVMs))
+                            {
+                                @foreach (var supplier in item)
+                                {
+                                    @if (supplier.SupplierPONumber != null)
+                                    {
+                                        <tr>
+                                            <td class="purchasing-supplier">@supplier.SupplierPONumber</td>
+                                            <td class="purchasing-supplier">@(SharedLocalizer.IsRightToLeft()? supplier.Supplier.NameAr: supplier.Supplier.Name)</td>
+                                            <td class="purchasing-status color-date">@supplier.StartDate?.ToString("MM/dd/yyyy")</td>
+                                            <td class="purchasing-type">@SharedLocalizer[supplier.Type.ToString()]</td>
+                                            <td class="clickable-row-actions" data-label="Actions">
+                                                <a class="btn btn-fav ">
+                                                    <i id="favouriteIcon" class="far fa-star"></i>
+                                                </a>
+                                                <a class="btn btn-delete show-loader" title="Unarchive" href="#">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                                <a class="btn btn-dote my-1">
+                                                    <i class="fas fa-ellipsis-h"></i>
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<div class="modal fade modalInfoNew" id="modalInfoNew" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="productDetailsModal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body box border-0">
+                <div class="check-true">
+                    <i class="fas fa-check"></i>
+                </div>
+                <p class="viewdata-second-header">@SharedLocalizer["IsCustomerPoFunded"]</p>
+                <div id="selectFunded">
+                    <div class="custom-control custom-radio">
+                        <input class="custom-control-input" type="radio" id="funded" name="funded" onchange="changeURLFunded()" value="@((int)ApplicationEnums.FundType.Funded )" placeholder="">
+                        <label for="funded" class="custom-control-label">@SharedLocalizer["Funded"]</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input class="custom-control-input" type="radio" id="LightFunded" name="funded" onchange="changeURLFunded()" value="@((int)ApplicationEnums.FundType.LightFunded )" placeholder="">
+                        <label for="LightFunded" class="custom-control-label"> @SharedLocalizer["LightFunded"]</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input class="custom-control-input" type="radio" id="notfunded" name="funded" onchange="changeURLFunded()" value="@((int)ApplicationEnums.FundType.NotFunded )" placeholder="">
+                        <label for="notfunded" class="custom-control-label">@SharedLocalizer["NotFunded"]</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button class="btn close" id="btnUpdate" data-dismiss="modal" aria-label="Close">
+                    @SharedLocalizer["Cancel"]
+                </button>
+                <div class="action action-modal">
+                    <a class="btn" href="#" id="goToCreate">@SharedLocalizer["Save"]</a>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="~/js/purchaseorders.js"></script>
+    <script type="text/javascript">
+
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        var stateLoadParamsCustomer = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchboxcustomer").val(searchData);
+        }
+        var stateLoadParamsSupplier = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchboxsupplier").val(searchData);
+        }
+
+
+
+        $(document).ready(function () {
+            handleDataTable({
+                selector: ".table-PurchasingOrders",
+                stateLoadCallback: stateLoadParams
+            });
+
+            handleDataTable({
+                selector: ".table-customerPo",
+                stateLoadCallback: stateLoadParamsCustomer,
+                searchBoxSelector: "#searchboxcustomer"
+            });
+
+            handleDataTable({
+                selector: ".table-supplierPo",
+                stateLoadCallback: stateLoadParamsSupplier,
+                searchBoxSelector: "#searchboxsupplier"
+            });
+        })
+    </script>
+}

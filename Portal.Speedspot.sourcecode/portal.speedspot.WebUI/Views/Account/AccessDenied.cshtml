@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_AccountLayout";
+    var returnUrl = Context.Request.Query["returnurl"];
+}
+
+<div class="login-box">
+    <div class="login-logo">
+        <a class="show-loader" asp-controller="Home" asp-action="Index">
+            <img src="~/lib/adminlte/dist/img/Logo.svg" />
+        </a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+        <div class="card-body login-card-body">
+            <p class="login-box-msg">
+                @SharedLocalizer["NotAuthorised"]
+            </p>
+            <p class="text-center">
+                <a asp-action="Login" class="text-center show-loader" asp-route-returnurl="@returnUrl">@SharedLocalizer["ClickToLogin"]</a>
+            </p>
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>
+

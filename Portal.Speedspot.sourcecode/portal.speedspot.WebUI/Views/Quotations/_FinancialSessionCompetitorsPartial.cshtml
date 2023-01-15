@@ -1,0 +1,302 @@
+﻿
+@model QuotationViewModel
+
+@{
+    List<QuotationGroupViewModel> quotationGroups = (ViewData["QuotationGroups"] as List<QuotationGroupViewModel>).OrderBy(o => o.TotalPrice).ToList();
+
+    int i = 0;
+}
+
+@foreach (var group in quotationGroups)
+{
+    <div class="accordion" id="fnOffersAccordion_@i">
+        <div class="card">
+            <div class="accordion-sp" id="fnOffersHeading_@i">
+                <button class="btn-head-qout" type="button" data-toggle="collapse" data-target="#fnOffers_@i" aria-expanded="false" aria-controls="fnOffers_@i">
+                    <div class="left-head-qout">
+                        <span class="index-qout">@(i+1)</span>
+                        <img class="img-head-qout" src="/images/@(group.IsCompetitor? "Competitors" : "Company")/@group.ImagePath" />
+                        <span class="company-name-qout-head">
+                            @group.Name
+                        </span>
+                    </div>
+                    <div class="right-head-qout">
+                        <div class="company-qout-id">
+                            @if (group.IsCompetitor)
+                            {
+                                if (group.CompetitorOfferVMs.FirstOrDefault().ProductVMs.Any(p => p.UnitPrice == null && p.IsIncluded))
+                                {
+                                    <span onclick="location.href = '@Url.Action("FinancialDetails",new { id = Model.Id, competitorId = group.Id })'">
+                                        <i class="fas fa-plus"></i> @SharedLocalizer["AddFinancialDetails"]
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span><span>@SharedLocalizer["TotalPrice"]: </span><span class="num-offers">@group.TotalPrice.ToString("###,#.00")</span></span>
+                                }
+                            }
+                            else
+                            {
+                                <span><span>@SharedLocalizer["TotalPrice"]: </span><span class="num-offers">@group.TotalPrice.ToString("###,#.00")</span></span>
+                                <span><span>@SharedLocalizer["SubTotal"]: </span><span class="num-offers">@group.SubTotal.ToString("###,#.00")</span></span>
+                            }
+                        </div>
+                        <div class="icon-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div id="fnOffers_@i" class="collapse" aria-labelledby="fnOffersHeading_@i" data-parent="#fnOffersAccordion_@i">
+            @if (!group.IsCompetitor)
+            {
+                int j = 0;
+                foreach (var offer in group.OfferVMs)
+                {
+                    var lastVersion = offer.VersionVMs.FirstOrDefault(v => v.IsSelected);
+                    if (lastVersion == null)
+                    {
+                        lastVersion = offer.VersionVMs.LastOrDefault();
+                    }
+                    <div class="card my-2">
+                        <div class=" card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row justify-content-between">
+                                        <span>@(j + 1). @lastVersion.Title</span>
+                                        @*<span class="edit-qoute">
+                                            <a asp-action="EditOfferVersion" asp-route-offerVersionId="@lastVersion.Id">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </span>*@
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["CurrencyId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.CurrencyNameAr : lastVersion.CurrencyName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["DeliveryPlaceId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.DeliveryPlaceNameAr : lastVersion.DeliveryPlaceName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["DeliveryRange"]</label>
+                                        <p class="details-label">@SharedLocalizer["From"] @lastVersion.DeliveryFromDays @SharedLocalizer["To"] @lastVersion.DeliveryToDays @SharedLocalizer["Days"]</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["ValidityId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.ValidityNameAr : lastVersion.ValidityName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["GuaranteePeriod"]</label>
+                                        @if (lastVersion.CommissionGuaranteeMonths != null)
+                                        {
+                                            <p class="details-label">@lastVersion.CommissionGuaranteeMonths @SharedLocalizer["Months"] @SharedLocalizer["FromCommission"]</p>
+                                        }
+                                        @if (lastVersion.DeliveryGuaranteeMonths != null)
+                                        {
+                                            <p class="details-label">@lastVersion.DeliveryGuaranteeMonths @SharedLocalizer["Months"] @SharedLocalizer["FromDelivery"]</p>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["Certificates"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.CertificateNamesStrAr : lastVersion.CertificateNamesStr)</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["GuaranteeTermId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.GuaranteeTermNameAr : lastVersion.GuaranteeTermName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["OriginDocumentId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? lastVersion.OriginDocumentNameAr : lastVersion.OriginDocumentName)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <table class="table table-striped competitors">
+                            <thead>
+                                <tr>
+                                    <th>@SharedLocalizer["Products"]</th>
+                                    <th>@SharedLocalizer["UnitPrice"]</th>
+                                    <th>@SharedLocalizer["Quantity"]</th>
+                                    <th>@SharedLocalizer["Subtotal"]</th>
+                                    <th>@SharedLocalizer["Total"]</th>
+                                    <th>@SharedLocalizer["Included"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in lastVersion.ProductVMs)
+                                {
+                                    <tr>
+                                        <td>
+                                            @product.ProductVM.ProductVM.Description
+                                        </td>
+                                        <td>@product.UnitPrice</td>
+                                        <td>@product.Quantity</td>
+                                        <td>@product.SubTotal</td>
+                                        <td>@product.Total</td>
+                                        <td>@SharedLocalizer["Yes"]</td>
+
+                                        @*@if (lastVersion.ProductVMs.Any(p => p.ProductId == product.Id))
+                                            {
+                                                var offerProduct = lastVersion.ProductVMs.FirstOrDefault(p => p.ProductId == product.Id);
+                                                <td>@offerProduct.UnitPrice</td>
+                                                <td>@offerProduct.Quantity</td>
+                                                <td>@offerProduct.SubTotal</td>
+                                                <td>@offerProduct.Total</td>
+                                                <td>@SharedLocalizer["Yes"]</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>@SharedLocalizer["No"]</td>
+                                            }*@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    j++;
+                }
+            }
+            else
+            {
+                int j = 0;
+                @foreach (var offer in group.CompetitorOfferVMs)
+                {
+                    <div class="card my-2">
+                        <div class=" card-body">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row justify-content-between">
+                                        <span>@(j + 1).</span>
+                                        <span class="edit-qoute">
+                                            <a asp-action="EditCompetitorOffer" asp-route-offerId="@offer.Id">
+                                                <i class="fa fa-edit"></i>
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["CurrencyId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.CurrencyNameAr : offer.CurrencyName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["DeliveryPlaceId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.DeliveryPlaceNameAr : offer.DeliveryPlaceName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["DeliveryRange"]</label>
+                                        <p class="details-label">@SharedLocalizer["From"] @offer.DeliveryFromDays @SharedLocalizer["To"] @offer.DeliveryToDays @SharedLocalizer["Days"]</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["ValidityId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.ValidityNameAr : offer.ValidityName)</p>
+                                    </div>
+                                </div>
+                                @*<div class="col-12 col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-details">@SharedLocalizer["GuaranteePeriod"]</label>
+                                            @if (offer.CommissionGuaranteeMonths != null)
+                                            {
+                                                <p class="details-label">@offer.CommissionGuaranteeMonths @SharedLocalizer["Months"] @SharedLocalizer["FromCommission"]</p>
+                                            }
+                                            @if (offer.DeliveryGuaranteeMonths != null)
+                                            {
+                                                <p class="details-label">@offer.DeliveryGuaranteeMonths @SharedLocalizer["Months"] @SharedLocalizer["FromDelivery"]</p>
+                                            }
+                                        </div>
+                                    </div>*@
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["Certificates"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.CertificateNamesStrAr : offer.CertificateNamesStr)</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["GuaranteeTermId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.GuaranteeTermNameAr : offer.GuaranteeTermName)</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="form-group">
+                                        <label class="text-details">@SharedLocalizer["OriginDocumentId"]</label>
+                                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? offer.OriginDocumentNameAr : offer.OriginDocumentName)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <table class="table table-striped competitors">
+                            <thead>
+                                <tr>
+                                    <th>@SharedLocalizer["Products"]</th>
+                                    <th>@SharedLocalizer["UnitPrice"]</th>
+                                    <th>@SharedLocalizer["Quantity"]</th>
+                                    <th>@SharedLocalizer["Subtotal"]</th>
+                                    <th>@SharedLocalizer["Total"]</th>
+                                    <th>@SharedLocalizer["Included"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in offer.ProductVMs)
+                                {
+                                    <tr>
+                                        <td>
+                                            @product.ProductVM.Description
+                                        </td>
+                                        <td>@product.UnitPrice</td>
+                                        <td>@product.Quantity</td>
+                                        <td>@product.TotalPrice</td>
+                                        <td>@product.TotalPrice</td>
+                                        <td>@(product.IsIncluded ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    j++;
+                }
+            }
+        </div>
+    </div>
+    i++;
+}

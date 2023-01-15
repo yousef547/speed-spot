@@ -1,0 +1,52 @@
+﻿@model SupplierConversationViewModel
+@{
+    var companyData = ViewBag.CompanyData as CompanyDataViewModel;
+}
+<form id="conversationSupplierEdit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="SupplierId" id="supplierIdEdit" />
+    <input type="hidden" asp-for="QuotationId" id="quotationIdEdit" />
+    @*<input type="hidden" asp-for="IsSupplier" />*@
+    <input type="hidden" asp-for="AttachmentId" />
+    <input type="hidden" asp-for="Id" />
+
+    <div class="row">
+        <div asp-validation-summary="All" class="text-danger col-md-12"></div>
+
+        <div class="col-sm-12 col-md-6">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="CreatedDate" class="control-label"></label>
+                    <input type="date" asp-for="CreatedDate"  class="form-control">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="DueDate" class="control-label"></label>
+                    <input type="date" class="form-control" asp-for="DueDate">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="CreatedById" class="control-label">@SharedLocalizer["ChooseSpeaker"]</label>
+                    <div class="modal-attach-message">
+                        <select class="inp-height" asp-for="IsSupplier">
+                            <option value="false">@(SharedLocalizer.IsRightToLeft() ? companyData.NameAr : companyData.Name)</option>
+                            <option value="true">@SharedLocalizer["Supplier"]</option>
+                        </select>
+                        <input asp-for="Message" type="text" class="form-control inp-height">
+                        <label class="attach-file-message" asp-for="ConversationFile" for="supplierEditConversationFile" >
+                            <i class="fas fa-paperclip"></i>
+                            <input type="file" class="d-none" asp-for="ConversationFile" id="supplierEditConversationFile" />
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

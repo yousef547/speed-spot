@@ -1,0 +1,114 @@
+@model IList<PaymentRequestDirectionViewModel>
+
+@{
+    if (Model.Count == 0)
+    {
+        Model.Add(new PaymentRequestDirectionViewModel());
+    }
+    int i = 0;
+}
+
+<table class="table table-directions">
+    <thead>
+        <tr>
+            <th>@SharedLocalizer["NO."]</th>
+            <th>@SharedLocalizer["Direction"]</th>
+            <th>@SharedLocalizer["Amount"]</th>
+            <th>@SharedLocalizer["Description"]</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <th>
+                    @(i+1)
+                </th>
+                <td>
+                    <select class="form-control select-no-border-white inp-height"
+                            name="Directions[@i].AccountId"
+                            asp-for="@Model[i].AccountId"
+                            asp-items="@(new SelectList(ViewBag.DirectionId as List<FinancialAccountViewModel>, "Id",
+                            SharedLocalizer.IsRightToLeft() ? "DescriptionAr" : "Description", item.AccountId))">
+                        <option value="">@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="@Model[i].AccountId"></span>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <input class="form-control inp-height child-amount"
+                               asp-for="@Model[i].Amount"
+                               name="Directions[@i].Amount">
+                        <div class="input-group-append">
+                            <span class="AmountSpan">/</span>
+                        </div>
+                    </div>
+                    <span class="text-danger" asp-validation-for="@Model[i].Amount"></span>
+                </td>
+                <td>
+                    <input class="form-control inp-height" type="text"
+                           asp-for="@Model[i].Description"
+                           name="Directions[@i].Description">
+                    <span class="text-danger" asp-validation-for="@Model[i].Description"></span>
+                </td>
+                <td>
+                    <button type="button" class="btn-delete-direction" onclick="deleteDirection('@i')"><i class="far fa-trash-alt"></i></button>
+                </td>
+            </tr>
+            i++;
+        }
+    </tbody>
+
+    <tfoot>
+        <tr>
+            <td colspan="5">
+                <button type="button" class="btn-add-direction" onclick="addDirection()"> <i class="fas fa-plus"></i> @SharedLocalizer["Add"]</button>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+@*@foreach (var item in Model.Directions)
+    {
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label" asp-for="Directions[i].AccountId"></label>
+                    <select class="form-control select-no-border-white inp-height"
+                            asp-for="Directions[i].AccountId"
+                            asp-items="@(new SelectList(ViewBag.DirectionId as List<FinancialAccount>, "Id", "Name", item.AccountId))">
+                        <option value="">@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span class="text-danger" asp-validation-for="Directions[i].AccountId"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label label-sales-information" asp-for="Directions[i].Amount"></label>
+                    <div class="input-group">
+                        <input class="form-control inp-height child-amount" asp-for="Directions[i].Amount">
+                        <div class="input-group-append">
+                            <span class="AmountSpan">/</span>
+                        </div>
+                    </div>
+                    <span class="text-danger" asp-validation-for="Directions[i].Amount"></span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                <div class="form-group">
+                    <label class="control-label label-sales-information" asp-for="Directions[i].Description">@SharedLocalizer["Description"]</label>
+                    <input class="form-control inp-height" type="text" asp-for="Directions[i].Description">
+                    <span class="text-danger" asp-validation-for="Directions[i].Description"></span>
+                </div>
+            </div>
+        </div>
+        i++;
+    }*@
+
+@*<div class="row">
+        <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+            <button type="button" class="btn addDirection" onclick="addDirection()"> <i class="fas fa-plus"></i> @SharedLocalizer["AddDirection"]</button>
+        </div>
+    </div>*@

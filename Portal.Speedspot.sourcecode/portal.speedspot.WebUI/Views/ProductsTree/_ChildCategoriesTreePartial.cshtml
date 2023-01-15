@@ -1,0 +1,84 @@
+﻿
+@model List<ProductCategoryViewModel>
+
+@foreach (var category in Model)
+{
+    <li class="sub-category first" id="item_@category.Id">
+        <span class="view-caregory">@(SharedLocalizer.IsRightToLeft() ? category.NameAr : category.Name)</span>
+        <span class="view-caregory">(@category.GeneratedCode)</span>
+        <div class="full-act-tree">
+            <div class="items-count"><span class="count-items">@(category.ProductsCount + category.ChildsCount)</span></div>
+            <span class="list-product-tree">
+                <i class="fas fa-bars"></i>
+            </span>
+
+            <div class="actions-product-tree">
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Details)).Succeeded)
+                {
+                    <button type="button" class="info-cat" onclick="getCategoryInfo('@category.Id')">
+                        <i class="fas fa-info"></i>
+                    </button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Edit)).Succeeded)
+                {
+                    <button type="button" class="info-cat" onclick="editCategory('@category.Id')">
+                        <i class="far fa-edit"></i>
+                    </button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Create)).Succeeded)
+                {
+                    <button type="button" class="add-cat-item" onclick="addItem('@category.Id')">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Delete)).Succeeded)
+                {
+                    if ((category.ProductsCount + category.ChildsCount) == 0)
+                    {
+                        <button type="button" class="btn-prod-delete" onclick="deleteCategory('@category.Id', '@category.IsService', '@category.DepartmentId')">
+                            <i class="fa fa-trash-alt"></i>
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+        <ul class="list-category-child">
+            @await Html.PartialAsync("_ChildCategoriesTreePartial", category.UnarchivedChildVMs)
+
+            <!-- <li class="item-category-child"></li> -->
+            @foreach (var product in category.UnarchivedProductVMs)
+            {
+                <li class="item-category-child no-check-box-select">
+                    @(SharedLocalizer.IsRightToLeft() ? product.NameAr : product.Name)
+                    (@product.GeneratedCode)
+                    <div class="full-act-tree">
+                        <span class="list-product-tree">
+                            <i class="fas fa-bars"></i>
+                        </span>
+
+                        <div class="actions-product-tree">
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Details)).Succeeded)
+                            {
+                                <button type="button" class="info-cat" onclick="getProductInfo('@product.Id')">
+                                    <i class="fas fa-info"></i>
+                                </button>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Edit)).Succeeded)
+                            {
+                                <button type="button" class="info-cat" onclick="editProduct('@product.Id')">
+                                    <i class="far fa-edit"></i>
+                                </button>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.Delete)).Succeeded)
+                            {
+                                <button type="button" class="btn-prod-delete" onclick="deleteProduct('@product.Id', '@category.IsService', '@product.DepartmentId')">
+                                    <i class="fa fa-trash-alt"></i>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </li>
+            }
+        </ul>
+    </li>
+}

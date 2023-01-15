@@ -1,0 +1,34 @@
+﻿
+@model DepartmentSettingsViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.DepartmentVM.NameAr : Model.DepartmentVM.Name;
+    ViewData["Level1Section"] = SharedLocalizer["CompanyProfile"];
+    ViewData["Level1Url"] = Url.Action("Index");
+    ViewData["Level2Section"] = SharedLocalizer["DepartmentSettings"].Value;
+}
+
+<form method="post" asp-action="DepartmentSettings" class="d-inline">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="DepartmentId" />
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <label class="control-label" asp-for="DefaultTreasuryAccountId"></label>
+                <select asp-for="DefaultTreasuryAccountId"
+                        data-live-search="true"
+                        class="form-control select-no-border-white"
+                        asp-items="@(new SelectList(ViewBag.FinancialAccounts as List<FinancialAccountViewModel>, "Id", 
+                                    SharedLocalizer.IsRightToLeft() ? "DescriptionAr" : "Description"))">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-start">
+        <div class="col-12 col-lg-4">
+            <input type="submit" class="btn btn-primary" value="@SharedLocalizer["Save"]" />
+        </div>
+    </div>
+</form>

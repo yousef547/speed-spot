@@ -1,0 +1,200 @@
+﻿
+@model BankViewModel
+
+<form id="bankInfoForm">
+    <input type="hidden" id="bankId" asp-for="Id" />
+    <input type="hidden" id="bankCountryId" asp-for="CountryId" />
+    <input type="hidden" id="bankFeesId" asp-for="BankFeesId" />
+
+    <div class="row justify-content-center modal-supp">
+        <div class="col-12 ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name"></label>
+                        <input class="form-control inp-height" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <input class="form-control inp-height" asp-for="NameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>@SharedLocalizer["MinFees"]</th>
+                                <th>@SharedLocalizer["Percentage"]</th>
+                                <th>@SharedLocalizer["CreditPercentage"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>@SharedLocalizer["BidBond"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="BidBondMinFees" />
+                                    <span asp-validation-for="BidBondMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="BidBondPercentage" />
+                                    <span asp-validation-for="BidBondPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="BidBondCreditPercentage" />
+                                    <span asp-validation-for="BidBondCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@SharedLocalizer["PerformanceLG"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="PerformanceLGMinFees" />
+                                    <span asp-validation-for="PerformanceLGMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="PerformanceLGPercentage" />
+                                    <span asp-validation-for="PerformanceLGPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="PerformanceLGCreditPercentage" />
+                                    <span asp-validation-for="PerformanceLGCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@SharedLocalizer["FinalLG"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="FinalLGMinFees" />
+                                    <span asp-validation-for="FinalLGMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="FinalLGPercentage" />
+                                    <span asp-validation-for="FinalLGPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="FinalLGCreditPercentage" />
+                                    <span asp-validation-for="FinalLGCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["ChequeCollection"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ChequeCollectionMinFees" />
+                                    <span asp-validation-for="ChequeCollectionMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ChequeCollectionPercentage" />
+                                    <span asp-validation-for="ChequeCollectionPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ChequeCollectionCreditPercentage" />
+                                    <span asp-validation-for="ChequeCollectionCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["Transfer"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="TransferMinFees" />
+                                    <span asp-validation-for="TransferMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="TransferPercentage" />
+                                    <span asp-validation-for="TransferPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="TransferCreditPercentage" />
+                                    <span asp-validation-for="TransferCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["LC"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="LCMinFees" />
+                                    <span asp-validation-for="LCMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="LCPercentage" />
+                                    <span asp-validation-for="LCPercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="LCCreditPercentage" />
+                                    <span asp-validation-for="LCCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["Form4"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form4MinFees" />
+                                    <span asp-validation-for="Form4MinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form4Percentage" />
+                                    <span asp-validation-for="Form4Percentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form4CreditPercentage" />
+                                    <span asp-validation-for="Form4CreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["Form5"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form5MinFees" />
+                                    <span asp-validation-for="Form5MinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form5Percentage" />
+                                    <span asp-validation-for="Form5Percentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="Form5CreditPercentage" />
+                                    <span asp-validation-for="Form5CreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>@SharedLocalizer["ForeignExchange"]</td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ForginExchangeMinFees" />
+                                    <span asp-validation-for="ForginExchangeMinFees" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ForginExchangePercentage" />
+                                    <span asp-validation-for="ForginExchangePercentage" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input class="form-control inp-height" asp-for="ForginExchangeCreditPercentage" />
+                                    <span asp-validation-for="ForginExchangeCreditPercentage" class="text-danger"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-6">
+            <div class="action action-modal">
+                <button class="btn" type="button" id="btnCreate" onclick="createBank()">
+                    <i class="fas fa-plus"></i> @SharedLocalizer["Add"]
+                </button>
+                <button class="btn d-none" type="button" id="btnUpdate" onclick="updateBank()">
+                    <i class="fas fa-edit"></i> @SharedLocalizer["Update"]
+                </button>
+            </div>
+        </div>
+    </div>
+</form>

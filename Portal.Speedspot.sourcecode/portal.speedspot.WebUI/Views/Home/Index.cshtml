@@ -1,0 +1,142 @@
+
+@{
+    ViewData["Title"] = SharedLocalizer["Dashboard"];
+    bool hasBOPermission = (await AuthorizationService.AuthorizeAsync(User, Permissions.Dashboard.BusinessOverview)).Succeeded;
+
+    List<UserActivityViewModel> teamActivities = ViewData["TeamActivities"] as List<UserActivityViewModel>;
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        @if (hasBOPermission)
+        {
+            <li class="nav-item">
+                <a class="nav-link active" id="bo-tab" data-toggle="tab" href="#bo" role="tab" aria-controls="bo" aria-selected="true">@SharedLocalizer["BusinessOverview"]</a>
+            </li>
+        }
+        <li class="nav-item">
+            <a class="nav-link @(!hasBOPermission ? "active" : "")" id="td-tab" data-toggle="tab" href="#td" role="tab" aria-controls="td" aria-selected="false">@SharedLocalizer["ThingsToDone"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="fg-tab" data-toggle="tab" href="#fg" role="tab" aria-controls="fg" aria-selected="false">@SharedLocalizer["FavouritesAndGuides"]</a>
+        </li>
+    </ul>
+}
+
+@section HeaderActions{
+    <div id="documentExpiryDate">
+        @await Html.PartialAsync("_showExpiryDateDocuments", new List<DepartmentDocumentViewModel>())
+    </div>
+}
+
+
+<br />
+<div class="tab-content">
+    @if (hasBOPermission)
+    {
+        <div class="tab-pane fade show active mx-3" id="bo" role="tabpanel" aria-labelledby="bo-tab">
+            @await Component.InvokeAsync("BusinessOverview")         
+        </div>
+    }
+    <div class="tab-pane fade mx-3 @(!hasBOPermission ? "show active" : "")" id="td" role="tabpanel" aria-labelledby="td-tab">
+        <partial name="_ThingsToBeDonePartial" />
+    </div>
+    <div class="tab-pane fade mx-3" id="fg" role="tabpanel" aria-labelledby="fg-tab">
+    </div>
+</div>
+
+
+<div class="modal fade modal-info-task" id="taskDetailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["TaskDetails"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="taskDetails">
+                @await Html.PartialAsync("_MyDetailsTaskPartial", new TaskViewModel())
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Done"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-info-task" id="requestDetailsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["RequestDetails"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="requestDetails">
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Done"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade modal-edit-task" id="editTaskModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["EditTask"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edittaskDetails">
+                @await Html.PartialAsync("_EditDetailsTaskPartial", null)
+
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <a onclick="updateDetailsTask()" class="btn-update">
+                        @SharedLocalizer["Update"]
+                    </a>
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/chartjs/chart.min.js"></script>
+    <script src="~/lib/full-calendar/main.js"></script>
+    <script src="~/lib/full-calendar/handelCalendar.js"></script>
+    <script src="~/js/dashboard.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var orderOptions = [];
+            var dateOrder = [2, 'desc'];
+            var timeOrder = [3, 'desc'];
+            orderOptions.push(dateOrder);
+            orderOptions.push(timeOrder);
+
+            handleDataTable({
+                selector: "#table_useractivties",
+                order: orderOptions
+            });
+        })
+    </script>
+}
+

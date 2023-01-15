@@ -1,0 +1,40 @@
+﻿
+@model SupplierViewModel
+
+<input id="roSupplierName" asp-for="Name" type="hidden" />
+<input id="roSupplierNameAr" asp-for="NameAr" type="hidden" />
+<input id="roCountryName" asp-for="AddressVM.CountryName" type="hidden" />
+<input id="roCountryNameAr" asp-for="AddressVM.CountryNameAr" type="hidden" />
+<input id="roSupplierEmail" asp-for="Email" type="hidden" />
+@if (SharedLocalizer.IsRightToLeft())
+{
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="AddressVM.CountryNameAr" class="control-label"></label>
+            <input asp-for="AddressVM.CountryNameAr" class="form-control" disabled />
+        </div>
+    </div>
+}
+else
+{
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label asp-for="AddressVM.CountryName" class="control-label"></label>
+            <input asp-for="AddressVM.CountryName" class="form-control" disabled />
+        </div>
+    </div>
+}
+
+<div class="col-12 col-lg-4">
+    <div class="form-group">
+        <label class="control-label">@SharedLocalizer["Agency"]</label>
+        <input id="roSupplierPhone" class="form-control" disabled />
+    </div>
+</div>
+
+<div class="col-12 col-lg-4">
+    <div class="form-group">
+        <label asp-for="WebsiteUrl" class="control-label"></label>
+        <input asp-for="WebsiteUrl" class="form-control" disabled />
+    </div>
+</div>

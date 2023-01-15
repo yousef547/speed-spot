@@ -1,0 +1,221 @@
+﻿
+@model QuotationViewModel
+
+@{
+    var companyData = ViewBag.CompanyData as CompanyDataViewModel;
+
+    var selectedVersion = Model.OfferVMs.SelectMany(x => x.VersionVMs).ToList().FirstOrDefault(v => v.IsSelected);
+    if (selectedVersion == null)
+    {
+        selectedVersion = Model.OfferVMs.LastOrDefault()?.VersionVMs.LastOrDefault();
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="parents-comparison">
+            <table class="table first-column-hidden">
+                <thead>
+                    <tr>
+                        <th class="invisible">@SharedLocalizer["CurrencyId"]</th>
+                        <th class="">
+                            <div class="head-comp-logo">
+                                <img src="/images/Company/@companyData.ImagePath" class="" alt="logo" />
+                                <p class="name-comp"> @(SharedLocalizer.IsRightToLeft() ? companyData.NameAr : companyData.Name)</p>
+                            </div>
+                        </th>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            <th class="">
+                                <div class="head-comp-logo">
+                                    <img src="/images/Competitors/@competitorGroup.First().CompetitorImagePath" class="" alt="logo" />
+                                    <p class="name-comp one-line"> @competitorGroup.Key</p>
+                                </div>
+                            </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody class="bg-white">
+                    <tr>
+                        <td data-label_table="" class="compair-td">@SharedLocalizer["CurrencyId"]</td>
+                        <td>@(selectedVersion == null?"": (SharedLocalizer.IsRightToLeft() ? selectedVersion.CurrencyNameAr : selectedVersion.CurrencyName))</td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td> @competitor.CurrencyName</td>
+                        }
+
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["ExchangeRate"]</td>
+                        <td>
+                            @selectedVersion.Factor
+                        </td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td> @competitor.ExchangeRate</td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["ValidityId"]</td>
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.ValidityNameAr : selectedVersion.ValidityName)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(SharedLocalizer.IsRightToLeft() ? competitor.ValidityNameAr : competitor.ValidityName)</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["GuaranteeTermId"]</td>
+
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.GuaranteeTermNameAr : selectedVersion.GuaranteeTermName)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(SharedLocalizer.IsRightToLeft() ? competitor.GuaranteeTermNameAr : competitor.GuaranteeTermName)</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["DeliveryRange"]</td>
+                        <td> @SharedLocalizer["From"] @selectedVersion.DeliveryFromDays @SharedLocalizer["To"] @selectedVersion.DeliveryToDays<span class="month"> @SharedLocalizer["Days"]</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td> @SharedLocalizer["From"] @competitor.DeliveryFromDays @SharedLocalizer["To"] @competitor.DeliveryToDays<span class="month"> @SharedLocalizer["Days"]</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["DeliveryPlaceId"]</td>
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.DeliveryPlaceNameAr : selectedVersion.DeliveryPlaceName)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(SharedLocalizer.IsRightToLeft() ? competitor.DeliveryPlaceNameAr : competitor.DeliveryPlaceName)</span></td>
+
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["IsVATIncluded"]</td>
+                        <td><span>@SharedLocalizer["Yes"]</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(competitor.IsVATIncluded? @SharedLocalizer["Yes"] : @SharedLocalizer["No"])</span></td>
+                        }
+                    </tr>
+
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["PaymentTerms"]</td>
+                        <td>
+                            @{
+                                int count = 0;
+                            }
+                            @if (selectedVersion.DownPaymentPercentage > 0)
+                            {
+                                <span>@selectedVersion.DownPaymentPercentage.ToString("##.##")@SharedLocalizer["DownPaymentPercentage"]</span>
+                                count++;
+                            }
+                            @if (selectedVersion.UponDeliveryPercentage > 0)
+                            {
+                                <span>
+                                    @if (count == 1)
+                                    {
+                                        @SharedLocalizer["And"]
+                                    }
+                                    @selectedVersion.UponDeliveryPercentage.ToString("##.##")@SharedLocalizer["UponDeliveryPercentage"]
+                                </span>
+                                count++;
+                            }
+                            @if (selectedVersion.AfterInstallationPercentage > 0)
+                            {
+                                <span>
+                                    @if (count >= 1)
+                                    {
+                                        @SharedLocalizer["And"]
+                                    }
+                                    @selectedVersion.AfterInstallationPercentage.ToString("##.##")@SharedLocalizer["AfterInstallationPercentage"]
+                                </span>
+                                count++;
+                            }
+                        </td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td>
+                                @{
+                                    count = 0;
+                                }
+                                @if (competitor.DownPaymentPercentage > 0)
+                                {
+                                    <span>@competitor.DownPaymentPercentage.ToString("##.##")@SharedLocalizer["DownPaymentPercentage"]</span>
+                                    count++;
+                                }
+                                @if (competitor.UponDeliveryPercentage > 0)
+                                {
+                                    <span>
+                                        @if (count == 1)
+                                        {
+                                            @SharedLocalizer["And"]
+                                        }
+                                        @competitor.UponDeliveryPercentage.ToString("##.##")@SharedLocalizer["UponDeliveryPercentage"]
+                                    </span>
+                                    count++;
+                                }
+                                @if (competitor.AfterInstallationPercentage > 0)
+                                {
+                                    <span>
+                                        @if (count >= 1)
+                                        {
+                                            @SharedLocalizer["And"]
+                                        }
+                                        @competitor.AfterInstallationPercentage.ToString("##.##")@SharedLocalizer["AfterInstallationPercentage"]
+                                    </span>
+                                    count++;
+                                }
+                            </td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["OriginDocumentId"]</td>
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.OriginDocumentNameAr : selectedVersion.OriginDocumentName)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(SharedLocalizer.IsRightToLeft() ? competitor.OriginDocumentName : competitor.OriginDocumentName)</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["CertificateIds"]</td>
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.CertificateNamesStrAr : selectedVersion.CertificateNamesStr)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@(SharedLocalizer.IsRightToLeft() ? competitor.CertificateNamesStr : competitor.CertificateNamesStrAr)</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["SupplierId"]</td>
+                        <td><span>@(SharedLocalizer.IsRightToLeft() ? selectedVersion.SupplierNameAr : selectedVersion.SupplierName)</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@competitor.Supplier</span></td>
+                        }
+                    </tr>
+                    <tr>
+                        <td class="compair-td">@SharedLocalizer["Notes"]</td>
+                        <td><span>@selectedVersion.Notes</span></td>
+                        @foreach (var competitorGroup in ViewData["CompetitorsGroup"] as List<IGrouping<string, CompetitorOfferViewModel>>)
+                        {
+                            var competitor = competitorGroup.FirstOrDefault();
+                            <td><span>@competitor.Notes</span></td>
+                        }
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

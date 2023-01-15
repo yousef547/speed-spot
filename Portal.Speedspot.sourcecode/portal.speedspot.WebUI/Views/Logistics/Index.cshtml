@@ -1,0 +1,63 @@
+
+@model List<LogisticViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Logistics"];
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+
+    bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+
+@section HeaderActions{
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="fa@(isFavourite ? "s" : "r") fa-star"></i>
+    </button>
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewLogistic"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    @*    <div class="col-sm-12 col-md-6">
+        <div class="select-Competitors">
+        <p>Name</p>
+        <select id="AddressVM_CityId" name="AddressVM.CityId" class="form-control">
+        <option value="">Offere</option>
+        <option value="">Remote wireless</option>
+        </select>
+        </div>
+        </div>*@
+    <div class="col-sm-12 col-md-6 search-Competitors">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchLogistics"]">
+        </div>
+    </div>
+</div>
+
+<div id="">
+    <div class="card">
+        <div class="card-body p-0" id="getLogistics">
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script src="~/js/logistics.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getLogistics();
+        })
+    </script>
+}

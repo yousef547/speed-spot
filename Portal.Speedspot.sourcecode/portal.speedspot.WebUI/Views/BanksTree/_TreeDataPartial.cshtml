@@ -1,0 +1,79 @@
+﻿
+@model List<Bankgrouping>
+
+<ul class="list-parent-category list-branch-bank" id="list-parent-category">
+    @foreach (var group in Model)
+    {
+        <li class="name-category-parents first active">
+            <span class="view-caregory">
+                @(SharedLocalizer.IsRightToLeft() ? group.CountryNameAr : group.CountryName)
+                <span class="count-items">@group.BanksCount</span>
+            </span>
+            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Create)).Succeeded)
+            {
+                <a class="add-another-countr" onclick="addNewBank('@group.CountryId')">
+                    <i class="fas fa-plus"></i>
+                </a>
+            }
+            <ul class="list-category-child active">
+                @foreach (var bank in group.BankVMs)
+                {
+                    <li class="sub-category first active bank-name">
+                        <span class="view-caregory">
+                            @(SharedLocalizer.IsRightToLeft() ? bank.NameAr : bank.Name)
+                            <span class="count-items">@bank.BranchesCount</span>
+                        </span>
+                        <div class="bank-branch">
+                            <i class="fas fa-bars open-actions"></i>
+                            <div class="action-branches">
+                                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.CreateBranch)).Succeeded)
+                                {
+                                    <i class="fas fa-plus" onclick="addBranch('@bank.Id')"></i>
+                                }
+                                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Edit)).Succeeded)
+                                {
+                                    <i class="fas fa-edit" onclick="editBank('@bank.Id')"></i>
+                                }
+                                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Delete)).Succeeded)
+                                {
+                                    <i class="fas fa-trash-alt" onclick="deleteBank('@bank.Id')"></i>
+                                }
+                            </div>
+                        </div>
+                        <ul class="list-category-child">
+                            @foreach (var branch in bank.BranchVMs.Where(b => !b.IsArchived))
+                            {
+                                <li class="sub-category no-select first active">
+                                    <span class="view-caregory no-select">@(SharedLocalizer.IsRightToLeft() ? branch.NameAr : branch.Name)</span>
+                                    <div class="actions-address-bank">
+                                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.EditBranch)).Succeeded)
+                                        {
+                                            <i class="fas fa-edit" onclick="editBranch('@branch.Id')"></i>
+                                        }
+                                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.DeleteBranch)).Succeeded)
+                                        {
+                                            <i class="fas fa-trash-alt" onclick="deleteBranch('@branch.Id')"></i>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+                <!-- <li class="item-category-child"></li> -->
+            </ul>
+        </li>
+    }
+    @foreach (var country in ViewBag.Countries as List<Country>)
+    {
+        <li class="name-category-parents first active">
+            <span class="view-caregory">@(SharedLocalizer.IsRightToLeft() ? country.NameAr : country.Name)</span>
+            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Create)).Succeeded)
+            {
+                <a class="add-another-countr" onclick="addNewBank('@country.Id')">
+                    <i class="fas fa-plus"></i>
+                </a>
+            }
+        </li>
+    }
+</ul>

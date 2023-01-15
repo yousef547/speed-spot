@@ -1,0 +1,109 @@
+﻿
+@model QuotationViewModel
+
+<div class="row">
+    <div class="col-12 col-md-7">
+        <div class="row">
+            <ul class="nav nav-pills tsessionTab-details" id="tsessionTab" role="tablist">
+                <li class="tabs-link-outline-blue-bg-white active">
+                    <a class="nav-link active"
+                       id="competitor-tab"
+                       data-toggle="tab"
+                       href="#competitor"
+                       role="tab"
+                       aria-controls="competitor"
+                       aria-selected="true">
+                        @SharedLocalizer["Competitors"]
+                        @if (Model.TechnicalSessionStatus != null)
+                        {
+                            <i class="fas fa-check"></i>
+                        }
+                    </a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link"
+                       id="comparison-tab"
+                       data-toggle="tab"
+                       href="#comparison"
+                       role="tab"
+                       aria-controls="comparison"
+                       aria-selected="false">
+                        @SharedLocalizer["Comparison"]
+                        @if (Model.TechnicalSessionStatus != null)
+                        {
+                            <i class="fas fa-check"></i>
+                        }
+                    </a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link"
+                       id="conversation-tab"
+                       data-toggle="tab"
+                       href="#conversation"
+                       role="tab"
+                       aria-controls="conversation"
+                       aria-selected="false">
+                        @SharedLocalizer["Conversation"]
+                        @if (Model.TechnicalSessionStatus != null)
+                        {
+                            <i class="fas fa-check"></i>
+                        }
+                    </a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link"
+                       id="aletter-tab"
+                       data-toggle="tab"
+                       href="#aletter"
+                       role="tab"
+                       aria-controls="aletter"
+                       aria-selected="false">
+                        @SharedLocalizer["AcceptanceLetter"]
+                        @if (Model.TechnicalSessionStatus == ApplicationEnums.QuotationTechnicalSessionStatus.Accepted)
+                        {
+                            <i class="fas fa-check"></i>
+                        }
+                        @if (Model.TechnicalSessionStatus == ApplicationEnums.QuotationTechnicalSessionStatus.Rejected)
+                        {
+                            <i class="fas fa-times"></i>
+                        }
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="row head-details-qout">
+            <p><i class="far fa-calendar"></i><span>@SharedLocalizer["TenderDate"]: </span> <span class="light-blue">@Model.DueDate.ToString("dd MMMM, yyyy")</span></p>
+            @{
+                int i = 0;
+            }
+            @foreach (var currency in ViewData["CurrencyVMs"] as List<CurrencyViewModel>)
+            {
+                <p>
+                    <span>@(SharedLocalizer.IsRightToLeft() ? currency.NameAr : currency.Name): </span>
+                    <span class="light-blue"> @currency.ExchangeRate </span>
+                </p>
+                @if (i < Model.CurrencyVMs.Count - 1)
+                {
+                    @:<span> | </span>
+                }
+                i++;
+            }
+        </div>
+    </div>
+</div>
+
+<div class="tab-content mt-4" id="tsessionTabContent">
+    <div class="tab-pane fade show active" id="competitor" role="tabpanel" aria-labelledby="competitor-tab">
+        @await Html.PartialAsync("_TechnicalSessionCompetitorsPartial")
+    </div>
+    <div class="tab-pane fade" id="comparison" role="tabpanel" aria-labelledby="comparison-tab">
+        @await Html.PartialAsync("_TechnicalSessionComparisonPartial")
+    </div>
+    <div class="tab-pane fade" id="conversation" role="tabpanel" aria-labelledby="conversation-tab">
+        @await Html.PartialAsync("_ConversationPartial")
+    </div>
+    <div class="tab-pane fade" id="aletter" role="tabpanel" aria-labelledby="aletter-tab">
+        @await Html.PartialAsync("_AcceptanceLetterPartial")
+    </div>
+</div>
+

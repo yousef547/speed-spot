@@ -1,0 +1,175 @@
+
+@model NegotiationResultsViewModel
+
+@{
+   
+}
+
+
+<form id="negotiationResultsForm" asp-action="NegotiationResults">
+
+    <div class="card p-3 border-box">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Title" value="@ViewData["Title"]" />
+        <input type="hidden" asp-for="OldOfferValue" />
+        <input type="hidden" asp-for="OldDownPaymentPercentage" />
+        <input type="hidden" asp-for="OldUponDeliveryPercentage" />
+        <input type="hidden" asp-for="OldAfterInstallationPercentage" />
+        <input type="hidden" asp-for="OldDeliveryFromDays" />
+        <input type="hidden" asp-for="OldDeliveryToDays" />
+        <div class="row mb-2 p-3">
+            <div class="col-12 col-lg-2">
+                <label>@SharedLocalizer["Conditions"]</label>
+            </div>
+            <div class="col-6 col-lg-4">
+                <label>@SharedLocalizer["Before"]</label>
+            </div>
+            <div class="col-6 col-lg-6">
+                <label>@SharedLocalizer["After"]</label>
+            </div>
+
+        </div>
+
+        <div class="border-box radius-box p-3">
+            <div class="row mb-2">
+                <div class="col-12 col-lg-2">
+                    <label class="control-label">@SharedLocalizer["Value"]</label>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <input class="form-control inp-height" type="text" value="@Model.OldOfferValue" disabled />
+                </div>
+                <div class="col-6 col-lg-6">
+                    <input class="form-control inp-height"
+                           asp-for="NegotiationResultsVM.OfferValue"
+                           value="@(Model.NegotiationResultsVM == null ? Model.OldOfferValue : Model.NegotiationResultsVM.OfferValue)"
+                           placeholder="@SharedLocalizer["Subtotal"]" />
+                    <span asp-validation-for="NegotiationResultsVM.OfferValue"></span>
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-12 col-lg-2">
+                    <label class="control-label">@SharedLocalizer["PaymentTerms"]</label>
+                </div>
+                <div class="col-6 col-lg-4 box-flex-center">
+                    @if (Model.OldDownPaymentPercentage > 0)
+                    {
+                        <span>@Model.OldDownPaymentPercentage.ToString("##.##")@SharedLocalizer["DownPaymentPercentage"].Value</span>
+                        <br />
+                    }
+                    @if (Model.OldUponDeliveryPercentage > 0)
+                    {
+                        <span>@Model.OldUponDeliveryPercentage.ToString("##.##")@SharedLocalizer["UponDeliveryPercentage"].Value</span>
+                        <br />
+                    }
+                    @if (Model.OldAfterInstallationPercentage > 0)
+                    {
+                        <span>@Model.OldAfterInstallationPercentage.ToString("##.##")@SharedLocalizer["AfterInstallationPercentage"].Value</span>
+                    }
+                </div>
+                <div class="col-6 col-lg-6">
+                    <div class="row">
+                        <div class="col-12 col-lg-4">
+                            <input class="form-control inp-height"
+                                   asp-for="NegotiationResultsVM.DownPaymentPercentage"
+                                   value="@(Model.NegotiationResultsVM == null ? Model.OldDownPaymentPercentage : Model.NegotiationResultsVM.DownPaymentPercentage)"
+                                   placeholder="@SharedLocalizer["DownPaymentPercentage"]" />
+                            <span asp-validation-for="NegotiationResultsVM.DownPaymentPercentage"></span>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <input class="form-control inp-height"
+                                   asp-for="NegotiationResultsVM.UponDeliveryPercentage"
+                                   value="@(Model.NegotiationResultsVM == null ? Model.OldUponDeliveryPercentage : Model.NegotiationResultsVM.UponDeliveryPercentage)"
+                                   placeholder="@SharedLocalizer["UponDeliveryPercentage"]" />
+                            <span asp-validation-for="NegotiationResultsVM.UponDeliveryPercentage"></span>
+                        </div>
+                        <div class="col-12 col-lg-4">
+                            <input class="form-control inp-height"
+                                   asp-for="NegotiationResultsVM.AfterInstallationPercentage"
+                                   value="@(Model.NegotiationResultsVM == null ? Model.OldAfterInstallationPercentage : Model.NegotiationResultsVM.AfterInstallationPercentage)"
+                                   placeholder="@SharedLocalizer["AfterInstallationPercentage"]" />
+                            <span asp-validation-for="NegotiationResultsVM.AfterInstallationPercentage"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-12 col-lg-2">
+                    <label class="control-label">@SharedLocalizer["DeliveryRange"]</label>
+                </div>
+                <div class="col-6 col-lg-4">
+                    <span class="text-box prim-color">@SharedLocalizer["From"] @Model.OldDeliveryFromDays @SharedLocalizer["To"] @Model.OldDeliveryToDays @SharedLocalizer["Days"]</span>
+                </div>
+                <div class="col-6 col-lg-6">
+                    <div class="row">
+                        <div class="col-12 col-lg-6">
+                            <input class="form-control inp-height"
+                                   asp-for="NegotiationResultsVM.DeliveryFromDays"
+                                   value="@(Model.NegotiationResultsVM == null ? Model.OldDeliveryFromDays : Model.NegotiationResultsVM.DeliveryFromDays)"
+                                   placeholder="@SharedLocalizer["DeliveryRangeFrom"]" />
+                            <span asp-validation-for="NegotiationResultsVM.DeliveryFromDays"></span>
+                        </div>
+                        <div class="col-12 col-lg-6">
+                            <input class="form-control inp-height"
+                                   asp-for="NegotiationResultsVM.DeliveryToDays"
+                                   value="@(Model.NegotiationResultsVM == null ? Model.OldDeliveryToDays : Model.NegotiationResultsVM.DeliveryToDays)"
+                                   placeholder="@SharedLocalizer["DeliveryRangeTo"]" />
+                            <span asp-validation-for="NegotiationResultsVM.DeliveryToDays"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @{
+                int i = 0;
+            }
+            @if (Model.OtherNegotiationResultVMs != null)
+            {
+                foreach (var otherNegotiationResult in Model.OtherNegotiationResultVMs)
+                {
+                    <div class="row mb-2">
+                        <div class="col-12 col-lg-2">
+                            <input class="form-control inp-height"
+                                   asp-for="OtherNegotiationResultVMs[i].Title"
+                                   value="@otherNegotiationResult.Title"
+                                   placeholder="@SharedLocalizer["NegotiationTitle"]" />
+                            <span asp-validation-for="OtherNegotiationResultVMs[i].Title"></span>
+                        </div>
+                        <div class="col-6 col-lg-4">
+                            <input class="form-control inp-height"
+                                   asp-for="OtherNegotiationResultVMs[i].ValueBefore"
+                                   value="@otherNegotiationResult.ValueBefore"
+                                   placeholder="@SharedLocalizer["ValueBefore"]" />
+                            <span asp-validation-for="OtherNegotiationResultVMs[i].ValueBefore"></span>
+                        </div>
+                        <div class="col-6 col-lg-5">
+                            <input class="form-control inp-height"
+                                   asp-for="OtherNegotiationResultVMs[i].ValueAfter"
+                                   value="@otherNegotiationResult.ValueAfter"
+                                   placeholder="@SharedLocalizer["ValueAfter"]" />
+                            <span asp-validation-for="OtherNegotiationResultVMs[i].ValueAfter"></span>
+                        </div>
+                        <div class="col-12 col-lg-1 justify-content-center">
+                            <button type="button" class="btn btn-action" onclick="deleteOtherNegotiationResult('@i')">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    i++;
+                }
+            }
+        </div>
+    </div>
+
+    <button class="btn btn-add-primary  px-3" type="button" onclick="addOtherNegotiationResult()">
+        <i class="fas fa-plus"></i>
+        @SharedLocalizer["AddCondition"]
+    </button>
+
+    <div class="d-flex justify-content-end">
+        <button class="btn btn-primary  px-3" type="submit">
+            @SharedLocalizer["Finish"]
+        </button>
+    </div>
+</form>

@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = SharedLocalizer["Products"];
+    ViewData["Level1Section"] = SharedLocalizer["RecycleBin"];
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchProducts"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-2 table-customers-home">
+    <div class="card-body p-0" id="dataTable">
+        @await Html.PartialAsync("_TablePartial", new List<ProductViewModel>())
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        deleteProduct = function (id) {
+            showLoader();
+            $.ajax({
+                url: "/ProductsArchive/Delete/" + id,
+                success: function () {
+                    $("#dataTable").load("/ProductsArchive/LoadProducts", function () {
+                        initializeTable();
+                        hideLoader();
+                    })
+                },
+                error: function () {
+                    toastr.error(ITEM_NOT_DELETED);
+                    hideLoader();
+                }
+            })
+        }
+
+        initializeTable = function () {
+            var groupColumn = 0;
+            var columnDefsArr = [
+                { "visible": false, "targets": [groupColumn] }
+            ]
+
+            var orderArr = [[groupColumn, 'asc']]
+
+            var drawCallbackFn = function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group bg-main-color"><td colspan="6">' + group + '</td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+
+            initTable({
+                selector: ".table-products",
+                stateLoadCallback: stateLoadParams,
+                columnDefs: columnDefsArr,
+                order: orderArr,
+                drawCallback: drawCallbackFn
+            });
+            var dataTable = $(".table-products").dataTable();
+
+            dataTable.fnFilter("");
+            $("#searchbox").keyup(function () {
+                dataTable.fnFilter(this.value);
+            });
+
+            var searchData = $("#searchbox").val();
+            dataTable.api().search(searchData).draw();
+
+            $('.table-products tbody').on('click', 'tr.group', function () {
+                var currentOrder = dataTable.api().order()[0];
+                if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                    dataTable.api().order([groupColumn, 'desc']).draw();
+                }
+                else {
+                    dataTable.api().order([groupColumn, 'asc']).draw();
+                }
+            });
+
+            $(".table-products").on('click', '.btn-delete', function (e) {
+                e.preventDefault();
+                $(this).confirmation({
+                    rootSelector: '[data-toggle=confirmation]',
+                    // other options
+                    popout: true,
+                    singleton: true,
+                    title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+                    btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+                    btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+                    onConfirm: function () {
+                        let id = $(this).data("id");
+                        deleteProduct(id);
+                    }
+                });
+                $(this).confirmation('show');
+            });
+        }
+
+        $(document).ready(function () {
+            showLoader();
+            $("#dataTable").load("/ProductsArchive/LoadProducts", function () {
+                initializeTable();
+                hideLoader();
+            })
+        })
+    </script>
+}

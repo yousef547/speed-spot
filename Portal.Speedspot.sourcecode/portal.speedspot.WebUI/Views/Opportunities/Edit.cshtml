@@ -1,0 +1,112 @@
+﻿
+@model OpportunityViewModel
+
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Sales"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["Opportunities"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["Opportunity"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm('Save')">
+        <i class="fas fa-check"></i> @SharedLocalizer["Save"]
+    </button>
+
+    <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form enctype="multipart/form-data" method="post" asp-action="Edit" class="d-inline" id="opportunityForm">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <input asp-for="Id" type="hidden" />
+    <input asp-for="IsArchived" type="hidden" />
+    <input asp-for="CreatedById" type="hidden" />
+    <input asp-for="StatusId" type="hidden" />
+    <input asp-for="TechnicalApprovedById" type="hidden" />
+    <input asp-for="IsTechnicalApproved" type="hidden" />
+    <input asp-for="ConvertedById" type="hidden" />
+    <input asp-for="IsConverted" type="hidden" />
+    <input asp-for="SerialNo" type="hidden" />
+    <br />
+    <ul class="nav nav-pills" id="mainTab" role="tablist">
+        <li class="nav-item top-tab-links-create-box">
+            <a class="nav-link active" id="si-tab" data-toggle="tab" href="#si" role="tab" aria-controls="si" aria-selected="true">
+                <span>1</span>
+                @SharedLocalizer["SalesInformation"]
+            </a>
+        </li>
+        <li class="nav-item top-tab-links-create-box">
+            <a class="nav-link" id="ts-tab" data-toggle="tab" href="#ts" role="tab" aria-controls="ts" aria-selected="false">
+                <span>2</span>
+
+                @SharedLocalizer["TechnicalSpecifications"]
+            </a>
+        </li>
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewSupplierOffers)).Succeeded)
+        {
+            if (Model.IsTechnicalApproved)
+            {
+                <li class="nav-item top-tab-links-create-box">
+                    <a class="nav-link " id="so-tab" data-toggle="tab" href="#so" role="tab" aria-controls="so" aria-selected="false">
+                        <span>3</span>
+                        @SharedLocalizer["SupplierOffers"]
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+    <br />
+    <div class="tab-content" id="mainTabContent">
+        <div class="tab-pane fade show active" id="si" role="tabpanel" aria-labelledby="si-tab">
+            @await Html.PartialAsync("_SalesInformationPartial", Model)
+        </div>
+        <div class="tab-pane fade" id="ts" role="tabpanel" aria-labelledby="ts-tab">
+            @await Html.PartialAsync("_TechnicalSpecificationPartial", Model)
+        </div>
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewSupplierOffers)).Succeeded)
+        {
+            if (Model.IsTechnicalApproved)
+            {
+                <div class="tab-pane fade" id="so" role="tabpanel" aria-labelledby="so-tab">
+                    @await Html.PartialAsync("_SupplierOffersMainPartial", Model)
+                </div>
+            }
+        }
+    </div>
+</form>
+
+@await Html.PartialAsync("_CustomerCreateModalPartial")
+@await Html.PartialAsync("_AddSupplierModalPartial")
+
+<input type="hidden" id="category-item-value">
+
+@section Scripts{
+    <script src="~/lib/custom-list/custom-list.js"></script>
+    <script src="~/js/opportunities.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            checkType();
+            checkBidBond();
+            checkBookTender();
+            showHideSections();
+            calculateHoldAmount();
+            calculateExpiryDate();
+            calculateBookTenderTotal();
+            $('.tsproduct-origin').selectpicker();
+            $('select.tsproduct-origin').each(function () {
+                reloadProductOriginStr(this);
+            })
+            $('select.tsproduct-origin').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+                reloadProductOriginStr(this)
+            });
+        });
+
+        initSelectPicker();
+        initCustomList('#availableSuppliers');
+        initCustomList('#editAvailableSuppliers');
+    </script>
+}

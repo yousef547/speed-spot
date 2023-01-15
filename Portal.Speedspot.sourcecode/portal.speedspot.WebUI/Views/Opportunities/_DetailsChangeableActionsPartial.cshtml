@@ -1,0 +1,38 @@
+﻿
+@model OpportunityViewModel
+
+@if (!Model.IsTechnicalApproved)
+{
+    if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.TechnicalApprove)).Succeeded)
+    {
+        if (Model.TechnicalSpecificationVM.ProductVMs.Count > 0)
+        {
+            <a asp-action="TechnicalApprove" class="btn btn-check-head show-loader" asp-route-id="@Model.Id" title="@SharedLocalizer["TechnicalApprove"]">
+                <i class="fas fa-check"></i>
+            </a>
+        }
+    }
+}
+else
+{
+    if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ConvertToQuotation)).Succeeded && Model.SupplierOfferVMs.Count(o => o.IsAccepted) > 0 && !Model.IsConverted)
+    {
+        <a asp-action="ConvertToQuotation" class="btn btn-check-head show-loader" asp-route-id="@Model.Id" title="@SharedLocalizer["ConvertToQuotation"]">
+            <i class="fas fa-check"></i>
+        </a>
+    }
+}
+
+@if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Delete)).Succeeded && !Model.IsConverted)
+{
+    <a data-toggle="confirmation"
+       class="btn btn-action opportunity-confirm-delete @(!Model.IsArchived?"":"d-none")"
+       data-source="archiveOpportunity"
+       data-itemid="@Model.Id" title="@SharedLocalizer["Archive"]">
+        <i class="fas fa-trash-alt"></i>
+    </a>
+    <a data-toggle="confirmation" class="btn btn-action btn-action-danger opportunity-confirm-delete @(Model.IsArchived?"":"d-none")" data-source="unArchiveOpportunity" data-itemid="@Model.Id" title="@SharedLocalizer["Unarchive"]">
+        <i class="fas fa-trash-alt"></i>
+    </a>
+
+}

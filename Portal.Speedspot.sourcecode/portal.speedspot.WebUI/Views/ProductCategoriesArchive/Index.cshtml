@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = SharedLocalizer["ProductCategories"];
+    ViewData["Level1Section"] = SharedLocalizer["RecycleBin"];
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchProductCategories"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-2 table-customers-home">
+    <div class="card-body p-0" id="dataTable">
+        @await Html.PartialAsync("_TablePartial", new List<ProductCategoryViewModel>())
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        stateLoadParams = function (settings, data) {
+            let searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        deleteCategory = function (id) {
+            showLoader();
+            $.ajax({
+                url: "/ProductCategoriesArchive/Delete/" + id,
+                success: function () {
+                    $("#dataTable").load("/ProductCategoriesArchive/LoadProductCategories", function () {
+                        initializeTable();
+                        hideLoader();
+                    })
+                },
+                error: function () {
+                    toastr.error(ITEM_NOT_DELETED);
+                    hideLoader();
+                }
+            })
+        }
+
+        initializeTable = function () {
+            let groupColumn = 0;
+            let columnDefsArr = [
+                { "visible": false, "targets": [groupColumn] }
+            ]
+
+            let orderArr = [[groupColumn, 'asc']]
+
+            drawCallbackFn = function (settings) {
+                let api = this.api();
+                let rows = api.rows({ page: 'current' }).nodes();
+                let last = null;
+
+                api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group bg-main-color"><td colspan="6">' + group + '</td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+
+            initTable({
+                selector: ".table-product-categories",
+                stateLoadCallback: stateLoadParams,
+                columnDefs: columnDefsArr,
+                order: orderArr,
+                drawCallback: drawCallbackFn
+            });
+            let dataTable = $(".table-product-categories").dataTable();
+
+            dataTable.fnFilter("");
+            $("#searchbox").keyup(function () {
+                dataTable.fnFilter(this.value);
+            });
+
+            var searchData = $("#searchbox").val();
+            dataTable.api().search(searchData).draw();
+
+            $('.table-product-categories tbody').on('click', 'tr.group', function () {
+                let currentOrder = dataTable.api().order()[0];
+                if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                    dataTable.api().order([groupColumn, 'desc']).draw();
+                }
+                else {
+                    dataTable.api().order([groupColumn, 'asc']).draw();
+                }
+            });
+
+            $(".table-product-categories").on('click', '.btn-delete', function (e) {
+                e.preventDefault();
+                $(this).confirmation({
+                    rootSelector: '[data-toggle=confirmation]',
+                    // other options
+                    popout: true,
+                    singleton: true,
+                    title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+                    btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+                    btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+                    onConfirm: function () {
+                        let id = $(this).data("id");
+                        deleteCategory(id);
+                    }
+                });
+                $(this).confirmation('show');
+            });
+        }
+
+        $(document).ready(function () {
+            showLoader();
+            $("#dataTable").load("/ProductCategoriesArchive/LoadProductCategories", function () {
+                initializeTable();
+                hideLoader();
+            })
+        })
+    </script>
+}

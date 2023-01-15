@@ -1,0 +1,385 @@
+﻿
+@{
+    ViewData["Title"] = SharedLocalizer["ProductsTree"];
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"];
+    bool isFavourite = false;
+}
+
+@section HeaderActions{
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="fa@(isFavourite ? "s" : "r") fa-star"></i>
+    </button>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="products-tab" data-toggle="tab" href="#products" role="tab" aria-controls="products" aria-selected="true">@SharedLocalizer["Products"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="services-tab" data-toggle="tab" href="#services" role="tab" aria-controls="services" aria-selected="false">@SharedLocalizer["Services"]</a>
+        </li>
+    </ul>
+}
+
+<br />
+
+<div class="tab-content" id="mainTabContent">
+    @*Start All Sec*@
+    <div class="tab-pane fade show active" id="products" role="tabpanel" aria-labelledby="products-tab">
+        <div class="bg-full d-none" id="products-spinner">
+            <div class="spinner-loading" role="status">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row m-4">
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="display-row-filter">
+                            <div class="icon-filter">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            @*<div class="result-filter">
+                                    <div class=""><p>Construction</p></div>
+                                    <div class=""><p>IT</p></div>
+                                    <div class=""><p>Marketing</p></div>
+                                    <span class="claer_search">Clear</span>
+                                </div>*@
+
+                            <select class="form-control select-no-border-white"
+                                    onchange="productsDepartmentChanged()"
+                                    id="productDepartmentId"
+                                    data-live-search="true"
+                                    asp-items="@(new SelectList(ViewBag.Departments as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="search-cat-tree">
+                    <input class="form-control inp-height" type="search" id="searchProduct" placeholder="@SharedLocalizer["SearchProducts"]" />
+                    <i class="fa fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row mx-4">
+            <div class="col-6">
+                <div class="add-cat-new" onclick="addParentCategory(false)">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <div class="category-dropdown" id="productsTree">
+                    @await Html.PartialAsync("_CategoriesTreePartial", new List<ProductCategoryViewModel>())
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Start Services Sec*@
+    <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
+        <div class="bg-full d-none" id="services-spinner">
+            <div class="spinner-loading" role="status">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-4">
+            <div class="col-9">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="display-row-filter">
+                            <div class="icon-filter">
+                                <i class="fas fa-sliders-h"></i>
+                            </div>
+                            @*<div class="result-filter">
+                                    <div class=""><p>Construction</p></div>
+                                    <div class=""><p>IT</p></div>
+                                    <div class=""><p>Marketing</p></div>
+                                    <span class="claer_search">Clear</span>
+                                </div>*@
+
+                            <select class="form-control select-no-border-white"
+                                    onchange="servicesDepartmentChanged()"
+                                    id="serviceDepartmentId"
+                                    asp-items="@(new SelectList(ViewBag.Departments as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="search-cat-tree">
+                    <input class="form-control inp-height" type="search" id="searchServices" placeholder="@SharedLocalizer["SearchServices"]" />
+                    <i class="fa fa-search"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row mx-4">
+            <div class="col-6">
+                <div class="add-cat-new">
+                    <i class="fas fa-plus" onclick="addParentCategory(true)"></i>
+                </div>
+                <div class="category-dropdown" id="servicesTree">
+                    @await Html.PartialAsync("_CategoriesTreePartial", new List<ProductCategoryViewModel>())
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modals *@
+
+@* Modal Edit *@
+<div class="modal fade modalInfo" id="modalInfo" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <input type="hidden" id="editParentId" />
+    <input type="hidden" id="editDepartmentId" />
+    <input type="hidden" id="editIsService" />
+    <input type="hidden" id="editIsCategory" value="true" />
+    <input type="hidden" id="editItemId" />
+    <input type="hidden" id="editAutoCode" />
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="productDetailsModal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center modal-supp">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="modal-title">
+                                    @SharedLocalizer["Name"]
+                                </label>
+                                <br>
+                                <label class="modal-contenttt">
+                                    <input class="form-control" type="text" id="editName" />
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label class="modal-title">
+                                    @SharedLocalizer["NameAr"]
+                                </label>
+                                <br>
+                                <label class="modal-contenttt">
+                                    <input class="form-control" type="text" id="editNameAr" />
+                                </label>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="modal-title">
+                                    @SharedLocalizer["Code"]
+                                </label>
+                                <br>
+                                <label class="modal-contenttt">
+                                    <input class="form-control" type="text" id="editCode" />
+                                </label>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="modal-title">
+                                    @SharedLocalizer["GeneratedCode"]
+                                </label>
+                                <br>
+                                <label class="modal-contenttt">
+                                    <span id="editGeneratedCode"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="action action-modal">
+                    <button type="button" class="btn" onclick="updateItem()">@SharedLocalizer["Update"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@* Modal Add *@
+<div class="modal fade modalAdd" id="modalAdd" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <input type="hidden" id="addParentId" />
+    <input type="hidden" id="addDepartmentId" />
+    <input type="hidden" id="addIsService" />
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input" type="radio" id="rbCategory" name="IsCategory" value="true" checked />
+                            <label for="rbCategory" class="custom-control-label">@SharedLocalizer["Category"]</label>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input" type="radio" id="rbProduct" name="IsCategory" value="false" />
+                            <label for="rbProduct" class="custom-control-label">@SharedLocalizer["Product"]</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center  modal-supp">
+                    <div class="col-12 ">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="modal-title">
+                                        @SharedLocalizer["Name"]
+                                    </label>
+                                    <input class="form-control" type="text" id="addName" />
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="modal-title">
+                                        @SharedLocalizer["NameAr"]
+                                    </label>
+                                    <input class="form-control" type="text" id="addNameAr" />
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="modal-title">
+                                        @SharedLocalizer["Code"]
+                                    </label>
+                                    <input class="form-control" type="text" id="addCode" />
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="modal-title">
+                                    @SharedLocalizer["GeneratedCode"]
+                                </label>
+                                <br>
+                                <label class="modal-contenttt">
+                                    <span id="addGeneratedCode"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-end">
+                    <div class="col-6">
+                        <div class="action action-modal">
+                            <button type="button" class="btn" onclick="createItem()">
+                                <i class="fas fa-plus"></i>@SharedLocalizer["Add"]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Modal Info *@
+<div class="modal fade modalInfoNew" id="modalInfoNew" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" id="productDetailsModal">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row justify-content-center modal-supp">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="modal-title-info">
+                                    @SharedLocalizer["Name"]
+                                </label>
+                                <br>
+                                @*<label class="modal-contenttt">
+                                        <input class="form-control" type="text" id="editName" />
+                                    </label>*@
+                                <p class="modal-title-info-data" id="infoName"></p>
+                            </div>
+                            <div class="col-6">
+                                <label class="modal-title-info">
+                                    @SharedLocalizer["NameAr"]
+                                </label>
+                                <br>
+                                @*<label class="modal-contenttt">
+                                        <input class="form-control" type="text" id="editNameAr" />
+                                    </label>*@
+                                <p class="modal-title-info-data" id="infoNameAr"></p>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="modal-title-info">
+                                    @SharedLocalizer["Code"]
+                                </label>
+                                <br>
+                                @*<label class="modal-contenttt">
+                                        <input class="form-control" type="text" id="editCode" />
+                                    </label>*@
+                                <p class="modal-title-info-data" id="infoCode"></p>
+                            </div>
+
+                            <div class="col-6">
+                                <label class="modal-title-info">
+                                    @SharedLocalizer["GeneratedCode"]
+                                </label>
+                                <br>
+                                @*<label class="modal-contenttt">
+                                        <span id="editGeneratedCode"></span>
+                                    </label>*@
+                                <p class="modal-title-info-data" id="infoGeneratedCode"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <button type="button" class="btn" onclick="hideInfoModal()">@SharedLocalizer["Done"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/productstree.js"></script>
+    <script>
+        $(document).ready(function () {
+            productsDepartmentChanged();
+            servicesDepartmentChanged();
+
+            $('input[name="IsCategory"]').on("change", function () {
+                isCategory = $("#rbCategory").is(":checked");
+                if (isCategory) {
+                    generateCategoryCode();
+                } else {
+                    generateProductCode();
+                }
+            });
+            $('select').selectpicker();
+
+        })
+    </script>
+}

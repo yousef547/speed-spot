@@ -1,0 +1,790 @@
+
+@using portal.speedspot.BizLayer.BizMethods
+
+@inject ApplicationUserManager UserManager
+
+@{
+    string controllerName = @ViewContext.RouteData.Values["controller"].ToString();
+
+    ApplicationUser user = null;
+    if (User.Identity.IsAuthenticated)
+    {
+        user = await UserManager.FindByEmailAsync(User.Identity.Name);
+    }
+
+    string activeMenu = "";
+    switch (controllerName)
+    {
+        case "Roles":
+        case "Users":
+            activeMenu = "UserManagement";
+            break;
+        case "ProductsTree":
+        case "BanksTree":
+        case "Countries":
+        case "Cities":
+        case "Classifications":
+        case "Currencies":
+        case "OrganizationTypes":
+        case "OriginDocuments":
+        case "OfferValidities":
+        case "OfferCertificates":
+        case "DeliveryPlaces":
+        case "GuaranteeTerms":
+        case "VisitReasons":
+        case "PaymentTypes":
+        case "VATValues":
+        case "RejectReasons":
+            activeMenu = "Lookups";
+            break;
+        case "Opportunities":
+        case "Quotations":
+        case "PurchasingOrders":
+        case "Visits":
+            activeMenu = "Sales";
+            break;
+        case "Customers":
+        case "Suppliers":
+        case "Competitors":
+        case "Logistics":
+            activeMenu = "Partners";
+            break;
+        case "ProductsArchive":
+        case "ProductCategoriesArchive":
+        case "BanksArchive":
+            activeMenu = "RecycleBin";
+            break;
+        case "Projects":
+        case "Payments":
+        case "ChartOfAccounts":
+        case "Treasuries":
+            activeMenu = "Financials";
+            break;
+    }
+}
+
+<!--  Start Popup Add New   -->
+<div class="poup-add-new">
+    <div class="popup-box">
+        <div class="close-icon">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="container mt-3">
+            <div class="row text-center">
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Create)).Succeeded)
+                {
+                    <div class="col-md-4 ">
+                        <span class="head-title">@SharedLocalizer["Opportunities"]:</span>
+                        <ul class="list-add-new-popup list-unstyled">
+                            @foreach (var opportunityType in ViewData["OpportunityTypes"] as List<OpportunityType>)
+                            {
+                                <li class="item">
+                                    <div class="plus-popup">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <a class="show-loader"
+                                       asp-action="Create"
+                                       asp-controller="Opportunities"
+                                       asp-route-typeId="@opportunityType.Id"
+                                       title="@(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)">
+                                        @(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="col-md-4 ">
+                    <span class="head-title">@SharedLocalizer["Partners"]:</span>
+                    <ul class="list-add-new-popup list-unstyled">
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.Create)).Succeeded)
+                        {
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a class="show-loader"
+                                   asp-action="Create"
+                                   asp-controller="Customers"
+                                   title="Customers">
+                                    @SharedLocalizer["Customers"]
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.Create)).Succeeded)
+                        {
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a class="show-loader"
+                                   asp-action="Create"
+                                   asp-controller="Suppliers"
+                                   title="Suppliers">
+                                    @SharedLocalizer["Suppliers"]
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.Create)).Succeeded)
+                        {
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a class="show-loader"
+                                   asp-action="Create"
+                                   asp-controller="Competitors"
+                                   title="Competitors">
+                                    @SharedLocalizer["Competitors"]
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.Create)).Succeeded)
+                        {
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a class="show-loader"
+                                   asp-action="Create"
+                                   asp-controller="Logistics"
+                                   title="Logistics">
+                                    @SharedLocalizer["Logistics"]
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                @*<div class="col-md-4 ">
+                        <span class="head-title">Pro:</span>
+                        <ul class="list-add-new-popup list-unstyled">
+
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Suppller Pro</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Custommer Pro</span> </a>
+                            </li>
+                            <span class="head-title">Inventory:</span>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Temporary</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href="">  <span>Permenent</span> </a>
+                            </li>
+                        </ul>
+                    </div>*@
+
+                @*<div class="col-md-4 ">
+                        <span class="head-title">Partners:</span>
+                        <ul class="list-add-new-popup list-unstyled">
+
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Customer</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Supplier</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Vendor</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Competition</span> </a>
+                            </li>
+                        </ul>
+                    </div>*@
+
+
+                @*<div class="hr-popup-add-new"></div>*@
+
+
+                @*<div class="col-md-4 ">
+                        <span class="head-title">Company:</span>
+                        <ul class="list-add-new-popup list-unstyled">
+
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Contracts</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Visit</span> </a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Shared File</span> </a>
+                            </li>
+                        </ul>
+                    </div>*@
+
+                @*<div class="col-md-4 ">
+                        <span class="head-title">HR:</span>
+                        <ul class="list-add-new-popup list-unstyled">
+
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""><span>Employee</span></a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Holidays</span></a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""> <span>Vacations</span> </a>
+                            </li>
+                        </ul>
+                    </div>*@
+
+
+                @*<div class="col-md-4 ">
+                        <span class="head-title">.... </span>
+                        <ul class="list-add-new-popup list-unstyled">
+
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""><span>Loans</span></a>
+                            </li>
+                            <li class="item">
+                                <div class="plus-popup">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <a href=""><span>Credit</span></a>
+                            </li>
+                        </ul>
+                    </div>*@
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div><!--  End Popup Add New   -->
+
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a asp-controller="Home" asp-action="Index" class="brand-link">
+        <img src="~/lib/adminlte/dist/img/Logo.svg" alt="AdminLTE Logo" class="brand-image logo-en"
+             style="opacity: .8">
+        <img src="~/lib/adminlte/dist/img/logo_ar.svg" alt="AdminLTE Logo" class="brand-image logo-ar"
+             style="opacity: .8">
+        <!--<span class="brand-text font-weight-light">@SharedLocalizer["AppName"]</span>-->
+    </a>
+
+
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="info">
+                <a href="#" class="d-block">@SharedLocalizer["New"]</a>
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <li class="nav-item">
+                    <a asp-controller="Home" asp-action="Index" class="nav-link show-loader @(controllerName == "Home"?"active":"")">
+                        <i class="fas fa-desktop nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["Dashboard"]
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item @(activeMenu == "Sales"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "Sales"? "active" : "")">
+                        <i class="fas fa-bullhorn nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["Sales"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Opportunities" asp-action="Index" class="nav-link show-loader @(controllerName == "Opportunities"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Opportunities"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Quotations" asp-action="Index" class="nav-link show-loader @(controllerName == "Quotations"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Quotations"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.PurchasingOrders.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="PurchasingOrders" asp-action="Index" class="nav-link show-loader @(controllerName == "PurchasingOrders"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["PurchasingOrders"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Visits.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Visits" asp-action="Index" class="nav-link show-loader @(controllerName == "Visits"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Visits"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                <li class="nav-item @(activeMenu == "Financials"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "Financials"? "active" : "")">
+                        <i class="fas fa-money-bill nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["Financials"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Projects.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Projects" asp-action="Index" class="nav-link show-loader @(controllerName == "Projects"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Projects2"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Payments.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Payments" asp-action="Index" class="nav-link show-loader @(controllerName == "Payments"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Payments"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.View)).Succeeded)
+                        {
+
+                            <li class="nav-item">
+                                <a asp-controller="ChartOfAccounts" asp-action="Index" class="nav-link show-loader @(controllerName == "ChartOfAccounts"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["ChartOfAccounts"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Treasuries.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Treasuries" asp-action="Index" class="nav-link show-loader @(controllerName == "Treasuries"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Treasuries"]
+                                    </p>
+                                </a>
+                            </li>
+
+                        }
+                    </ul>
+                </li>
+                <li class="nav-item @(activeMenu == "Partners"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "Partners"? "active" : "")">
+                        <i class="far fa-envelope nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["Partners"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Customers" asp-action="Index" class="nav-link show-loader @(controllerName == "Customers"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Customers"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Suppliers" asp-action="Index" class="nav-link show-loader @(controllerName == "Suppliers"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Suppliers"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Competitors.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Competitors" asp-action="Index" class="nav-link show-loader @(controllerName == "Competitors"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Competitors"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Logistics.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Logistics" asp-action="Index" class="nav-link show-loader @(controllerName == "Logistics"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Logistics"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+                <li class="nav-item @(activeMenu == "UserManagement"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "UserManagement"? "active" : "")">
+                        <i class="fas fa-users-cog nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["UserManagement"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Roles" asp-action="Index" class="nav-link show-loader @(controllerName == "Roles"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Roles"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Users.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Users" asp-action="Index" class="nav-link show-loader @(controllerName == "Users"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Users"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+
+                <li class="nav-item @(activeMenu == "Lookups"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "Lookups"? "active" : "")">
+                        <i class="fas fa-book-open nav-icon"></i>
+                        <p>
+                            @SharedLocalizer["Lookups"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductsTree.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="ProductsTree" asp-action="Index" class="nav-link show-loader @(controllerName == "ProductsTree"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["ProductsTree"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="BanksTree" asp-action="Index" class="nav-link show-loader @(controllerName == "BanksTree"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Banks"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Countries.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Countries" asp-action="Index" class="nav-link show-loader @(controllerName == "Countries"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Countries"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Cities.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Cities" asp-action="Index" class="nav-link show-loader @(controllerName == "Cities"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Cities"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Classifications.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Classifications" asp-action="Index" class="nav-link show-loader @(controllerName == "Classifications"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Classifications"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Currencies.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="Currencies" asp-action="Index" class="nav-link show-loader @(controllerName == "Currencies"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Currencies"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.OrganizationTypes.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="OrganizationTypes" asp-action="Index" class="nav-link show-loader @(controllerName == "OrganizationTypes"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["OrganizationTypes"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.DeliveryPlaces.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="DeliveryPlaces" asp-action="Index" class="nav-link show-loader @(controllerName == "DeliveryPlaces"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["DeliveryPlaces"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.OfferCertificates.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="OfferCertificates" asp-action="Index" class="nav-link show-loader @(controllerName == "OfferCertificates"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["OfferCertificates"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.OfferValidities.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="OfferValidities" asp-action="Index" class="nav-link show-loader @(controllerName == "OfferValidities"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["OfferValidities"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.OriginDocuments.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="OriginDocuments" asp-action="Index" class="nav-link show-loader @(controllerName == "OriginDocuments"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["OriginDocuments"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.GuaranteeTerms.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="GuaranteeTerms" asp-action="Index" class="nav-link show-loader @(controllerName == "GuaranteeTerms"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["GuaranteeTerms"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.VisitReasons.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="VisitReasons" asp-action="Index" class="nav-link show-loader @(controllerName == "VisitReasons"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["VisitReasons"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.PaymentTypes.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="PaymentTypes" asp-action="Index" class="nav-link show-loader @(controllerName == "PaymentTypes"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["PaymentTypes"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.VATValues.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="VATValues" asp-action="Index" class="nav-link show-loader @(controllerName == "VATValues"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["VATValues"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.RejectReasons.View)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="RejectReasons" asp-action="Index" class="nav-link show-loader @(controllerName == "RejectReasons"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["RejectReasons"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @*@if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductOrigins.View)).Succeeded)
+                            {
+                                <li class="nav-item">
+                                    <a asp-controller="ProductOrigins" asp-action="Index" class="nav-link show-loader @(controllerName == "ProductOrigins"?"active":"")">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            @SharedLocalizer["ProductOrigins"]
+                                        </p>
+                                    </a>
+                                </li>
+                            }*@
+                    </ul>
+                </li>
+
+                <li class="nav-item @(activeMenu == "RecycleBin"? "menu-open" : "")">
+                    <a href="#" class="nav-link @(activeMenu == "RecycleBin"? "active" : "")">
+                        <i class="nav-icon fas fa-dumpster"></i>
+                        <p>
+                            @SharedLocalizer["RecycleBin"]
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductCategories.ViewArchived)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="ProductCategoriesArchive" asp-action="Index" class="nav-link show-loader @(controllerName == "ProductCategoriesArchive"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["ProductCategories"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Products.ViewArchived)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="ProductsArchive" asp-action="Index" class="nav-link show-loader @(controllerName == "ProductsArchive"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Products"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.ViewArchived)).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a asp-controller="BanksArchive" asp-action="Index" class="nav-link show-loader @(controllerName == "BanksArchive"?"active":"")">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        @SharedLocalizer["Banks"]
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</aside>
+
+

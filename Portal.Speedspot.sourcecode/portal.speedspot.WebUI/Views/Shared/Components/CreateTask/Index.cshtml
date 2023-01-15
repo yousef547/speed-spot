@@ -1,0 +1,85 @@
+﻿
+@model TaskViewModel
+
+@{
+
+}
+
+<div class="header-top-tasks">
+    <span>@SharedLocalizer["Task"] </span>
+    <div class="close-tasks" onclick="closeNewTask()"> <i class="fas fa-times"></i> </div>
+</div>
+<div class="hr-notes"></div>
+<div id="add-new-task">
+
+    <form class="add-tasks" id="createTaskForm">
+        @*<i class="fas fa-plus"></i>*@
+        <span>@SharedLocalizer["AddTask"]</span>
+        <div class="row">
+            <div class="col-12">
+                <label asp-for="Title" class="control-label label-sales-information"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="Description" class="control-label label-sales-information"></label>
+                <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="AssignedToId" class="label-sales-information"></label>
+                <select class="select-no-border-white form-control" id="AssignedToId" asp-for="AssignedToId" asp-items="@(new SelectList(ViewBag.TaskAssignedToId as List<UserViewModel>, "Id", "Name"))">
+                    <option value="">@SharedLocalizer["Select"]</option>
+                </select>
+                <span asp-validation-for="AssignedToId" class="text-danger"></span>
+            </div>
+            <div class="col-12">
+                <label asp-for="PriorityLevel" class="label-sales-information"></label>
+                <select class="select-no-border-white form-control inp-height form-control" id="priorityLevels" asp-for="PriorityLevel" asp-items="@ViewBag.PriorityLevels">
+                    <option value="" selected>@SharedLocalizer["Select"]</option>
+                </select>
+                <span asp-validation-for="PriorityLevel" class="text-danger"></span>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Deadline" class="control-label label-sales-information"></label>
+                <input asp-for="Deadline" class="form-control" />
+                <span asp-validation-for="Deadline" class="text-danger"></span>
+            </div>
+
+            <div class="col-12">
+                <div class="check-done">
+                    <div class="icheck-primary">
+                        <input type="checkbox" asp-for="IsSavePage">
+                        <label asp-for="IsSavePage"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-12">
+            <div class="actions-add-new-task">
+                <button id="cancel" class="cancel" onclick="cancelNewTask()">@SharedLocalizer["Cancel"] </button>
+                <button id="update" class="update" onclick="createNewTask()">
+                    <i class="fas fa-plus"></i> @SharedLocalizer["Add"]
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="success-task" class="success-task d-none">
+    <div class="modal-thanks">
+        <div class="box">
+            <div class="clos-item">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </div>
+            <div class="check-true">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3>@SharedLocalizer["TaskAssignedSuccessfully"]</h3>
+            <button type="button" onclick="successDone()"> @SharedLocalizer["Done"]</button>
+        </div>
+    </div>
+</div>

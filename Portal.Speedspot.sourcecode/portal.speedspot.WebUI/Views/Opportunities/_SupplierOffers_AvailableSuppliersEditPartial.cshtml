@@ -1,0 +1,36 @@
+﻿
+@model int?
+
+<div id="editAvailableSuppliers" class="d-flex justify-content-center" data-isedit="true">
+    <input type="hidden" class="list-selected-id" onchange="getDSupplierProducts()" id="soDSupplierId" value="@Model" />
+    <ul class="custom-list">
+        @foreach (var supplier in ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>)
+        {
+            <li class="custom-list-item
+            @((ViewData["SupplierOffers"] as List<SupplierOfferViewModel>).Any(o => o.SupplierId == supplier.Id) ? "done" : "")
+            @(Model == supplier.Id ? "active" : "")"
+                data-itemid="@supplier.Id"
+                data-offer-count="@((ViewData["SupplierOffers"] as List<SupplierOfferViewModel>).Count(o=>o.SupplierId==supplier.Id))">
+                <div class="list-img-container">
+                    @if (supplier.LogoAttachmentPath != null)
+                    {
+                        <img class="list-img" src="/images/Suppliers/@supplier.LogoAttachmentPath" />
+                    }
+                    else
+                    {
+                        <img class="list-img" src="/images/01Umsco.png" />
+                    }
+                </div>
+                <div class="list-label" title="@(SharedLocalizer.IsRightToLeft()? supplier.NameAr : supplier.Name)">@(SharedLocalizer.IsRightToLeft()? supplier.NameAr : supplier.Name)</div>
+                <div class="list-dot"></div>
+            </li>
+        }
+    </ul>
+</div>
+
+@*<select class="form-control"
+            id="soDSupplierId"
+            onchange="getDSupplierProducts()"
+            asp-items="@(new SelectList(ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", Model))">
+        <option value="" selected>@SharedLocalizer["Select"]</option>
+    </select>*@

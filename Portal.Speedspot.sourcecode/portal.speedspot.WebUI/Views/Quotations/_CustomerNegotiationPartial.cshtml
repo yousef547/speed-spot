@@ -1,0 +1,116 @@
+﻿
+@model List<CustomerNegotiationViewModel>
+
+<div class="all-message">
+    <div class="bg-full d-none" id="global-spinner-CustomerNegotiation">
+        <div class="spinner-loading-conversation" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="row">
+            @* Send Message Customers *@
+            @if (!item.IsCustomer)
+            {
+                <div class="col-md-12">
+                    <div class="message-send">
+                    
+                            <div class="actions-send">
+                                <div class="dropdown">
+                                    <button typeof="button" class="btn bg-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="showModalEditConvarsationCustomer('modalEditNegotiationCustomer',@item.Id)">@SharedLocalizer["Edit"]</a>
+                                        <a class="dropdown-item conversation-confirm-delete" title="@SharedLocalizer["Delete"]" data-source="archiveNegotiationCustomer" data-itemid="@item.Id" data-toggle="confirmation">
+                                            @SharedLocalizer["Delete"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                        <div class="send">
+                            <p>
+                                @item.Message
+                            </p>
+                            <div class="file-attach attach-customer">
+                                @if (item.AttachmentId != null)
+                                {
+                                    <a href="/images/Negotiation/@item.FilePath" target="_blank" ><i class="fas fa-download"></i>@item.TitleImage</a>
+                                    <span>38712 KB</span>
+                                }
+                            </div>
+                            <div class="created-date-message-send">
+                                @item.CreatedDate.ToString("dd MMM, yyyy")
+                            </div>
+                            <div class="due-date-send">
+                                @if (item.DueDate != null)
+                                {
+                                    <span class="dueDate">@SharedLocalizer["DueDate"]:</span> <span class="dateSend">@item.DueDate?.ToString("dd MMM, yyyy")</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* Recieved Message Customers *@
+            @if (item.IsCustomer)
+            {
+                <div class="col-md-12">
+                    <div class="message-recieved">
+                        <div class="avatar-recieved">
+                            <img src="/images/Customers/@ViewBag.CustomerLogoPath" />
+                        </div>
+                        <div class="recieved">
+                            <p>
+                                @item.Message
+                            </p>
+                            <div class="file-attach attach-customer">
+                                @if (item.AttachmentId != null)
+                                {
+                                    <a href="/images/Negotiation/@item.FilePath" target="_blank" ><i class="fas fa-download"></i>@item.TitleImage</a>
+                                    <span>38712 KB</span>
+                                }
+                            </div>
+                            <div class="created-date-message-recived">
+                                @item.CreatedDate.ToString("dd MMM, yyyy")
+                            </div>
+                            <div class="due-date-recieved">
+                                @if (item.DueDate != null)
+                                {
+                                    <span class="dueDate">@SharedLocalizer["DueDate"]:</span> <span class="dateSend">@item.DueDate?.ToString("dd MMM, yyyy")</span>
+                                }
+                            </div>
+                        </div>
+                      
+                            <div class="actions-send">
+                                <div class="dropdown">
+                                    <button typeof="button" class="btn bg-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="showModalEditConvarsationCustomer('modalEditNegotiationCustomer',@item.Id)">@SharedLocalizer["Edit"]</a>
+                                        <a class="dropdown-item conversation-confirm-delete" title="@SharedLocalizer["Delete"]" data-source="archiveNegotiationCustomer" data-itemid="@item.Id" data-toggle="confirmation">
+                                            @SharedLocalizer["Delete"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                    </div>
+                </div>
+            }
+        </div>
+    }
+        <div class="add-message customer">
+            <button onclick="shwoModalConvarsationCustomer('modalAddNegotiationCustomer')" type="button">@SharedLocalizer["AddMessage"]</button>
+        </div>
+</div>

@@ -1,0 +1,129 @@
+﻿
+@model List<SupplierConversationViewModel>
+
+<div class="all-message">
+    <div class="bg-full d-none" id="spinner-supplier">
+        <div class="spinner-loading-conversation" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+    @foreach (var item in Model)
+    {
+        <div class="row">
+            @* Send Message Supplier *@
+            @if (!item.IsSupplier)
+            {
+                <div class="col-md-12">
+                    <div class="message-send">
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ConversationMessageOptions)).Succeeded && !(bool)ViewData["IsTechnicalSessionDone"])
+                        {
+                            <div class="actions-send">
+                                <div class="dropdown">
+                                    <button typeof="button" class="btn bg-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="showModalEditConvarsation('modalEditMessageSupplier',@item.Id)">@SharedLocalizer["Edit"]</a>
+                                        <a class="dropdown-item  conversation-confirm-delete" title="@SharedLocalizer["Delete"]" data-source="archiveConversationSupplier" data-itemid="@item.Id" data-toggle="confirmation">
+                                            @SharedLocalizer["Delete"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="send" id="@item.Id">
+                            <p>
+                                @item.Message
+                            </p>
+                            <div class="file-attach attach-supplier">
+                                @if (item.AttachmentId != null)
+                                {
+                                    <a href="/images/Conversation/@item.FilePath" target="_blank" ><i class="fas fa-download"></i>@item.TitleImage</a>
+                                    <span>38712 KB</span>
+                                }
+                            </div>
+                            <div class="created-date-message-send">
+                                @item.CreatedDate.ToString("dd MMM, yyyy")
+                            </div>
+
+                            <div class="due-date-send">
+                                @if (@item.DueDate != null)
+                                {
+
+                                    <span class="dueDate">@SharedLocalizer["DueDate"]:</span> <span class="dateSend"> @item.DueDate?.ToString("dd MMM, yyyy")</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* Recieved Message Supplier *@
+            @if (item.IsSupplier)
+            {
+                <div class="col-md-12">
+                    <div class="message-recieved">
+                        <div class="avatar-recieved">
+                            <img src="/images/Suppliers/@item.SupplierLogoPath" />
+                        </div>
+
+                        <div class="recieved" id="@item.Id">
+                            <p>
+                                @item.Message
+                            </p>
+                            <div class="file-attach attach-supplier">
+                                @if (item.AttachmentId != null)
+                                {
+                                    <a href="/images/Conversation/@item.FilePath" target="_blank" ><i class="fas fa-download"></i>@item.TitleImage</a>
+                                    <span>38712 KB</span>
+                                }
+                            </div>
+                            <div class="created-date-message-recieved">
+                                @item.CreatedDate.ToString("dd MMM, yyyy")
+                            </div>
+                            <div class="due-date-recieved">
+                                @if (@item.DueDate != null)
+                                {
+                                    <span class="dueDate">@SharedLocalizer["DueDate"]:</span> <span class="dateSend"> @item.DueDate?.ToString("dd MMM, yyyy")</span>
+                                }
+                            </div>
+                        </div>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ConversationMessageOptions)).Succeeded && !(bool)ViewData["IsTechnicalSessionDone"])
+                        {
+                            <div class="actions-send">
+                                <div class="dropdown">
+                                    <button typeof="button" class="btn bg-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                        <a class="dropdown-item" onclick="showModalEditConvarsation('modalEditMessageSupplier',@item.Id)">@SharedLocalizer["Edit"]</a>
+                                        <a class="dropdown-item conversation-confirm-delete" title="@SharedLocalizer["Delete"]" data-source="archiveConversationSupplier" data-itemid="@item.Id" data-toggle="confirmation">
+                                            @SharedLocalizer["Delete"]
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (!(bool)ViewData["IsTechnicalSessionDone"])
+    {
+        <div class="add-message supplier">
+            <button onclick="shwoModalConvarsation('modalAddMessageSupplier')" id="btn-supplier" type="button">@SharedLocalizer["AddMessage"]</button>
+        </div>
+    }
+</div>
+
+
+@* Modal Add Message Supplier *@
+

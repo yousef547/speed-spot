@@ -1,0 +1,10 @@
+﻿
+@model List<ProductViewModel>
+
+<ul class="item open">
+    @foreach (var product in Model)
+    {
+        string productName = SharedLocalizer.IsRightToLeft() ? product.NameAr : product.Name;
+        <li class="product-list-item" id="product_@product.Id" onclick="selectItem('@product.Id', '@productName')">@productName</li>
+    }
+</ul>

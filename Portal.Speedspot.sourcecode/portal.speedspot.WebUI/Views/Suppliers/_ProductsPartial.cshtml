@@ -1,0 +1,54 @@
+﻿
+@model List<IGrouping<string, SupplierProductViewModel>>
+
+<div class="box">
+    <h3 class="head-box">@SharedLocalizer["Products"]:</h3>
+    <div class="content scroll-Custom products-list">
+        @{
+            int i = 0;
+        }
+        @foreach (var group in Model)
+        {
+            <p>@group.Key</p>
+            @foreach (var product in group)
+            {
+                <div class="form-group product-item">
+                    <div class="selectProducts pl-2">
+                        <a class="select-item-product-list"
+                           data-toggle="modal"
+                           data-target="#selectProductsModal"
+                           onclick="setupSelectProductBtn(this, @i)">
+                            @(SharedLocalizer.IsRightToLeft() ? product.ProductNameAr : product.ProductName)
+                            <p>@(SharedLocalizer.IsRightToLeft()? product.ProductVM.CategoryTreeAr : product.ProductVM.CategoryTree)</p>
+                        </a>
+                        <input class="product-id" name="ProductVMs[@i].Id" type="hidden" value="@product.Id" />
+                        <input class="product-productid" name="ProductVMs[@i].ProductId" type="hidden" value="@product.ProductId" id="productId_@i" />
+                        <input class="product-productname" name="ProductVMs[@i].ProductName" value="@product.ProductName" type="hidden" />
+                        <input class="product-productnamear" name="ProductVMs[@i].ProductNameAr" value="@product.ProductNameAr" type="hidden" />
+                        <input class="product-supplierid" name="ProductVMs[@i].SupplierId" value="@product.SupplierId" type="hidden" />
+                    </div>
+                </div>
+                i++;
+            }
+        }
+
+        <div class="form-group product-item">
+            <div class="selectProducts pl-2">
+                <a class="select-item-product-list"
+                   data-toggle="modal"
+                   data-target="#selectProductsModal"
+                   onclick="setupSelectProductBtn(this, @i)">
+                    <i class="fas fa-plus"></i>
+                    @SharedLocalizer["SelectProduct"]
+                </a>
+                <input class="product-id" name="ProductVMs[@i].Id" type="hidden" value="" />
+                <input class="product-productid" name="ProductVMs[@i].ProductId" type="hidden" value="" id="productId_@i" />
+                <input class="product-productname" name="ProductVMs[@i].ProductName" value="" type="hidden" />
+                <input class="product-productnamear" name="ProductVMs[@i].ProductNameAr" value="" type="hidden" />
+                <input class="product-supplierid" name="ProductVMs[@i].SupplierId" value="" type="hidden" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="selected-product-ids">

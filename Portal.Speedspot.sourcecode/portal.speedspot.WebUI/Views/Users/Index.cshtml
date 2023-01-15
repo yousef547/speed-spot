@@ -1,0 +1,78 @@
+﻿
+@model List<UserViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Users"];
+}
+@section HeaderActions{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewUser"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchUsers"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-3">
+    <div class="card-body p-0" id="getUsers">
+    </div>
+</div>
+
+<div class="modal fade modal-info-task" id="userDetailsModel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["UserDetails"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="userDetails">
+                @await Html.PartialAsync("_UserDetailsPartial", new UserInfoViewModel())
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Done"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/users.js"></script>
+    <script type="text/javascript">
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        $(document).ready(function () {
+            getUsers();
+        })
+
+        getUserInfo = function (userId) {
+            showLoader();
+            $("#userDetails").load(`/Users/Details/${userId}`, function () {
+                $("#userDetailsModel").modal('show');
+                hideLoader();
+            })
+        }
+    </script>
+}

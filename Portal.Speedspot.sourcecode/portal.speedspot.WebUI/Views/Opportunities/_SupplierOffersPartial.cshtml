@@ -1,0 +1,119 @@
+﻿
+@model List<SupplierOfferViewModel>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="row justify-content-end mt-3">
+                    <div class="mx-3">
+                        <div class="icheck-primary">
+                            <input type="checkbox" onclick="showHideCIF()" id="isAllCIF" />
+                            <label for="isAllCIF">@SharedLocalizer["AllCIF"]</label>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-supp-off-det">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>@SharedLocalizer["SupplierId"]</th>
+                            <th>@SharedLocalizer["CurrencyId"]</th>
+                            <th>@SharedLocalizer["DeliveryTypeId"]</th>
+                            <th>@SharedLocalizer["DeliveryRange"]</th>
+                            <th class="wocif">@SharedLocalizer["Price"]</th>
+                            <th class="wocif">
+                                @SharedLocalizer["Price"] (@(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol))
+                            </th>
+                            <th class="wcif d-none">@SharedLocalizer["Price"]</th>
+                            <th class="wcif d-none">
+                                @SharedLocalizer["Price"] (@(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol))
+                            </th>
+                            <th>@SharedLocalizer["PaymentTypeId"]</th>
+                            <th>@SharedLocalizer["Products"]</th>
+                            <th>@SharedLocalizer["Actions"]</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (SupplierOfferViewModel offer in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="icheck-primary">
+                                        <input type="checkbox" onclick="changeOfferAcceptance('@offer.Id')" id="isAccepted_@offer.Id" @(offer.IsAccepted ? "checked" : "") />
+                                        <label for="isAccepted_@offer.Id"></label>
+                                    </div>
+                                </td>
+                                <td class="SupplierName">
+                                    #@(SharedLocalizer.IsRightToLeft() ? offer.SupplierNameAr : offer.SupplierName)
+                                </td>
+                                <td class="CurrencyName">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.CurrencyNameAr : offer.CurrencyName)
+                                </td>
+                                <td class="DeliveryTypeName">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.DeliveryTypeNameAr : offer.DeliveryTypeName)
+                                </td>
+                                <td class="suppDate">
+                                    @SharedLocalizer["From"] @offer.DeliveryRangeFrom @SharedLocalizer["To"] @offer.DeliveryRangeTo @SharedLocalizer["Days"]
+                                </td>
+                                <td class="wocif CurrencySymbol">
+                                    @offer.TotalPrice.ToString("#,###.##") @offer.CurrencySymbol
+                                </td>
+                                <td class="wocif paymentSupp">
+                                    @offer.LocalTotalPrice.ToString("#,###.##") @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </td>
+                                <td class="wcif CurrencySymbol d-none">
+                                    @offer.TotalPriceWCIF.ToString("#,###.##") @offer.CurrencySymbol
+                                </td>
+                                <td class="wcif paymentSupp d-none">
+                                    @offer.LocalTotalPriceWCIF.ToString("#,###.##") @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </td>
+                                <td class="PaymentTypeNameAr">
+                                    @(SharedLocalizer.IsRightToLeft() ? offer.PaymentTypeNameAr : offer.PaymentTypeName)
+                                </td>
+                                <td>
+                                    @{
+                                        int i = 0;
+                                    }
+                                    @foreach (var product in offer.ProductVMs)
+                                    {
+                                        <a data-toggle="modal" data-target="#tsProductDetailsModal" onclick="loadProductDetails('@product.TechnicalSpecificationProductId')">
+                                            @product.ProductIndex
+                                            @if (i < offer.ProductVMs.Count - 1)
+                                            {
+                                                <span>,</span>
+                                            }
+                                        </a>
+                                        i++;
+                                    }
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-edit" onclick="editSupplierOffer('@offer.Id')">
+                                        <i class="far fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-delete" onclick="deleteSupplierOffer('@offer.Id')">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-12 mt-3 mx-3">
+            @SharedLocalizer["AddedSuppliersOffersMSG"]
+        </div>
+    </div>
+}

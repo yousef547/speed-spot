@@ -1,0 +1,321 @@
+﻿
+@model QuotationViewModel
+
+@if (Model.PerformanceLGVM == null)
+{
+    Model.PerformanceLGVM = new LetterOfGuaranteeViewModel();
+}
+
+@if (Model.FinalLGVM == null)
+{
+    Model.FinalLGVM = new LetterOfGuaranteeViewModel();
+}
+
+@{
+    bool canSend = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.SendLG)).Succeeded;
+    bool canApprove = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ApproveLG)).Succeeded;
+    bool canPrint = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.PrintLG)).Succeeded;
+
+    bool disablePerformanceFields = Model.PerformanceLGVM.IsApproved || Model.PerformanceLGVM.IsRejected;
+    bool disableFinalFields = Model.FinalLGVM.IsApproved || Model.FinalLGVM.IsRejected;
+}
+
+@if (Model.FinancialSessionStatus == null)
+{
+    <div class="awarding-letter">
+        <p>@SharedLocalizer["FinancialSessionAcceptedOrRejected"]</p>
+        <div class="btn-actions">
+            <button type="button" onclick="acceptFALetterClicked()" class="sp-btn-outline-success sp-btn-lg">@SharedLocalizer["Accepted"]</button>
+            <button type="button" onclick="rejectFALetterClicked()" class="sp-btn-outline-danger  sp-btn-lg">@SharedLocalizer["Rejected"]</button>
+        </div>
+    </div>
+
+    <div class="modal fade modal-letter-accepted" id="modalAwardingAccepted" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md ">
+            <div class="modal-content">
+                <div class="head-modal">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="addMessageDetails">
+                    <div class="modal-content-action">
+                        <div class="icon">
+                            <img src="/images/congrat.png" />
+                        </div>
+                        <p>@SharedLocalizer["Congratulations"]!</p>
+                        <span>@SharedLocalizer["AwardingAcceptanceMSG"]</span>
+                        @*<p class="message">@SharedLocalizer["Don’tForgetToUploadYourAwardingletter"]</p>*@
+                        <button type="button" data-dismiss="modal" onclick="window.location.reload()">  @SharedLocalizer["Done"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-letter-rejected" id="modalAwardingRejected" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-md ">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="modal-content-action">
+                        <div class="icon">
+                            <img src="/images/03.png" />
+                        </div>
+                        <p>@SharedLocalizer["SorryForYou"]!</p>
+                        <span>@SharedLocalizer["AwardingRejectionMSG"]</span>
+                        <button type="button" data-dismiss="modal" onclick="window.location.reload()">@SharedLocalizer["Done"]</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (Model.FinancialSessionStatus == ApplicationEnums.QuotationFinancialSessionStatus.Accepted)
+{
+    <p class="p-success"><i class="fas fa-check fa-2x fa-success"></i><span>@SharedLocalizer["FinancialSessionAccepted"]</span></p>
+
+    <div class="row">
+        <div class="form-group col-12 col-md-7">
+            <div class="box">
+                <label class="control-label">
+                    @SharedLocalizer["AwardingLetterFile"]
+                </label>
+                <div class="bg-white d-flex align-items-center">
+                    <i class="fas fa-file-download mx-3"></i>
+                    <a class="awarding-letter" href="/images/Quotations/@Model.AwardingLetterPath" target="_blank">
+                        @SharedLocalizer["AwardingLetter"]
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-md-5">
+            <div class="box">
+                <label class="control-label">
+                    @SharedLocalizer["AwardingDate"]
+                </label>
+                <div class="bg-white d-flex align-items-center">
+                    <i class="far fa-calendar mx-3"></i>
+                    <p class="mb-0">@Model.AwardingLetterDate.Value.ToString("dd MMM, yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p class="p-danger"><i class="fas fa-times fa-2x fa-danger"></i><span>@SharedLocalizer["FinancialSessionRejected"]</span></p>
+
+    <div class="row">
+        <div class="form-group col-12 col-md-7">
+            <div class="box">
+                <label class="control-label">
+                    @SharedLocalizer["RejectionFile"]
+                </label>
+                <div class="bg-white">
+                    <a class="acceptance-letter" href="/images/Quotations/@Model.RejectLetterPath" target="_blank"><i class="fas fa-file-alt"></i>@SharedLocalizer["RejectionFile"]</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-md-5">
+            <div class="box">
+                <label class="control-label">
+                    @SharedLocalizer["RejectionDate"]
+                </label>
+                <div class="bg-white">
+                    <p>@Model.RejectLetterDate.Value.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-md-12">
+            <div class="box">
+                <label class="control-label">
+                    @SharedLocalizer["RejectReasonId"]
+                </label>
+                <div class="bg-white">
+                    <p>@(SharedLocalizer.IsRightToLeft() ? Model.RejectReasonNameAr : Model.RejectReasonName)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="f-accept-block @(Model.FinancialSessionStatus == null ? "d-none" : "")">
+    <form id="lgForm">
+        @if (Model.FinancialSessionStatus == null)
+        {
+            <div class="row mt-5">
+                <div class="form-group col-md-7">
+                    <div class="box">
+                        <label class="control-label" for="awardingLetterFile">
+                            @SharedLocalizer["AwardingLetterFile"]
+                        </label>
+                        <div class="bg-white">
+                            <div class="custom-file">
+                                <label class="file file-upload-label" for="awardingLetterFile">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                    <span class="span-upload">
+                                        @SharedLocalizer["Upload"]
+                                    </span>
+                                </label>
+                                <input id="awardingLetterFile"
+                                       asp-for="AwardingLetter"
+                                       type="file"
+                                       class="custom-file-input d-none">
+                            </div>
+                        </div>
+                        <span asp-validation-for="AwardingLetter" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group col-md-5">
+                    <div class="box">
+                        <label for="awardingLetterDate" class="control-label">@SharedLocalizer["AwardingLetterDate"]</label>
+                        <div class="bg-white">
+                            <input type="date"
+                                   asp-for="AwardingLetterDate"
+                                   id="awardingLetterDate"
+                                   class="form-control inp-height" />
+                        </div>
+                        <span asp-validation-for="AwardingLetterDate" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>@SharedLocalizer["LG"]:</label>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="0" id="noLG" onchange="checkLG()" checked />
+                        <label class="form-label" for="noLG">@SharedLocalizer["NoLG"]</label>
+                    </div>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="1" id="finalLG" onchange="checkLG()" />
+                        <label class="form-label" for="finalLG">@SharedLocalizer["FinalLG"]</label>
+                    </div>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="2" id="bothLGs" onchange="checkLG()" />
+                        <label class="form-label" for="bothLGs">@SharedLocalizer["PerformanceAndFinalLG"]</label>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <input type="hidden" asp-for="LGType" value="@Model.LGType" />
+            <div class="row">
+                <div class="form-group">
+                    <label>@SharedLocalizer["LG"]:</label>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="0" disabled />
+                        <label class="form-label" for="noLG">@SharedLocalizer["NoLG"]</label>
+                    </div>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="1" disabled />
+                        <label class="form-label" for="finalLG">@SharedLocalizer["FinalLG"]</label>
+                    </div>
+
+                    <div class="icheck-primary d-inline mx-2">
+                        <input type="radio" asp-for="LGType" value="2" disabled />
+                        <label class="form-label" for="bothLGs">@SharedLocalizer["PerformanceAndFinalLG"]</label>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="row" id="lgBlock">
+            <div class="col-12 col-lg-6" id="performanceLGBlock">
+                @await Html.PartialAsync("_PerformanceLGPartial")
+            </div>
+
+            <div class="col-12 col-lg-6" id="finalLGBlock">
+                @await Html.PartialAsync("_FinalLGPartial")
+            </div>
+        </div>
+    </form>
+
+    @if (Model.FinancialSessionStatus == null)
+    {
+        <div class="form-group">
+            <div class="actions-letter">
+                <button type="button" onclick="cancelFALetterClicked()" class="sp-no-background">@SharedLocalizer["Cancel"]</button>
+                <button type="button" onclick="acceptFinancialSession()" class="sp-sm-done">@SharedLocalizer["Save"]</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-group">
+            <div class="actions-letter">
+                <button type="button" onclick="saveLetterOfGuarantees()" class="sp-sm-done">@SharedLocalizer["Save"]</button>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="f-reject-block d-none">
+    <div class="row mt-5">
+        <div class="form-group col-md-7">
+            <div class="box">
+                <label class="control-label" for="fRejectFile">
+                    @SharedLocalizer["RejectionFile"]
+                </label>
+                <div class="bg-white">
+                    <div class="custom-file">
+                        <label class="file file-upload-label" for="fRejectFile">
+                            <span class="upload-file-icons">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            <span class="span-upload">
+                                @SharedLocalizer["Upload"]
+                            </span>
+                        </label>
+                        <input id="fRejectFile"
+                               type="file"
+                               class="custom-file-input d-none">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-5">
+            <div class="box">
+                <label for="fRejectDate" class="control-label">@SharedLocalizer["RejectionDate"]</label>
+                <div class="bg-white">
+                    <input type="date" id="fRejectDate" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-md-12">
+            <div class="box">
+                <label for="fRejectReasonId" class="control-label">@SharedLocalizer["RejectReasonId"]</label>
+                <div class="bg-white">
+                    <select class="form-control inp-height select-no-border-white"
+                            id="fRejectReasonId"
+                            asp-items="@(new SelectList(ViewBag.RejectReasonId as List<RejectReason>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                        <option value="">@SharedLocalizer["Select"]</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.FinancialSessionStatus == null)
+    {
+        <div class="form-group">
+            <div class="actions-letter">
+                <button type="button" onclick="cancelFALetterClicked()" class="sp-no-background">@SharedLocalizer["Cancel"]</button>
+                <button type="button" onclick="rejectFinancialSession()" class="sp-sm-done">@SharedLocalizer["Save"]</button>
+            </div>
+        </div>
+    }
+</div>

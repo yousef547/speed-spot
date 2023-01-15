@@ -1,0 +1,128 @@
+﻿
+@model OpportunityViewModel
+
+@if (!Model.IsTechnicalApproved && Model.TechnicalSpecificationVM.ProductVMs.Count > 0)
+{
+    <div class="row my-4">
+        <div class="col-2">
+            <div class="pending-approve">
+                <i class="fas fa-history"></i>
+                <p> @SharedLocalizer["PendingApprovalMSG"]</p>
+
+            </div>
+        </div>
+    </div>
+}
+
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <label asp-for="TechnicalSpecificationVM.Specifications" class="control-label"></label>
+        <div class="card card-techspecs">
+            <div class="card-body">
+                <div class="form-group">
+                    @Html.Raw(Model.TechnicalSpecificationVM.Specifications)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <label class="control-label" asp-for="TechnicalSpecificationVM.AttachmentFiles"></label>
+        <div class="card card-techspecs">
+            <div class="card-body" id="techSpecsAttachments">
+                @await Html.PartialAsync("_DetailsTechnicalSpecificationAttachmentsPartial", Model.TechnicalSpecificationVM.AttachmentFiles)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <label class="control-label">@SharedLocalizer["ProductList"]:</label>
+        <div class="card">
+
+            <table class="table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @SharedLocalizer["Number"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Item"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Quantity"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Description"]
+                        </th>
+                        <th class="head-origin">
+                            @SharedLocalizer["Origin"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Attachment"]
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.TechnicalSpecificationVM.ProductVMs != null && Model.TechnicalSpecificationVM.ProductVMs.Count > 0)
+                    {
+                        int i = 0;
+                        foreach (var productVM in Model.TechnicalSpecificationVM.ProductVMs.OrderBy(o => o.Index).ToList())
+                        {
+                            <tr>
+                                <td class="tech-specif-id">
+                                    @(productVM.Index)
+                                </td>
+                                <td class="tech-specif-name">
+                                    <a class="select-item-product-list">
+                                        <p class="cat-name-prod">
+                                            <span>
+                                                @(SharedLocalizer.IsRightToLeft()? productVM.ProductNameAr : productVM.ProductName)
+                                            </span>
+                                            @(SharedLocalizer.IsRightToLeft()? productVM.ProductVM.CategoryTreeAr : productVM.ProductVM.CategoryTree)
+                                        </p>
+
+                                    </a>
+                                </td>
+                                <td class="tech-specif-quant">
+                                    @productVM.Quantity
+                                </td>
+                                <td class="tech-specif-desc">
+                                    @productVM.Description
+                                </td>
+                                <td class="tech-specif-origin">
+                                    @(SharedLocalizer.IsRightToLeft() ? productVM.RequestedOriginsStrAr : productVM.RequestedOriginsStr)
+                                </td>
+                                <td>
+                                    @if (productVM.AttachmentId != null)
+                                    {
+                                        <div class="custom-label-upload">
+                                            <label class="" for="BidBondFile">
+                                                <span class="upload-file-icons">
+                                                    <i class="fas fa-file-upload"></i>
+                                                </span>
+                                            </label>
+                                            <a class="one-line" href="/images/Opportunities/@productVM.AttachmentPath" target="_blank">@productVM.AttachmentTitle</a>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="actions-table-btn">
+                                    <button type="button"
+                                            class="btn archive"
+                                            onclick="deleteTechDbProduct('@productVM.Id', this)"
+                                            @(Model.IsTechnicalApproved ? "disabled" : "")>
+                                        <i class="far fa-trash-alt text-purple"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

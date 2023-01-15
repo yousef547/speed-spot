@@ -1,0 +1,295 @@
+﻿
+@model BidBondViewModel
+
+@if (Model.IsRequested)
+{
+    <h5><strong>@SharedLocalizer["BidBond"]:</strong></h5>
+
+    <div class="card Opportunities-sections-details">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Amount" class="control-label"></label>
+                        <br />
+                        <p>@Model.Amount</p>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label">@SharedLocalizer["AssignedTo"]</label>
+                        <br />
+                        <p>@Model.AssignedToName</p>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.IsSent)
+            {
+                <div class="row mb-3">
+                    <div class="col-12 col-lg-4">
+                        <div class="custom-control custom-switch">
+                            <input id="BidBondVM_CashType" class="custom-control-input" asp-for="CashType" disabled>
+                            <label asp-for="CashType" class="custom-control-label"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 bidbondon">
+                        <div class="custom-control custom-switch">
+                            <input class="custom-control-input" asp-for="BidBondOn_IsCredit" disabled>
+                            <label asp-for="BidBondOn_IsCredit" class="custom-control-label"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 bidbondon">
+                        @if (Model.BidBondOn_NoOfPeriods != null)
+                        {
+                            switch (Model.BidBondOn_NoOfPeriods)
+                            {
+                                case 1:
+                                    <p>@SharedLocalizer["OnePeriod"]</p>
+                                    break;
+                                case 2:
+                                    <p>@SharedLocalizer["TwoPeriods"]</p>
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 bidbondon">
+                        <div class="form-group">
+                            <label asp-for="BidBondOn_BankId" class="control-label"></label>
+                            <br />
+                            <p>@(SharedLocalizer.IsRightToLeft()? Model.BidBondOn_BankNameAr : Model.BidBondOn_BankName)</p>
+                        </div>
+                    </div>
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewBidBondTotals)).Succeeded)
+                    {
+                        <div class="col-12 col-lg-6 bidbondon">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label>@SharedLocalizer["Percentage"]</label>
+                                    <br />
+                                    @if (Model.BidBondOn_Percentage.HasValue)
+                                    {
+                                        <p>@Model.BidBondOn_Percentage.Value.ToString("#.##")%</p>
+                                    }
+                                    else
+                                    {
+                                        <p>0%</p>
+                                    }
+                                </div>
+                                <div class="col-4">
+                                    <label>@SharedLocalizer["HoldAmount"]</label>
+                                    <br />
+                                    @if (Model.BidBondOn_HoldAmount.HasValue)
+                                    {
+                                        <p>@Model.BidBondOn_HoldAmount.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+                                    }
+                                    else
+                                    {
+                                        <p>@Model.BidBondOn_HoldAmount</p>
+                                    }
+                                </div>
+                                <div class="col-4">
+                                    <label>@SharedLocalizer["BankFees"]</label>
+                                    <br />
+                                    @if (Model.BidBondOn_Fees.HasValue)
+                                    {
+                                        <p>@Model.BidBondOn_Fees.Value.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+                                    }
+                                    else
+                                    {
+                                        <p>@Model.BidBondOn_Fees</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="row">
+                @if (Model.IsSent)
+                {
+                    <div class="col-12 col-lg-6 bidbondon">
+                        <div class="form-group">
+                            <label asp-for="BidBondOn_BankBranch" class="control-label"></label>
+                            <br />
+                            <p>@Model.BidBondOn_BankBranch</p>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.IsPrinted)
+                {
+                    <div class="col-12 col-lg-6 bidbondff">
+                        <div class="form-group">
+                            <label asp-for="BidBondOff_ReceiptNo" class="control-label"></label>
+                            <br />
+                            <p>@Model.BidBondOff_ReceiptNo</p>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 bidbondon">
+                        <div class="form-group">
+                            <label asp-for="BidBondOn_BidBondNo" class="control-label"></label>
+                            <br />
+                            <p>@Model.BidBondOn_BidBondNo</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            @if (Model.IsPrinted)
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-6 bidbondon">
+                        <div class="form-group">
+                            <label asp-for="BidBondOn_IssueDate" class="control-label"></label>
+                            <br />
+                            @if (Model.BidBondOn_IssueDate != null)
+                            {
+                                <p>@Model.BidBondOn_IssueDate.Value.ToString("dd/MM/yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>@SharedLocalizer["NotSpecified"]</p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 bidbondff">
+                        <div class="form-group">
+                            <label asp-for="BidBondOff_PaymentDate" class="control-label"></label>
+                            <br />
+                            @if (Model.BidBondOff_PaymentDate != null)
+                            {
+                                <p>@Model.BidBondOff_PaymentDate.Value.ToString("dd/MM/yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>@SharedLocalizer["NotSpecified"]</p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-6 bidbondon">
+                        <div class="form-group">
+                            <label asp-for="BidBondOn_ExpiryDate" class="control-label"></label>
+                            <br />
+                            @if (Model.BidBondOn_ExpiryDate != null)
+                            {
+                                <p>@Model.BidBondOn_ExpiryDate.Value.ToString("dd/MM/yyyy")</p>
+                            }
+                            else
+                            {
+                                <p>@SharedLocalizer["NotSpecified"]</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <br />
+                        <p class="pre">@Model.Description</p>
+                    </div>
+                </div>
+
+                @if (Model.IsPrinted && Model.BidBondAttachmentId != null)
+                {
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label" asp-for="BidBondFile">@SharedLocalizer["BidBondFile"]</label>
+                            <br />
+                            <div class="custom-label-upload">
+                                <label class="" for="BidBondFile">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                </label>
+                                <a class="one-line"
+                                   href="/images/Opportunities/@Model.BidBondAttachmentPath"
+                                   target="_blank"
+                                   title="@Model.BidBondAttachmentTitle">
+                                    @Model.BidBondAttachmentTitle
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (!Model.IsSent)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingFinancialMSG"]
+                    </span>
+                </div>
+            }
+            else
+            {
+                if (!Model.IsRejected)
+                {
+                    if (!Model.IsApproved)
+                    {
+                        <div class="row justify-content-end mx-1 align-items-center">
+                            <i class="fas fa-history"></i>
+                            <span class="font-size-action">
+                                @SharedLocalizer["PendingManagerMSG"]
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        if (!Model.IsPrinted)
+                        {
+                            <div class="row justify-content-end mx-1 align-items-center">
+                                <i class="fas fa-history"></i>
+                                <span class="font-size-action">
+                                    @SharedLocalizer["PendingFinancialMSG"]
+                                </span>
+                            </div>
+                        }
+                    }
+                }
+            }
+
+            @if (Model.IsRejected)
+            {
+                <div class="row justify-content-end align-items-center">
+                    <div class="mx-2">
+                        <i class="fas fa-times"></i>
+                        <span class="font-size-action">@SharedLocalizer["RejectedBy"] @Model.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success mx-2 align-items-center">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["DoneBy"] @Model.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["ApprovedBy"] @Model.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

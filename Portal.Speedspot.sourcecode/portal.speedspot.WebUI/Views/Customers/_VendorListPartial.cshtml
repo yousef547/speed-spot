@@ -1,0 +1,102 @@
+﻿@model List<CustomerVendorRegistrationViewModel>
+
+@{
+    if (Model.Count == 0)
+    {
+        Model.Add(new CustomerVendorRegistrationViewModel());
+    }
+}
+
+<div class="box">
+    <div class="top-add-new">
+        <h3 class="head-box">@SharedLocalizer["VendorList"]:</h3>
+        <a class="btn btn-add-primary" id="add-vendor" onclick="addVendor()">
+            <i class="fa fa-plus"></i>
+            @SharedLocalizer["AddVendorList"]
+        </a>
+    </div>
+    <div class="content scroll-Custom">
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <div class="item">
+                <input type="hidden"
+                   class="vendor-id"
+                   name="VendorRegistrationVMs[@i].Id"
+                   id="VendorRegistrationVMs[@i]_Id"
+                   value="@Model[i].Id" />
+                <input type="hidden"
+                   class="vendor-customerid"
+                   name="VendorRegistrationVMs[@i].CustomerId"
+                   id="VendorRegistrationVMs[@i]_CustomerId"
+                   value="@Model[i].CustomerId" />
+                <div class="count-add-vendor">
+                    <h3>@(i+1)</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label-customer-form">@SharedLocalizer["BookRegistrationNumber"]</label>
+                            <input class="form-control vendor-brn"
+                               type="text"
+                               name="VendorRegistrationVMs[@i].BookRegistrationNumber"
+                               id="VendorRegistrationVMs[@i]_BookRegistrationNumber"
+                               value="@Model[i].BookRegistrationNumber" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label-customer-form">@SharedLocalizer["Value"]</label>
+                            <input class="form-control vendor-value"
+                               type="number"
+                               name="VendorRegistrationVMs[@i].Value"
+                               id="VendorRegistrationVMs[@i]_Value"
+                               value="@Model[i].Value" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label-customer-form">@SharedLocalizer["Date"]</label>
+                            <input class="form-control vendor-date"
+                               type="date"
+                               name="VendorRegistrationVMs[@i].RegistrationDate"
+                               id="VendorRegistrationVMs[@i]_RegistrationDate"
+                               value="@(Model[i].RegistrationDate.HasValue ?  Model[i].RegistrationDate.Value.ToString("yyyy-MM-dd") : "")" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="label-customer-form">@SharedLocalizer["Tax"]</label>
+                            <input class="form-control vendor-vat"
+                               type="number"
+                               name="VendorRegistrationVMs[@i].VAT"
+                               id="VendorRegistrationVMs[@i]_VAT"
+                               value="@Model[i].VAT" />
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <input type="hidden" value="@Model[i].AttachmentId" id="VendorRegistrationVMs[@i]_AttachmentId" name="VendorRegistrationVMs[@i].AttachmentId" />
+                        <div class="form-group">
+                            <label class="label-customer-form">@SharedLocalizer["Attachment"]</label>
+                            <label class="file file-upload-label" for="VendorRegistrationVMs[@i]_File">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                <span class="span-upload">@SharedLocalizer["Upload"]</span>
+                            </label>
+                            <input class="custom-file-input d-none vendor-attachment" type="file" id="VendorRegistrationVMs[@i]_File" name="VendorRegistrationVMs[@i].File" />
+                            @if (Model[i].AttachmentId != null && Model[i].AttachmentPath != null)
+                            {
+                                <input class="vendor-attachmentid" name="VendorRegistrationVMs[@i].AttachmentId" id="VendorRegistrationVMs[@i]_AttachmentId" value="@Model[i].AttachmentId" type="hidden" />
+                                <input class="vendor-attachmentpath" name="VendorRegistrationVMs[@i].AttachmentPath" id="VendorRegistrationVMs[@i]_AttachmentPath" value="@Model[i].AttachmentPath" type="hidden" />
+                                <a class="view-attach-edit" href="/images/Customers/@Model[i].AttachmentPath" target="_blank">@SharedLocalizer["ViewAttachment"]</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br />
+        }
+    </div>
+</div>

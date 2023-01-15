@@ -1,0 +1,174 @@
+﻿@model List<ProductCategoryViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["ProductCategories"];
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"];
+}
+@section HeaderActions{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewProductCategories"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchProductCategories"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-2 table-customers-home">
+    <div class="card-body p-0">
+        <table class="table table-head-fixed table-product-categories">
+            <thead>
+                <tr>
+                    <th>
+                        @SharedLocalizer["DepartmentId"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["ParentId"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["ProductOrService"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Code"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["Name"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["NameAr"]
+                    </th>
+                    <th class="no-sort">
+                        @SharedLocalizer["Actions"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)
+                        </td>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @(SharedLocalizer.IsRightToLeft() ? item.ParentNameAr : item.ParentName)
+                            </span>
+                        </td>
+                        <td>
+                            @SharedLocalizer[(item.IsService) ? "Service" : "Product2"]
+                        </td>
+                        <td class="">
+                            <span class="id-etails one-line">
+                                @item.Code
+                            </span>
+                        </td>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @item.Name
+                            </span>
+                        </td>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @item.NameAr
+                            </span>
+                        </td>
+                        <td class="clickable-row-actions">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader">
+                                <i class="fas fa-info"></i>
+                            </a>
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductCategories.Edit)).Succeeded)
+                            {
+                                <a class="btn btn-edit show-loader btn-table-width" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ProductCategories.Delete)).Succeeded)
+                            {
+                                if (!item.IsArchived)
+                                {
+                                    <a data-toggle="confirmation"
+                                       class="btn btn-delete btn-table-width"
+                                       asp-action="Archive"
+                                       asp-route-id="@item.Id">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-delete-unarchive show-loader btn-table-width" asp-action="Unarchive" asp-route-id="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        $(document).ready(function () {
+            var groupColumn = 0;
+            var columnDefsArr = [
+                { "visible": false, "targets": [groupColumn] }
+            ]
+
+            var orderArr = [[groupColumn, 'asc']]
+
+            var drawCallbackFn = function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group bg-main-color"><td colspan="6">' + group + '</td></tr>'
+                        );
+                        last = group;
+                    }
+                });
+            }
+
+            var dataTable = handleDataTable({
+                selector: ".table-product-categories",
+                stateLoadCallback: stateLoadParams,
+                columnDefs: columnDefsArr,
+                order: orderArr,
+                drawCallback: drawCallbackFn
+            });
+
+            $('.table-product-categories tbody').on('click', 'tr.group', function () {
+                var currentOrder = dataTable.api().order()[0];
+                if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                    dataTable.api().order([groupColumn, 'desc']).draw();
+                }
+                else {
+                    dataTable.api().order([groupColumn, 'asc']).draw();
+                }
+            });
+        })
+    </script>
+}

@@ -1,0 +1,95 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<div class="row">
+    <div class="col-12 navigat-Things-to-be-done">
+        <ul class="nav nav-pills" id="mainTab" role="tablist">
+            <li class=" tabs-link-outline-blue-bg-white">
+                <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                    @SharedLocalizer["Me"]
+                </a>
+            </li>
+            <li class="tabs-link-outline-blue-bg-white">
+                <a class="nav-link" id="tss-tab" data-toggle="tab" href="#tss" role="tab" aria-controls="tss" aria-selected="false">
+                    @SharedLocalizer["MyTeam"]
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-12">
+        <div class="tab-content px-2 sales-informations-tab-content" id="mainTabContent">
+            <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="pendingOnMe">
+                                    @await Html.PartialAsync("_PendingOnMePartial", new List<PendingRequestViewModel>())
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row pt-5 mt-5">
+                            <div class="col-md-12">
+                                <div id="myTasks">
+                                    @await Html.PartialAsync("_MyTasksPartial", new List<TaskViewModel>())
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row pt-5 mt-5">
+                            <div class="col-md-12">
+                                <div id="myRequests">
+                                    @await Html.PartialAsync("_MyRequestsPartial", new List<PendingRequestViewModel>())
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-4">
+                            <div class="card calendar-dashboard">
+                                <div class="head-calendar">
+                                    <p>@SharedLocalizer["MyCalendar"]</p>
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="options-calendar">
+                                    <div class="monthly-year">
+                                        <span class="active">Weekly</span>
+                                        <span>Monthly</span>
+                                        <span>Annually</span>
+                                    </div>
+                                    <div class="month-dropdown"> April</div>
+                                </div>
+                                <div id="calendar" class=""></div>
+                            </div>
+                        </div>*@
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tss" role="tabpanel" aria-labelledby="tss-tab">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="myTeamTasks">
+                                    @await Html.PartialAsync("_MyTeamTasksPartial", new List<TaskViewModel>())
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row pt-5 mt-5">
+                            <div class="col-md-12">
+                                <div id="pendingOnTeam">
+                                    @await Html.PartialAsync("_PendingOnTeamPartial", new List<PendingRequestViewModel>())
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

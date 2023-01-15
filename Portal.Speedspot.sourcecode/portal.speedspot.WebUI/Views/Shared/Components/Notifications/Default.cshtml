@@ -1,0 +1,66 @@
+﻿
+@model List<NotificationUserViewModel>
+@if (Model.Count() != 0)
+{
+    <div class="position-relative">
+        <div class="count-notification" onclick="toggleNotificationPanel(event)">@(Model.Count() > 99 ? "99+":Model.Count())</div>
+        <i class="far fa-bell" id="bell" title="@SharedLocalizer["Notifications"]" onclick="toggleNotificationPanel(event)"></i>
+    </div>
+}
+else
+{
+    <div class="position-relative">
+        <i class="far fa-bell" id="bell" title="@SharedLocalizer["Notifications"]" onclick="toggleNotificationPanel(event)"></i>
+    </div>
+}
+
+<div class="notifications">
+    <div class="bg-full-custom d-none" id="spinner-notification">
+        <div class="bg-full-custom-notification" role="status">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notif-box-header">
+        <h2>@SharedLocalizer["Notifications"] - <span>@Model.Count()</span></h2>
+        <a class="view-all-noti" asp-action="Index" asp-controller="Notifications">@SharedLocalizer["ViewAllNotifications"]</a>
+    </div>
+
+    @foreach (var item in Model)
+    {
+        <div class="notifications-item" data-toggle="modal" data-target="#staticBackdrop">
+            @if (!item.IsRead)
+            {
+                <i class="fas fa-bell" onclick="isRead(true,@item.Id)"></i>
+            }
+            else
+            {
+                <i class="far fa-bell" onclick="isRead(false,@item.Id)"></i>
+            }
+            <div class="text w-100" onclick="openNotificationModel(@item.Id)">
+                <p>@item.CreatedByName</p>
+                <p>@(SharedLocalizer[$"{item.NotificationType.ToString()}"])</p>
+                <p>@item.Description</p>
+                <p>@item.CreatedDate.ToString("dd/MM/yyyy") - @item.CreatedDate.ToString("hh:mm tt")</p>
+                @*<h4>@(SharedLocalizer[$"{item.NotificationType.ToString()}"])</h4>*@
+            </div>
+        </div>
+    }
+</div>
+
+
+
+
+
+
+
+
+
+
+

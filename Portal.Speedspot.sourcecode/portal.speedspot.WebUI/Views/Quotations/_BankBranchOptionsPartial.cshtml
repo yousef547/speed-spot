@@ -1,0 +1,9 @@
+﻿
+@model IList<BankBranch>
+
+<option value="" selected>@SharedLocalizer["Select"]</option>
+
+@foreach (var branch in Model)
+{
+    <option value="@branch.Id">@(SharedLocalizer.IsRightToLeft() ? branch.NameAr : branch.Name)</option>
+}

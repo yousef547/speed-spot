@@ -1,0 +1,201 @@
+﻿
+@model SupplierViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+    ViewData["Level2Section"] = SharedLocalizer["Suppliers"];
+    ViewData["Level2Url"] = Url.Action("Index", "Suppliers");
+    ViewData["Level3Section"] = SharedLocalizer["SupplierDetails"];
+    ViewData["PartnerLogo"] = "/images/Suppliers/" + Model.LogoAttachmentPath;
+}
+
+
+
+@section HeaderActions{
+
+    <div id="changeableActions">
+        @await Html.PartialAsync("_DetailsChangeableActionsPartial")
+
+    </div>
+
+    <div class="vertical-split"></div>
+
+    <div class="btn-actions-header-second">
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.Edit)).Succeeded)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-action show-loader" title="@SharedLocalizer["Edit"]">
+                <i class="far fa-edit"></i>
+            </a>
+        }
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-print"></i>
+        </a>
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-ellipsis-h"></i>
+        </a>
+    </div>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="si-tab" data-toggle="tab" href="#si" role="tab" aria-controls="si" aria-selected="true">@SharedLocalizer["GeneralInfo"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="ts-tab" data-toggle="tab" href="#ts" role="tab" aria-controls="ts" aria-selected="false">@SharedLocalizer["History"]</a>
+        </li>
+
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.BankDetails)).Succeeded)
+        {
+            <li class="nav-item">
+                <a class="nav-link" id="bdetails-tab" data-toggle="tab" href="#bdetails" role="tab" aria-controls="bdetails" aria-selected="false">@SharedLocalizer["BankDetails"]</a>
+            </li>
+        }
+    </ul>
+}
+
+<br />
+
+
+<div class="tab-content" id="mainTabContent">
+    <div class="tab-pane fade show active" id="si" role="tabpanel" aria-labelledby="si-tab">
+        @await Html.PartialAsync("_DetailsGeneralInfoPartial", Model)
+    </div>
+    <div class="tab-pane fade mt-3" id="ts" role="tabpanel" aria-labelledby="ts-tab">
+        <form method="post" class="d-inline" id="CustomersDetailsHistoryForm">
+            <input name="actionType" id="actionType" value="Add" type="hidden" />
+            <ul class="nav nav-pills" id="mainTab" role="tablist">
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                        @SharedLocalizer["SupplierOffers"]
+                    </a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link" id="fss-tab" data-toggle="tab" href="#fss" role="tab" aria-controls="fss" aria-selected="false">
+                        @SharedLocalizer["PurchasingOrders"]
+                    </a>
+                </li>
+            </ul>
+            <br />
+            <div class="tab-content px-4 sales-informations-tab-content" id="mainTabContent">
+                <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table suppliers-details-offers text-center">
+                                <thead>
+                                    <tr>
+                                        <th>@SharedLocalizer["ID"]</th>
+                                        <th>@SharedLocalizer["QuotationNo"].</th>
+                                        <th>@SharedLocalizer["CreatedBy"]</th>
+                                        <th>@SharedLocalizer["Status"]</th>
+                                        <th>@SharedLocalizer["Date"]</th>
+                                        <th>@SharedLocalizer["Action"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="name">#871023</td>
+                                        <td class="name">#1235</td>
+                                        <td class="name">Baher Mousa</td>
+                                        <td class="name">Direct PO</td>
+                                        <td class="name">3/12/2021</td>
+                                        <td class="actions-table-btn">
+                                            <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                                <i class="far fa-edit"></i>
+                                            </a>
+                                            <a class="btn btn-delete" href="#">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="fss" role="tabpanel" aria-labelledby="fss-tab">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table suppliers-details-PurchasingOrders text-center">
+                                <thead>
+                                    <tr>
+                                        <th>@SharedLocalizer["ID"]</th>
+                                        <th>@SharedLocalizer["Name"]</th>
+                                        <th>@SharedLocalizer["QuotationNo"].</th>
+                                        <th>@SharedLocalizer["Date"]</th>
+                                        <th>@SharedLocalizer["Status"]</th>
+                                        <th>@SharedLocalizer["Price"]</th>
+                                        <th>@SharedLocalizer["Action"]</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="name">#871023</td>
+                                        <td class="name">
+                                            <span class="one-line">
+                                                Offer Remote wireless
+                                            </span>
+                                        </td>
+                                        <td class="name">#1235</td>
+                                        <td class="name">3/12/2021</td>
+                                        <td class="name">Direct PO</td>
+                                        <td class="name">$5485</td>
+                                        <td class="actions-table-btn">
+                                            <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                                <i class="far fa-edit"></i>
+                                            </a>
+                                            <a class="btn btn-delete" href="#">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Suppliers.BankDetails)).Succeeded)
+    {
+        <div class="tab-pane fade" id="bdetails" role="tabpanel" aria-labelledby="bdetails-tab">
+            @await Html.PartialAsync("_BankDetailsPartial")
+        </div>
+    }
+</div>
+
+@section Scripts{
+    <script src="~/js/maps.js"></script>
+    <script src="~/js/suppliers.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var lat = $("#AddressVM_Latitude").val();
+            var lng = $("#AddressVM_Longitude").val();
+            if (lat != "" && lng != "") {
+                getAddress(lat, lng, locationText);
+            }
+
+            $("[data-toggle=confirmation]").confirmation({
+                rootSelector: '[data-toggle=confirmation]',
+                // other options
+                popout: true,
+                singleton: true,
+                title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+                btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+                btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+                onConfirm: function () {
+                    showLoader();
+                }
+            });
+
+            handleTable(".suppliers-details-offers", null, null, null);
+            handleTable(".suppliers-details-PurchasingOrders", null, null, null);
+            handleTable(".suppliers-details-visit", null, null, null);
+        })
+    </script>
+}

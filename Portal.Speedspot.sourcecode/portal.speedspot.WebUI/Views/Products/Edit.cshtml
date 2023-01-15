@@ -1,0 +1,103 @@
+﻿
+@model ProductViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["Products"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["Product"].Value;
+}
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form method="post" asp-action="Edit" class="d-inline" id="productForm">
+    <div class="form-global-inp mx-4">
+        <div class="">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IsArchived" type="hidden" />
+
+            <div class="row">
+                <div class="col-12 col-lg-4 d-flex align-items-start mt-5">
+                    <div class="custom-control custom-switch">
+                        <input class="custom-control-input" asp-for="IsService" onchange="departmentChanged()">
+                        <label asp-for="IsService" class="custom-control-label label-sales-information"></label>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label lable-create-roles" asp-for="DepartmentId"></label>
+                        <select class="form-control inp-height"
+                                onchange="departmentChanged()"
+                                asp-for="DepartmentId"
+                                asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label lable-create-roles" asp-for="CategoryId"></label>
+                        <div id="departmentCategories">
+                            @await Html.PartialAsync("_CategoriesPartial", (List<ProductCategory>)ViewBag.CategoryId)
+                        </div>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Code">@SharedLocalizer["Code"]</label>
+                        <input class="form-control inp-height" asp-for="Code" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name">@SharedLocalizer["Name"]</label>
+                        <input class="form-control inp-height" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr">@SharedLocalizer["NameAr"]</label>
+                        <input class="form-control inp-height" asp-for="NameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*        <div class="card-footer">
+                <input type="button" value="@SharedLocalizer["Save"]" class="btn btn-save show-loader" />
+                <a asp-action="Index" class="btn btn-default float-right show-loader">
+                    @SharedLocalizer["Cancel"]
+                </a>
+            </div>*@
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/js/products.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var categoryId = '@Model.CategoryId';
+            departmentChanged(categoryId);
+        })
+    </script>
+}

@@ -1,0 +1,98 @@
+﻿@model List<QuotationOfferProductViewModel>
+@{int i = 1;}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="top-add-new">
+            <h3 class="head-box">@SharedLocalizer["ProductList"]:</h3>
+        </div>
+        <div class="card">
+            <div class="row-employees mt-1" id="customer-employees">
+
+
+
+                <div class="box employees-list no-padding">
+                    <div class="header row">
+                        <div class="col-1">
+                            <label class="control-label">@SharedLocalizer["No"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["Item"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["Description"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["Quantity"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label ">@SharedLocalizer["Origin"]</label>
+                        </div>
+                        <div class="col-2 ">
+                            <label class="control-label ">@SharedLocalizer["Attachment"]</label>
+                        </div>
+                    </div>
+                    <div id="showSupplierProduct">
+
+                        @foreach (var item in ViewData["products"] as List<QuotationOfferProductViewModel>)
+                        {
+
+                            <div class="row box-content">
+                                <div class="col-6 col-md-3 col-lg-1 item">
+                                    <div class="font-product">
+                                        @i
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-2 item">
+                                    <p class="cat-name-prod">
+                                        <span>@(SharedLocalizer.IsRightToLeft() ? item.ProductVM.ProductVM.ProductNameAr : item.ProductVM.ProductVM.ProductName) </span>
+                                        @if (item.ProductVM.ProductVM.ProductVM != null)
+                                        {
+                                            @(SharedLocalizer.IsRightToLeft()? item.ProductVM.ProductVM.ProductVM.CategoryTreeAr : item.ProductVM.ProductVM.ProductVM.CategoryTree)
+                                        }
+                                    </p>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-2 item">
+                                    <div class="font-product">
+                                        @item.ProductVM.ProductVM.Description
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-2 item">
+                                    <div class="font-product">
+                                        @item.ProductVM.ProductVM.Quantity
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-2 item ">
+                                    <div class="font-product">
+                                        @(SharedLocalizer.IsRightToLeft()? item.SelectedOriginStrAr: item.SelectedOriginStr )
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6 col-lg-2 item ">
+                                    <div class="font-product">
+                                        <div class="custom-label-upload">
+                                            <label class="" for="BidBondFile">
+                                                <span class="upload-file-icons">
+                                                    <i class="fas fa-file-upload"></i>
+                                                </span>
+                                            </label>
+                                            <a class="one-line" href="/images/Opportunities/@item.ProductVM.ProductVM.AttachmentPath" target="_blank">@item.ProductVM.ProductVM.AttachmentTitle</a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            i++;
+                        }
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

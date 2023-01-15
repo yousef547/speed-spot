@@ -1,0 +1,22 @@
+﻿
+@model CalculatedCurrencyViewModel
+
+<div class="col-12 col-lg-6">
+    <div class="form-group">
+        <label for="soExchangeRate" class="control-label">@SharedLocalizer["ExchangeRate"]</label>
+        <input id="soExchangeRate"
+               value="@Model.ExchangeRate"
+               class="form-control  inp-height"
+               onchange="getCurrencyDetails()" />
+    </div>
+</div>
+
+@if (Model.LocalPrice != 0)
+{
+    <div class="col-12 col-lg-6">
+        <div class="form-group">
+            <label for="soLocalPrice" class="control-label">@SharedLocalizer["LocalPrice"]</label>
+            <h4 id="soLocalPrice">@Model.LocalPrice.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</h4>
+        </div>
+    </div>
+}

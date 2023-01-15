@@ -1,0 +1,195 @@
+
+@model PaymentDetailsViewModel
+
+@{
+    PaymentRequestViewModel paymentRequestVM = ViewData["PaymentRequestVM"] as PaymentRequestViewModel;
+}
+
+<div class="modal-content">
+    <div class="modal-header border-0">
+        <div>
+            <h5 class="payment-type-modal-title">@SharedLocalizer["AddPaymentType"]</h5>
+            <span class="payment-type-modal-subtitle">@(SharedLocalizer.IsRightToLeft() ? paymentRequestVM.DirectionStrAr : paymentRequestVM.DirectionStr)</span>
+        </div>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="card shadow-none border-0">
+            <form id="paymentTypeForm">
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="PaymentRequestId" />
+                <input type="hidden" id="paymentAmount" value="@paymentRequestVM.TotalAmount" />
+                <input type="hidden" asp-for="TotalAmount" value="@paymentRequestVM.TotalAmount" />
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" for="departmentTreasuryId" asp-for="TreasuryId"></label>
+                            <select class="form-control inp-height" onchange="checkTreasury()"
+                                    id="departmentTreasuryId"
+                                    asp-for="TreasuryId"
+                                    asp-items="@(new SelectList( ViewData["Treasuries"] as List<TreasuryViewModel>, "Id", SharedLocalizer.IsRightToLeft() ? "DescriptionAr" : "Description"))">
+                                <option value="">@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="TreasuryId"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3 d-flex align-items-start mt-4">
+                        <div>
+                            <h5 class="payment-type-modal-label">@SharedLocalizer["Balance"]</h5>
+                            <span class="payment-type-modal-amount">
+                                <span id="treasuryBalance">0</span>
+                                <span class="treasury-currency-symbol">
+                                    @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-3 d-flex align-items-start mt-4">
+                        <div>
+                            <h5 class="payment-type-modal-label-big">@SharedLocalizer["Amount"]</h5>
+                            <span class="payment-type-modal-amount-big">@paymentRequestVM.TotalAmount.ToString("#,###.00") @paymentRequestVM.CurrencySymbol</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row not-cheque">
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="ExchangeRate"></label>
+                            <div class="input-group input-payment-select">
+                                <input class="form-control inp-height" asp-for="ExchangeRate" onchange="calculateTotalAmount()">
+                                <div class="input-group-prepend">
+                                    <span class="payment-type-modal-label BankInterestSpan treasury-currency-symbol">
+                                        @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="text-danger" asp-validation-for="ExchangeRate"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-3 d-flex align-items-start mt-4">
+                        <div>
+                            <h5 class="payment-type-modal-label">
+                                @SharedLocalizer["Amount"]
+                                <span class="treasury-currency-symbol">
+                                    @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </span>
+                            </h5>
+                            <span class="payment-type-modal-amount">
+                                <span class="total-amount">@paymentRequestVM.LocalTotalAmount.ToString("#,###.00")</span>
+                                <span class="treasury-currency-symbol">
+                                    @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 mb-3">
+                        <span class="control-label payment-type-modal-label">@SharedLocalizer["ChoosePaymentType"]</span>
+                    </div>
+                    <div class="col-12 col-lg-2 d-flex align-items-start ">
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input cash" 
+                                   type="radio" 
+                                   id="cashPaymentType" 
+                                   disabled 
+                                   value="0" 
+                                   asp-for="Type"
+                                   checked="@(Model.Type == ApplicationEnums.PaymentTypeEnum.Cash ? "true" : false)"
+                                   onchange="checkPaymentType()">
+                            <label for="cashPaymentType" class="custom-control-label">@SharedLocalizer["Cash"]</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2 d-flex align-items-start ">
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input bank" 
+                                   type="radio" 
+                                   id="transferPaymentType" 
+                                   disabled 
+                                   value="1" 
+                                   asp-for="Type"
+                                   checked="@(Model.Type == ApplicationEnums.PaymentTypeEnum.Transfer ? "true" : false)"
+                                   onchange="checkPaymentType()">
+                            <label for="transferPaymentType" class="custom-control-label">@SharedLocalizer["Transfer"]</label>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-2 d-flex align-items-start">
+                        <div class="custom-control custom-radio">
+                            <input class="custom-control-input bank" 
+                                   type="radio" 
+                                   id="chequePaymentType" 
+                                   disabled value="2" 
+                                   asp-for="Type"
+                                   checked="@(Model.Type == ApplicationEnums.PaymentTypeEnum.Cheque ? "true" : false)"
+                                   onchange="checkPaymentType()">
+                            <label for="chequePaymentType" class="custom-control-label">@SharedLocalizer["Cheque"]</label>
+                        </div>
+                    </div>
+                    @*  <div class="col-12 col-lg-2 d-flex align-items-start" name="paymentType">
+                <div class="custom-control custom-radio">
+                    <input class="custom-control-input" type="radio"  value="0"  checked="" >
+                    <label for="rbBankAccount" class="custom-control-label cursor-pointer">حساب بنكي</label>
+                </div>
+            </div>*@
+                </div>
+                <div class="row mt-3 d-none" id="paymentDetailsRow">
+                    <div class="col-12 col-lg-6 not-cash d-none">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="ReceiptNo"></label>
+                            <input class="form-control inp-height" asp-for="ReceiptNo">
+                            <span class="text-danger" asp-validation-for="ReceiptNo"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 not-cash d-none">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="IssueDate"></label>
+                            <input class="form-control inp-height" asp-for="IssueDate">
+                            <span class="text-danger" asp-validation-for="IssueDate"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 is-transfer d-none">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="ReceiveBankId"></label>
+                            <select class="form-control inp-height"
+                                    asp-for="ReceiveBankId"
+                                    asp-items="@(new SelectList( ViewData["Banks"] as List<BankViewModel>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                                <option value="">@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span class="text-danger" asp-validation-for="ReceiveBankId"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 is-cheque d-none">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="DueDate"></label>
+                            <input class="form-control inp-height" asp-for="DueDate">
+                            <span class="text-danger" asp-validation-for="DueDate"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="form-group">
+                            <label class="control-label payment-type-modal-label" asp-for="Description"></label>
+                            <input class="form-control inp-height" asp-for="Description">
+                            <span class="text-danger" asp-validation-for="Description"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5 justify-content-end">
+                    <div class="col-12">
+                        <button type="button" class="payment-type-modal-btn-save float-right" onclick="savePaymentType()">@SharedLocalizer["Save"]</button>
+                        <button type="button" class="payment-type-modal-btn-cancel float-right" data-dismiss="modal">@SharedLocalizer["Cancel"]</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

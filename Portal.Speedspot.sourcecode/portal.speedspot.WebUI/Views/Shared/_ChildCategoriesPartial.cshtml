@@ -1,0 +1,21 @@
+﻿@model List<ProductCategoryViewModel>
+
+@foreach (var category in Model)
+{
+    <li class="sub-category first" id="item_@category.Id">
+        <span class="view-caregory">@(SharedLocalizer.IsRightToLeft() ? category.NameAr : category.Name)</span>
+        <span class="count-items">@(category.ProductVMs.Count + category.ChildVMs.Count)</span>
+        <input class="inp-checked" type="checkbox" onclick="checkAllChilds(event, @category.Id, this)" id="category_@category.Id" />
+
+        <ul class="list-category-child">
+            @await Html.PartialAsync("_ChildCategoriesPartial", category.ChildVMs)
+            <!-- <li class="item-category-child"></li> -->
+            @foreach (var product in category.ProductVMs)
+            {
+                <li class="item-category-child" data-categoryitem="@product.Id">
+                    @(SharedLocalizer.IsRightToLeft() ? product.NameAr : product.Name)
+                </li>
+            }
+        </ul>
+    </li>
+}

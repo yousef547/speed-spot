@@ -1,0 +1,32 @@
+﻿
+@model List<ProductSuppliersTreeViewModel>
+
+<div class="category-dropdown">
+    <input type="hidden" id="supplier-ids">
+    @if (Model.Count > 0)
+    {
+        foreach (var product in Model)
+        {
+            <ul class="list-parent-item" id="list-parent-item">
+                <li class="name-items first">
+                    <span class="view-caregory">@(SharedLocalizer.IsRightToLeft() ? product.NameAr : product.Name)</span>
+                    <span class="count-items">@product.Suppliers.Count</span>
+                    <ul class="list-items">
+                        <!-- <li class="list-items"></li> -->
+                        @foreach (var supplier in product.Suppliers)
+                        {
+                            <li class="item-supplier-id" data-supplierid="@supplier.SupplierId">
+                                @(SharedLocalizer.IsRightToLeft() ? supplier.NameAr : supplier.Name)
+                                <span>@(SharedLocalizer.IsRightToLeft() ? supplier.CountryNameAr : supplier.CountryName)</span>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            </ul>
+        }
+    }
+    else
+    {
+        @SharedLocalizer["NoSuppliersFound"]
+    }
+</div>

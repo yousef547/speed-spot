@@ -1,0 +1,289 @@
+
+@model List<OpportunityViewModel>
+
+@*Start Filter Popup*@
+<div class="justify-content-center filter-popup filter-popup-opportunity-archive">
+    <div class="box-filter box-filter-opportunity-archive scroll-Custom">
+        <div class="content ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityTypesFilter">@SharedLocalizer["TypeId"]</label>
+                            <select class="form-control" id="opportunityTypesFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @foreach (var opportunityType in ViewData["OpportunityTypes"] as List<OpportunityType>)
+                                {
+                                    <option value="@opportunityType.Id">@(SharedLocalizer.IsRightToLeft() ? opportunityType.NameAr : opportunityType.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityStatusesFilter">@SharedLocalizer["StatusId"]</label>
+                            <select class="form-control" id="opportunityStatusesFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @foreach (var opportunityStatus in ViewData["OpportunityStatuses"] as List<OpportunityStatus>)
+                                {
+                                    <option value="@opportunityStatus.Id">@(SharedLocalizer.IsRightToLeft() ? opportunityStatus.NameAr : opportunityStatus.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">@SharedLocalizer["Departments"]</label>
+                            <select class="form-control selectpicker select-multiple" id="departmentFilter" multiple data-live-search="true">
+                                @foreach (var department in ViewData["Departments"] as List<Department>)
+                                {
+                                    <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">@SharedLocalizer["DateFrom"]</label>
+                            <input id="dueDateFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">@SharedLocalizer["DateTo"]</label>
+                            <input id="dueDateTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*End Filter Popup*@
+
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-9">
+        <div class="input-group mb-3 justify-content-start">
+            <a href="#" class="filter-open filter-open-opportunity-archive"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchOpportunities"]">
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="show-filter-choose">
+            <div class="type-filter d-none"><span></span><i class="fas fa-times"></i></div>
+            <div class="date-filter d-none"><span class="date-start"></span> - <span class="date-end"></span><i class="fas fa-times"></i></div>
+            <div class="status-filter d-none"><span></span><i class="fas fa-times"></i></div>
+            <div class="departments-filter d-none"><span class="one-line"></span><i class="fas fa-times"></i></div>
+            <div class="result-filter d-none"><span></span>&nbsp; @SharedLocalizer["Results"]</div>
+        </div>
+    </div>
+</div>
+
+<div class="card opportunities-section mx-4">
+    <div class="card-body">
+        <table class="table table-head-fixed " id="datatable_Opportunities_Archive">
+            <thead>
+                <tr>
+                    <th>
+                        @SharedLocalizer["ID"]
+                    </th>
+                    <th class="d-none">
+                        Tender #
+                    </th>
+                    <th>
+                        @SharedLocalizer["Name"]
+                    </th>
+                    <th class="w-200">
+                        @SharedLocalizer["DepartmentId"]
+                    </th>
+                    <th class="w-150">
+                        @SharedLocalizer["TypeId"]
+                    </th>
+                    <th class="w-250">
+                        @SharedLocalizer["CustomerName"]
+                    </th>
+                    <th class="no-sort d-none">
+                        @SharedLocalizer["SalesAgent"]
+                    </th>
+                    <th class="w-200 th-pending">
+                        <span>@SharedLocalizer["PendingOn"]</span>
+                    </th>
+                    <th>
+                        @SharedLocalizer["Budget"]
+                    </th>
+                    <th class="w-200">
+                        @SharedLocalizer["Progress"]
+                    </th>
+                    <th class="w-200">
+                        @SharedLocalizer["DueDate"]
+                    </th>
+                    <th class="no-sort">
+                        @SharedLocalizer["Actions"]
+                    </th>
+                    <th class="no-sort d-none">
+                        Opportunity Status Id
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td data-label_table="@SharedLocalizer["ID"]"
+                            data-sort="@item.SerialStr">
+                            <span class="id-details">
+                                #@item.SerialStr
+                            </span>
+                        </td>
+                        <td class="d-none" data-label_table="@SharedLocalizer["Tender"]">
+                            @item.TenderNumber
+                        </td>
+                        <td data-label_table="@SharedLocalizer["Name"]"
+                            title="@item.Name"
+                            data-sort="@item.Name">
+                            <span class="name-details one-line">
+                                @item.Name
+                            </span>
+                        </td>
+                        <td data-label_table="@SharedLocalizer["DepartmentId"]"
+                            title="@(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)"
+                            data-sort="@(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)"
+                            data-filter="@item.DepartmentId">
+                            <span class="one-line sales-agent-details">
+                                @(SharedLocalizer.IsRightToLeft() ? item.DepartmentNameAr : item.DepartmentName)
+                            </span>
+                        </td>
+                        <td data-label_table="@SharedLocalizer["TypeName"]"
+                            data-sort="@(SharedLocalizer.IsRightToLeft()? item.TypeNameAr : item.TypeName)"
+                            data-filter="@item.TypeId">
+                            <span class="type-details @(!item.IsLocalTenderType ? "text-orange" : !item.IsLimitedTenderType ? "" : "text-navy")">
+                                @(SharedLocalizer.IsRightToLeft()? item.TypeNameAr : item.TypeName)
+                            </span>
+                        </td>
+                        <td data-label_table="@SharedLocalizer["CustomerName"]"
+                            title="@(SharedLocalizer.IsRightToLeft()? item.CustomerNameAr : item.CustomerName)"
+                            data-sort="@(SharedLocalizer.IsRightToLeft()? item.CustomerNameAr : item.CustomerName)">
+                            <span class="customer-name-details one-line">
+                                @(SharedLocalizer.IsRightToLeft()? item.CustomerNameAr : item.CustomerName)
+                            </span>
+                        </td>
+                        <td class="d-none" data-label_table="@SharedLocalizer["SalesAgent"]">
+                            <span class="sales-agent-details">
+                                @item.SalesAgentName
+                            </span>
+                        </td>
+                        <td data-label_table="@SharedLocalizer["Pending"]">
+                            <span class="pending-span Bidbond">@(SharedLocalizer.IsRightToLeft() ? item.PendingStrAr1 : item.PendingStr1)</span>
+                            @if (@item.PendingStr2 != "")
+                            {
+                                <span class="pending-span BookTender">@(SharedLocalizer.IsRightToLeft() ? item.PendingStrAr2 : item.PendingStr2)</span>
+                            }
+                            else
+                            {
+                                <span class="d-none"></span>
+                            }
+                        </td>
+                        <td data-label_table="@SharedLocalizer["Budget"]" class="sales-agent-details">
+                            @item.Budget
+                        </td>
+                        <td data-label_table="@SharedLocalizer["Progress"]"
+                            data-sort="@item.Progress">
+                            <div class="progress position-relative">
+                                <span class="progress-text">@(item.Progress)%</span>
+                                <div class="progress-bar @(item.Progress < 50 ? "bg-danger" : "bg-info")" role="progressbar" style="width: @(item.Progress.ToString() + "%")" aria-valuenow="@item.Progress" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <span class="progress-symbol">
+                                @(SharedLocalizer.IsRightToLeft()? item.ProgressSymbolAr : item.ProgressSymbol)
+                            </span>
+                        </td>
+                        <td class="date-details" data-label_table="@SharedLocalizer["DueDate"]"
+                            data-sort="@item.DueDate.Value.ToString("yyyy-MM-dd")"
+                            data-filter="@item.DueDate.Value.ToString("dd/MM/yyyy", new CultureInfo("en-US"))">
+                            @item.DueDate.Value.ToString("yyyy/MM/dd")
+                        </td>
+                        <td class="actions-table-btn min-w-250" data-label="@SharedLocalizer["Actions"]">
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Details)).Succeeded)
+                            {
+
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info info-details my-1 show-loader-ajax">
+                                    <i class="fas fa-info"></i>
+                                </a>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Edit)).Succeeded && !item.IsConverted)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-edit show-loader-ajax">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            }
+                            <button type="button" class="btn btn-fav my-1" onclick="favourite('@item.Id')">
+                                <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star"></i>
+                            </button>
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Delete)).Succeeded)
+                            {
+                                if (!item.IsArchived)
+                                {
+                                    <a data-toggle="confirmation"
+                                       class="btn btn-delete my-1 show-loader opportunity-confirm-delete"
+                                       data-source="archiveOpportunityArchive"
+                                       data-itemid="@item.Id">
+                                        <i class="fas fa-archive"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (!item.IsConverted)
+                                    {
+                                        <a class="btn btn-delete-unarchive my-1 show-loader opportunity-confirm-delete"
+                                           data-toggle="confirmation"
+                                           data-source="unArchiveOpportunityArchive"
+                                           data-itemid="@item.Id"
+                                           title="@SharedLocalizer["Unarchive"]">
+                                            <i class="fas fa-archive"></i>
+                                        </a>
+                                    }
+                                }
+                            }
+                        </td>
+                        <td class="d-none">
+                            @item.StatusId
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="5"></th>
+                    <th colspan="1" class="total-opportunities">@SharedLocalizer["Total"]: </th>
+                    <th colspan="1" class="total-currenc-opportunities"></th>
+                    <th colspan="6"></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>

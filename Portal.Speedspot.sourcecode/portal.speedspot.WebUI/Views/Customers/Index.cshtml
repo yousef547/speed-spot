@@ -1,0 +1,51 @@
+
+@model List<CustomerViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Customers"];
+    ViewData["Level1Section"] = SharedLocalizer["Partners"];
+
+
+    bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+
+@section HeaderActions{
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="fa@(isFavourite ? "s" : "r") fa-star"></i>
+    </button>
+
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Customers.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewCustomer"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchCustomers"]">
+        </div>
+    </div>
+</div>
+
+<div class="card mx-2 table-customers-home">
+    <div class="card-body p-0" id="getCustomers">
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/customers.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getCustomers();
+        });
+    </script>
+}

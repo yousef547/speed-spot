@@ -1,0 +1,78 @@
+﻿
+@{
+    var pendingRequestsTotal = (ViewData["PendingRequests"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+
+    var overDueTotal = (ViewData["PendingRequests"] as List<PaymentRequestViewModel>)
+        .Where(r => r.Deadline < DateTime.UtcNow)
+        .Sum(r => r.LocalTotalAmount);
+
+    var inprogressPaymentsTotal = (ViewData["InprogressPayments"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+
+    var paidPaymentsTotal = (ViewData["PaidPayments"] as List<PaymentRequestViewModel>)
+        .Sum(r => r.LocalTotalAmount);
+}
+
+<div class="row">
+    <div class="col-4">
+        <div class="payments-requested active d-flex flex-row justify-content-between" onclick="openTablePayment(this,'requestedPayments')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    @SharedLocalizer["RequestedPayments"]
+                </span>
+                <span class="total-number">
+                    <img src="/images/paid.png">
+                    @pendingRequestsTotal.ToString("#,##0.00")
+                </span>
+            </div>
+            <div class="d-flex flex-column justify-content-center">
+                <span class="over-due-title">
+                    @SharedLocalizer["Overdue"]
+                </span>
+                <span class="over-due-number">@overDueTotal.ToString("#,##0.00")</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="payments-inprogress" onclick="openTablePayment(this,'inprogressPayments')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    @SharedLocalizer["InprogressPayments"]
+                </span>
+                <span class="total-number">
+                    <img src="/images/inprogress.png">
+                    @inprogressPaymentsTotal.ToString("#,##0.00")
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="payments-paid" onclick="openTablePayment(this,'paidPayments')">
+            <div class="d-flex flex-column">
+                <span class="total-title">
+                    @SharedLocalizer["Paid"]
+                </span>
+                <span class="total-number">
+                    <img src="/images/collected.png">
+                    @paidPaymentsTotal.ToString("#,##0.00")
+                </span>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12" id="requestedPayments">
+        @await Html.PartialAsync("_RequestedPaymentsPartial", ViewData["PendingRequests"])
+    </div>
+
+    <div class="col-12 d-none" id="inprogressPayments">
+        @await Html.PartialAsync("_InprogressPaymentsPartial", ViewData["InprogressPayments"])
+    </div>
+
+    <div class="col-12 d-none" id="paidPayments">
+        @await Html.PartialAsync("_PaidPaymentsPartial", ViewData["PaidPayments"])
+    </div>
+</div>

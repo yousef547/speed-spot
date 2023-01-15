@@ -1,0 +1,184 @@
+﻿@model PurchaseOrderViewModel
+
+@{ 
+    if(Model.FundDetailsVM == null)
+    {
+        Model.FundDetailsVM = new FundDetailsViewModel
+        {
+            AllSupplierPayments = new List<FundDetailsPaymentViewModel>()
+        };
+    }
+}
+<div class="text-danger field-validation-valid" asp-validation-summary="All"></div>
+<div class="row">
+
+    @*<input type="hidden" asp-for="Id" value="0" />*@
+    <input type="hidden" asp-for="FundDetailsVM.PurchaseOrderId" value="@Model.Id" />
+    <input type="hidden" asp-for="FundDetailsVM.Id" />
+
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" asp-for="FundDetailsVM.BankId">@SharedLocalizer["BankName"]</label>
+            <select class="form-control inp-height select-no-border-white"
+                    asp-items="@(new SelectList(ViewBag.Banks as List<BankViewModel>,"Id",SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))" asp-for="FundDetailsVM.BankId">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+            </select>
+            <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.BankId"></span>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" asp-for="FundDetailsVM.CurrencyId">@SharedLocalizer["Currency"]</label>
+            <select asp-for="FundDetailsVM.CurrencyId" class="form-control inp-height select-no-border-white" id="CurrencyId" onchange="changeInterest()">
+                <option value="" selected>@SharedLocalizer["Select"]</option>
+                @foreach (var currency in ViewBag.Currencies as List<CurrencyViewModel>)
+                {
+                    <option value="@currency.Id" data-symbol="@currency.Symbol">@(SharedLocalizer.IsRightToLeft()?currency.NameAr:currency.Name)</option>
+                }
+            </select>
+            <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.CurrencyId"></span>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" asp-for="FundDetailsVM.Amount">@SharedLocalizer["Amount"]</label>
+            <input class="form-control inp-height select-no-border-white" type="number" placeholder="$978979" asp-for="FundDetailsVM.Amount" id="Amount" onchange="changeInterest()" />
+            <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.Amount"></span>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label l" asp-for="FundDetailsVM.FundPeriod">@SharedLocalizer["FundPeriod"]</label>
+            <div class="input-group input-payment-select">
+                <input class="form-control inp-height FoundPeriodNumber" type="number" asp-for="FundDetailsVM.FundPeriod" id="FundPeriod" onchange="changeInterest()"/>
+                <div class="input-group-prepend">
+                    <span class="BankInterestSpan">/@SharedLocalizer["Months"]</span>
+                </div>
+
+            </div>
+                <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.FundPeriod"></span>
+
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label" asp-for="FundDetailsVM.BankInterest">@SharedLocalizer["BankInterest"]</label>
+            <div class="input-group input-payment-select">
+                <input type="text" class="form-control inp-height" id="BankInterest" asp-for="FundDetailsVM.BankInterest" onchange="changeInterest()">
+                <div class="input-group-prepend">
+                    <span class="BankInterestSpan">/@SharedLocalizer["Month"]</span>
+                </div>
+            </div>
+            <span class="text-danger" asp-validation-for="FundDetailsVM.BankInterest"></span>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <div class="customperPo-flex-centered">
+                <p>@SharedLocalizer["TotalInterest"] :  </p>
+                <span id='symbol'></span>
+                <span id='totalInterest'></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" asp-for="FundDetailsVM.ProjectNo">@SharedLocalizer["ProjectAccountNo"]</label>
+            <input class="form-control inp-height select-no-border-white" type="number" asp-for="FundDetailsVM.ProjectNo" />
+            <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.ProjectNo"></span>
+
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" for="">@SharedLocalizer["UploadContractFile"]</label>
+            <div class="custom-file">
+                <label class="file file-upload-label tsproduct-attachment-label change-bg-file-upload" asp-for="FundDetailsVM.ContractFormFile">
+                    <span class="upload-file-icons">
+                        <i class="fas fa-file-upload"></i>
+                    </span>
+                    <span class="span-upload">@SharedLocalizer["Upload"]</span>
+                </label>
+                <input  type="file" class="custom-file-input d-none" asp-for="FundDetailsVM.ContractFormFile">
+                <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.ContractFormFile"></span>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        <div class="form-group">
+            <label class="control-label label-sales-information" for="">@SharedLocalizer["ReleaseCustomerCollection"]</label>
+            <div class="custom-file">
+                <label class="file file-upload-label tsproduct-attachment-label change-bg-file-upload" asp-for="FundDetailsVM.CollectionFormFile">
+                    <span class="upload-file-icons">
+                        <i class="fas fa-file-upload"></i>
+                    </span>
+                    <span class="span-upload">@SharedLocalizer["Upload"]</span>
+                </label>
+                <input  type="file" class="custom-file-input d-none" asp-for="FundDetailsVM.CollectionFormFile">
+                <span class="text-danger field-validation-valid" asp-validation-for="FundDetailsVM.CollectionFormFile"></span>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="top-add-new">
+            <h3 class="head-box">@SharedLocalizer["SupplierPayments"]:</h3>
+        </div>
+        <div class="card">
+            <div class="row-employees mt-1" id="customer-employees">
+
+
+
+                <div class="box employees-list no-padding">
+                    <div class="header row">
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["SupplierId"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["SupplierPoNumber"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["Amount"]</label>
+                        </div>
+                        <div class="col-2">
+                            <label class="control-label">@SharedLocalizer["PaymentType"]</label>
+                        </div>
+                        <div class="col-3">
+                            <label class="control-label invisible">Phone</label>
+                        </div>
+                        <div class="col-1 ">
+                            <label class="control-label invisible">Phone</label>
+                        </div>
+                    </div>
+                    <div id="showSupplierPayment">
+                        <partial name="_AddSupplierPaymentPartial" model="@Model.FundDetailsVM.AllSupplierPayments"  />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <a id="add-new-emp" class="btn btn-add-primary AddSupplier" onclick="addSupplierPayment(true)">
+            <i class="fa fa-plus"></i>
+            @SharedLocalizer["AddSuplliers"]
+        </a>
+    </div>
+</div>

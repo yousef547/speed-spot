@@ -1,0 +1,45 @@
+
+@model IList<AlternateVersionViewModel>
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <h4>@SharedLocalizer["AlternateVersions"]</h4>
+    </div>
+</div>
+
+@if (Model is not null && Model.Count > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@SharedLocalizer["ID"]</th>
+                <th>@SharedLocalizer["ItemsNo"]</th>
+                <th>@SharedLocalizer["TotalPrice"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>A-@item.SerialNo</td>
+                    <td>@item.ProductVMs.Count(p => p.IsIncluded)</td>
+                    <td>@item.TotalPrice</td>
+                    <td class="actions-table-btn">
+                        <a asp-action="EditAlternateVersion" asp-route-alternateVersionId="@item.Id" class="btn btn-edit my-1" target="_blank" title="@SharedLocalizer["Edit"]">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <h5>@SharedLocalizer["NoAlternateVersion"]</h5>
+        </div>
+    </div>
+}

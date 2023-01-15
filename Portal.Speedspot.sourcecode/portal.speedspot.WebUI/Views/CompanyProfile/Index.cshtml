@@ -1,0 +1,129 @@
+﻿
+@model CompanyDataViewModel
+
+@section Styles{
+    <link href="~/lib/spectrum/css/spectrum.min.css" rel="stylesheet" />
+}
+
+
+@{
+    ViewData["Title"] = @SharedLocalizer["About"].Value + " " + (SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name);
+    ViewData["Level1Section"] = SharedLocalizer["CompanyProfile"];
+    ViewData["Level2Section"] = @SharedLocalizer["About"].Value + " " + (SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name);
+    ViewData["Level2Url"] = Url.Action("Index");
+}
+
+@section HeaderActions{
+    @*asp-controller="Departments" asp-action="Index"*@
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.Create)).Succeeded)
+    {
+        <a class="btn btn-action cursor-pointer" onclick="$(`#CreateDepartment`).modal('show');">
+            <i class="fas fa-plus"></i>
+            @SharedLocalizer["NewDepartment"]
+        </a>
+    }
+    <div class="btn-actions-header-second">
+        @*<a class="btn btn-action btn-add-department" title="@SharedLocalizer["AddDepartment"]">
+                <i class="fas fa-plus"></i>
+                @SharedLocalizer["AddDepartment"]
+            </a>*@
+
+        <div class="vertical-split"></div>
+
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.CompanyProfile.Edit)).Succeeded)
+        {
+            <a asp-action="Edit" class="btn btn-action show-loader" title="@SharedLocalizer["Edit"]">
+                <i class="far fa-edit"></i>
+            </a>
+        }
+
+
+
+    </div>
+}
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <div class="col-md-3">
+            @if (Model.ImagePath == null || Model.ImagePath == "")
+            {
+                <img class="img-fluid" src="/images/01Umsco.png" />
+            }
+            else
+            {
+                <img class="navbar-umsco-img img-fluid" src="/images/Company/@Model.ImagePath" />
+            }
+        </div>
+        <div class="col-md-1"></div>
+        <div class="col-md-7">
+            <div class="row">
+                <h1>
+                    @(SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name)
+                </h1>
+            </div>
+            <div class="row">
+                <p>
+                    @(SharedLocalizer.IsRightToLeft() ? Model.DescriptionAr : Model.Description)
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade modal-edit-task" id="CreateDepartment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["AddNewDepart"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            @await Html.PartialAsync("_CreateDepartmentPartial", new DepartmentViewModel())
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade modal-edit-task" id="EditDepartment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["Edit"] @SharedLocalizer["Department"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div id="displyEditDepartment">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.View)).Succeeded)
+{
+    <div id="getAllDepartment">
+        @await Html.PartialAsync("_ShowDepartmentsPartial", new List<DepartmentViewModel>())
+    </div>
+}
+
+@section Scripts{
+    <script src="~/js/companyprofile.js"></script>
+    <script src="~/lib/spectrum/js/spectrum.min.js"></script>
+    <script>
+        $('#color-picker-create').spectrum({
+            type: "component",
+            togglePaletteOnly: true,
+            showInput: true,
+            showInitial: true,
+            allowEmpty: false
+        });
+
+        $("#createManagingDirectorId").selectpicker();
+        $("#createSalesDirectorId").selectpicker();
+    </script>
+}
+

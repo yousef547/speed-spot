@@ -1,0 +1,71 @@
+﻿
+@model List<BankViewModel>
+
+<table class="table table-head-fixed table-banks">
+    <thead>
+        <tr>
+            <th>
+                @SharedLocalizer["Name"]
+            </th>
+            <th>
+                @SharedLocalizer["NameAr"]
+            </th>
+            <th>
+                @SharedLocalizer["CountryId"]
+            </th>
+            @*<th>
+                @SharedLocalizer["BidBondPercentage"]
+            </th>
+            <th>
+                @SharedLocalizer["BidBondFees"]
+            </th>*@
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.Name
+                    </span>
+                </td>
+                <td class="">
+                    <span class="name-details one-line">
+                        @item.NameAr
+                    </span>
+                </td>
+                <td>
+                    <span class="name-details one-line">
+                        @(SharedLocalizer.IsRightToLeft() ? item.CountryNameAr : item.CountryName)
+                    </span>
+                </td>
+                @*<td class="">
+                    <span class="name-details one-line">
+                        @item.BidBondPercentage%
+                    </span>
+                </td>*@
+                @*<td class="">
+                    <span class="name-details one-line">
+                        @item.BidBondFees.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))
+                    </span>
+                </td>*@
+                <td>
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Delete)).Succeeded)
+                    {
+                        <a class="btn btn-delete btn-table-width"
+                           data-toggle="confirmation" data-id="@item.Id">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                        <a class="btn show-loader btn-table-width" asp-action="Restore" asp-route-id="@item.Id" title="@SharedLocalizer["Restore"]">
+                            <i class="fas fa-trash-restore-alt"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

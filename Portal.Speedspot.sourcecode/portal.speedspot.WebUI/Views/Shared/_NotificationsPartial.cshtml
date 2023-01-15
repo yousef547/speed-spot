@@ -1,0 +1,29 @@
+﻿@model List<NotificationUserViewModel>
+
+
+<span class="count-notif"><i class="fas fa-exclamation"></i>  @Model.Count()</span>
+<div class="notification-partial">
+    @foreach (var item in Model)
+    {
+
+        <div class="notifications-item" >
+            @if (!item.IsRead)
+            {
+                <i class="fas fa-bell" onclick="isRead(true,@item.Id,`notifications`)" ></i>
+            }
+            else
+            {
+
+                <i class="far fa-bell" onclick="isRead(false,@item.Id,`notifications`)"></i>
+            }
+            <div class="text w-100" onclick="openNotificationModel(@item.Id)">
+                <p>@item.CreatedByName</p>
+                <p>@(SharedLocalizer[$"{item.NotificationType.ToString()}"])</p>
+                <p>@item.Description</p>
+                <p>@item.CreatedDate.ToString("dd/MM/yyyy") - @item.CreatedDate.ToString("hh:mm tt")</p>
+                @*<h4>@(SharedLocalizer[$"{item.NotificationType.ToString()}"])</h4>*@
+            </div>
+        </div>
+
+    }
+</div>

@@ -1,0 +1,211 @@
+﻿
+@{
+    ViewData["Title"] = SharedLocalizer["PurchasingOrders"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    bool canViewDetails = (await AuthorizationService.AuthorizeAsync(User, Permissions.PurchasingOrders.Details)).Succeeded;
+
+    //bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+@section HeaderActions{
+
+    <div id="changeableActions">
+
+    </div>
+
+
+    <div class="btn-actions-header-second d-flex">
+
+        <a class="btn btn-action show-loader">
+            <i class="fas fa-plus"></i>
+        </a>
+
+        <div class="vertical-split"></div>
+
+        <button type="button" class="btn btn-action">
+            <i id="favouriteIcon" class="far fa-star"></i>
+        </button>
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-print"></i>
+        </a>
+
+        <a href="#" class="btn btn-action">
+            <i class="fas fa-ellipsis-h"></i>
+        </a>
+    </div>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="/PurchasingOrders/ProjectIndex">@SharedLocalizer["Projects"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="/PurchasingOrders/Customerindex">@SharedLocalizer["Customers"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="/PurchasingOrders/Supplierindex">@SharedLocalizer["Suppliers"]</a>
+        </li>
+    </ul>
+}
+
+<br />
+
+<div class="tab-content" id="mainTabContent">
+
+    @*Start Projects Sec*@
+    <div class="tab-pane fade show active" id="projects" role="tabpanel" aria-labelledby="proj-tab">
+        @* Start Filter Popup *@
+        <div class="mx-4 justify-content-center filter-popup">
+            <div class="box-filter scroll-Custom">
+                <div class="content ">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityTypesFilter">Type</label>
+                            <select class="form-control" id="opportunityTypesFilter">
+                                <option value="">All</option>
+                                <option value="6">Direct Offer</option>
+                                <option value="7">Envelope</option>
+                                <option value="8">Two Envelopes</option>
+                                <option value="9">Auction</option>
+                                <option value="10">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityStatusesFilter">Status</label>
+                            <select class="form-control" id="opportunityStatusesFilter">
+                                <option value="">All</option>
+                                <option value="1">Sales Information</option>
+                                <option value="2">Technical Specifications</option>
+                                <option value="3">Supplier Offers</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">Departments</label>
+                            <div class="dropdown bootstrap-select show-tick form-control select-multiple">
+                                <select class="form-control selectpicker select-multiple" id="departmentFilter" multiple="" tabindex="-98">
+                                    <option value="1">constructions</option>
+                                    <option value="2">IT</option>
+                                    <option value="4">Engineering Services	</option>
+                                    <option value="5">MPG (Euro)</option>
+                                    <option value="6">Mena tec (Euro)</option>
+                                    <option value="7">PEISCO</option>
+                                    <option value="8">Prodynmics </option>
+                                    <option value="9">Otor-Umsco</option>
+                                    <option value="10">EAST WORLD- UMSCO</option>
+                                    <option value="11">Etec - Umsco</option>
+                                    <option value="12">Test Department</option>
+                                </select><button type="button" class="btn dropdown-toggle btn-light bs-placeholder" data-toggle="dropdown" role="combobox" aria-owns="bs-select-1" aria-haspopup="listbox" aria-expanded="false" data-id="departmentFilter" title="Nothing selected"><div class="filter-option"><div class="filter-option-inner"><div class="filter-option-inner-inner">Nothing selected</div></div> </div></button><div class="dropdown-menu "><div class="inner show" role="listbox" id="bs-select-1" tabindex="-1" aria-multiselectable="true"><ul class="dropdown-menu inner show" role="presentation"></ul></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">Date From</label>
+                            <input id="dueDateFrom" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">Date To</label>
+                            <input id="dueDateTo" type="date" class="form-control">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        @* End Filter Popup *@
+        <div class="row mx-4 justify-content-end">
+            <div class="col-12 col-md-9">
+                <div class="input-group mb-3 justify-content-start">
+                    <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>Filter</a>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <div class="input-group mb-3 justify-content-end">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchCustomers"]">
+                </div>
+            </div>
+
+        </div>
+
+        <div id="" class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-PurchasingOrders-project">
+                        <thead>
+                            <tr>
+                                <th>@SharedLocalizer["QoutationNo"]</th>
+                                <th>@SharedLocalizer["Customer"]</th>
+                                <th>@SharedLocalizer["STATUS"]</th>
+                                <th>@SharedLocalizer["CustomerPoNo"]</th>
+                                <th>@SharedLocalizer["SupplierPoNo"]</th>
+                                <th>@SharedLocalizer["LastUpdatedBy"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Actions"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name-details">1/16025</td>
+                                <td class="name-details">Abo -Alhol Co. For Oil And detergents</td>
+                                <td class="created-by">UMPOC-1912264-1</td>
+                                <td class="name-details">UMPOC-1912264-1</td>
+                                <td class="last-visit">UMPOC-1912264-1</td>
+                                <td class="last-visit">Sara Ibrahim</td>
+                                <td class="last-visit">UMPOC-1912264-1</td>
+                                <td class="clickable-row-actions" data-label="Actions">
+                                    <button type="button" class="btn btn-info info-details my-1">
+                                        <i class="fas fa-info"></i>
+                                    </button>
+                                    <a href="#" class="btn btn-fav ">
+                                        <i id="favouriteIcon" class="far fa-star"></i>
+                                    </a>
+                                    <a class="btn btn-delete show-loader" title="Unarchive" href="#">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-dote my-1">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+@section Scripts{
+    <script type="text/javascript">
+
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        $(document).ready(function () {
+            handleDataTable({
+                selector: ".table-PurchasingOrders-project",
+                stateLoadCallback: stateLoadParams
+            });
+        })
+    </script>
+}

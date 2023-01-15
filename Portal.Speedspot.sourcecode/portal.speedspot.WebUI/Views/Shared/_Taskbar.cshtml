@@ -1,0 +1,132 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@*<div class="open-tasks-sidebar-right">
+    <div class="header-top-tasks">
+        <span>Task</span>
+        <div class="close-tasks"> <i class="fas fa-times"></i> </div>
+    </div>
+    <div class="hr-notes"></div>
+    <div class="add-tasks">
+        <i class="fas fa-plus"></i>
+        <span>Add a task</span>
+    </div>
+    <div class="date-time p-2">
+        <div>
+            <span>jac ma tolerance bid trim |</span>
+            <div class="callender">
+                <i class="far fa-calendar"></i>
+                <p>Date And Time</p>
+            </div>
+        </div>
+    </div>
+    <div class="status-done">
+        <span>Done</span>
+    </div>
+
+    <div class="empower-write">
+        <div class="box-emp">
+            <div class="icons-dote">
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <div class="checkbox-emp">
+                <input type="checkbox" />
+                <span>Empower your team to write</span>
+            </div>
+            <div class="callender">
+                <i class="far fa-calendar"></i>
+                <p>Wen,seb,2021</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="empower-write">
+        <div class="box-emp">
+            <div class="icons-dote">
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <div class="checkbox-emp">
+                <input type="checkbox" />
+                <span>Empower your team to write</span>
+            </div>
+            <div class="callender">
+                <i class="far fa-calendar"></i>
+                <p>Wen,seb,2021</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="empower-write">
+        <div class="box-emp">
+            <div class="icons-dote">
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <div class="checkbox-emp">
+                <input type="checkbox" />
+                <span>Empower your team to write</span>
+            </div>
+            <div class="callender">
+                <i class="far fa-calendar"></i>
+                <p>Wen,seb,2021</p>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+<div class="open-NewTask-sidebar-right">
+    @await Component.InvokeAsync("CreateTask")
+</div>
+
+<div class="open-notes-sidebar-right">
+    <div id="formNote">
+        @await Html.PartialAsync("_CreateStickyNotePartial", new StickyNoteViewModel())
+
+    </div>
+    <div id="stickyNotes">
+        @await Component.InvokeAsync("StickyNotes")
+    </div>
+
+</div>
+
+
+
+
+<div class="open-NewRequest-sidebar-right">
+    @await Component.InvokeAsync("CreateRequest")
+</div>
+
+<div class="open-sidebar-right-toggle">
+    <i class="fas fa-chevron-left"></i>
+</div>
+
+<div class="sidebar-right-toggle">
+    <div class="sidebar-right-notif">
+        <div class="note-task">
+            <div class="box box-notes">
+                <i class="fas fa-clipboard-list"> </i>
+                <span>@SharedLocalizer["Notes"]</span>
+            </div>
+            <div class="hr"></div>
+            @*<div class="box box-tasks">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Task</span>
+            <div class="count-noti">2</div>
+        </div>*@
+            <div class="box box-Newtasks">
+                @*<a asp-action="TaksList"  class="actions_table"> <i class="fas fa-clipboard-list"></i></a> *@
+                <i class="fas fa-clipboard-list"></i>
+                <span>@SharedLocalizer["Tasks"]</span>
+            </div>
+            <div class="hr"></div>
+            <div class="box box-Request">
+                @*<a asp-action="TaksList"  class="actions_table"> <i class="fas fa-clipboard-list"></i></a> *@
+                <i class="fas fa-clipboard-list"></i>
+                <span>@SharedLocalizer["Request"]</span>
+            </div>
+        </div>
+        <div class="icon-toggle">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+</div>

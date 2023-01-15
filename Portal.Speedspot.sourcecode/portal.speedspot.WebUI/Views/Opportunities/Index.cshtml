@@ -1,0 +1,184 @@
+﻿@model List<OpportunityViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Opportunities"];
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+
+    bool isFavourite = (bool)ViewBag.IsFavourite;
+}
+
+@section HeaderActions{
+    <ul class="export-table-data">
+        <li>
+            <a class="parent"> <i class="fas fa-download"></i>@SharedLocalizer["Export"]</a>
+            <ul class="child-exp">
+                <li class="pdf-text">@SharedLocalizer["ExportAs"]<span>PDF</span></li>
+                <li class="excel-text">@SharedLocalizer["ExportAs"] <span>XLS</span></li>
+            </ul>
+        </li>
+    </ul>
+    <button type="button" class="btn btn-search-top-header" onclick="favourite('')">
+        <i id="favouriteIcon_" class="fa@(isFavourite ? "s" : "r") fa-star"></i>
+    </button>
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Create)).Succeeded)
+    {
+        <div class="dropdown">
+            <button class="btn btn-primary" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-plus"></i> @SharedLocalizer["NewOpportunity"] <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu dropdown-opportunities" aria-labelledby="dropdownMenuButton">
+                @foreach (var opportunityType in ViewData["OpportunityTypes"] as List<OpportunityType>)
+                {
+                    <a class="dropdown-item show-loader"
+                       asp-action="Create"
+                       asp-route-typeId="@opportunityType.Id"
+                       title="@(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)">
+                        @(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)
+                    </a>
+                }
+            </div>
+        </div>
+
+        @*<button type="button" class="btn btn-primary" data-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-plus"></i> @SharedLocalizer["NewOpportunity"] <i class="fas fa-chevron-down"></i>
+
+                <ul class="dropdown-menu dropdown-opportunities">
+                    @foreach (var opportunityType in ViewData["OpportunityTypes"] as List<OpportunityType>)
+                    {
+                        <li class="dropdown-item show-loader">
+                            <a class="show-loader"
+                               asp-action="Create"
+                               asp-route-typeId="@opportunityType.Id"
+                               title="@(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)">
+                                @(SharedLocalizer.IsRightToLeft()? opportunityType.NameAr : opportunityType.Name)
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </button>*@
+    }
+}
+
+
+@*Start Filter Popup*@
+<div class="justify-content-center filter-popup">
+    <div class="box-filter scroll-Custom">
+        <div class="content ">
+            <div class="row">
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityTypesFilter">@SharedLocalizer["TypeId"]</label>
+                            <select class="form-control" id="opportunityTypesFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @foreach (var opportunityType in ViewData["OpportunityTypes"] as List<OpportunityType>)
+                                {
+                                    <option value="@opportunityType.Id">@(SharedLocalizer.IsRightToLeft() ? opportunityType.NameAr : opportunityType.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="opportunityStatusesFilter">@SharedLocalizer["StatusId"]</label>
+                            <select class="form-control" id="opportunityStatusesFilter" data-live-search="true">
+                                <option value="">@SharedLocalizer["All"]</option>
+                                @foreach (var opportunityStatus in ViewData["OpportunityStatuses"] as List<OpportunityStatus>)
+                                {
+                                    <option value="@opportunityStatus.Id">@(SharedLocalizer.IsRightToLeft() ? opportunityStatus.NameAr : opportunityStatus.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="item">
+                        <div class="form-group">
+                            <label class="control-label" for="departmentFilter">@SharedLocalizer["Departments"]</label>
+                            <select class="form-control selectpicker select-multiple" id="departmentFilter" multiple data-live-search="true">
+                                @foreach (var department in ViewData["Departments"] as List<Department>)
+                                {
+                                    <option value="@department.Id">@(SharedLocalizer.IsRightToLeft() ? department.NameAr : department.Name)</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateFrom" class="control-label">@SharedLocalizer["DateFrom"]</label>
+                            <input id="dueDateFrom" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="item">
+                        <div class="form-group">
+                            <label for="dueDateTo" class="control-label">@SharedLocalizer["DateTo"]</label>
+                            <input id="dueDateTo" type="date" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*End Filter Popup*@
+
+
+
+<div class="row mx-2 justify-content-end">
+    <div class="col-12 col-md-9">
+        <div class="input-group mb-3 justify-content-start">
+            <a href="#" class="filter-open"><i class="fas fa-sliders-h"></i>@SharedLocalizer["Filter"]</a>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchOpportunities"]">
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="show-filter-choose">
+            <div class="type-filter d-none"><span></span><i class="fas fa-times"></i></div>
+            <div class="date-filter d-none"><span class="date-start"></span> - <span class="date-end"></span><i class="fas fa-times"></i></div>
+            <div class="status-filter d-none"><span></span><i class="fas fa-times"></i></div>
+            <div class="departments-filter d-none"><span class="one-line"></span><i class="fas fa-times"></i></div>
+            <div class="result-filter d-none"><span></span>&nbsp; @SharedLocalizer["Results"]</div>
+        </div>
+    </div>
+</div>
+
+<div class="card opportunities-section mx-2">
+    <div class="card-body" id="getOpportunities">
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/opportunities.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getOpportunities();
+            $("#departmentFilter").selectpicker();
+            $("#opportunityStatusesFilter").selectpicker();
+            $("#opportunityTypesFilter").selectpicker();
+        })
+
+
+    </script>
+}

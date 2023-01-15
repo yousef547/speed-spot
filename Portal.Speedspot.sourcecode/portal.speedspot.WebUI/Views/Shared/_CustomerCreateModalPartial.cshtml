@@ -1,0 +1,25 @@
+﻿<div class="modal fade modal-edit-task" id="modalCustomer" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["NewCustomer"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body" id="edittaskDetails">
+                @await Html.PartialAsync("_ModalCreateCustomerPartial", new CreateCustomerViewModel())
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <a onclick="addCustomer()" class="btn-update">
+                        @SharedLocalizer["Add"]
+                    </a>
+                    <button type="button" class="btn-cancel" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Cancel"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

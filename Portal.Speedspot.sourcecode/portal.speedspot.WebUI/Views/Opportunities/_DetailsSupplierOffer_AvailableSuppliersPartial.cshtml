@@ -1,0 +1,10 @@
+﻿
+<div class="form-group">
+    <label for="soSupplierId" class="control-label">@SharedLocalizer["SupplierId"]</label>
+    <select id="soSupplierId"
+            onchange="getSupplierOfferSupplierDetails()"
+            class="form-control inp-height"
+            asp-items="@(new SelectList(ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+        <option value="" selected>@SharedLocalizer["Select"]</option>
+    </select>
+</div>

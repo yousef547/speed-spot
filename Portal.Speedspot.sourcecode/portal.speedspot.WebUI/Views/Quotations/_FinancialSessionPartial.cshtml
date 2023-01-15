@@ -1,0 +1,56 @@
+﻿
+@model QuotationViewModel
+
+<div class="row">
+    <div class="col-12 col-md-7">
+        <div class="row">
+            <ul class="nav nav-pills tsessionTab-details" id="fsessionTab" role="tablist">
+                <li class="tabs-link-outline-blue-bg-white active">
+                    <a class="nav-link active" id="fncompetitor-tab" data-toggle="tab" href="#fncompetitor" role="tab" aria-controls="fncompetitor" aria-selected="true">@SharedLocalizer["Competitors"]</a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link" id="fncomparison-tab" data-toggle="tab" href="#fncomparison" role="tab" aria-controls="fncomparison" aria-selected="false">@SharedLocalizer["Comparison"]</a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link" id="fnnegotiation-tab" data-toggle="tab" href="#fnnegotiation" role="tab" aria-controls="fnnegotiation" aria-selected="false">@SharedLocalizer["Negotiation"]</a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white">
+                    <a class="nav-link" id="fnaletter-tab" data-toggle="tab" href="#fnaletter" role="tab" aria-controls="fnaletter" aria-selected="false">@SharedLocalizer["AwardingLetter"]</a>
+                </li>
+            </ul>
+        </div>
+        <div class="row head-details-qout">
+            <p><i class="far fa-calendar"></i><span>@SharedLocalizer["TenderDate"]: </span> <span class="light-blue">@Model.DueDate.ToString("dd MMMM, yyyy")</span></p>
+            @{
+                int i = 0;
+            }
+            @foreach (var currency in ViewData["CurrencyVMs"] as List<CurrencyViewModel>)
+            {
+                <p>
+                    <span>@(SharedLocalizer.IsRightToLeft() ? currency.NameAr : currency.Name): </span>
+                    <span class="light-blue"> @currency.ExchangeRate </span>
+                </p>
+                @if (i < Model.CurrencyVMs.Count - 1)
+                {
+                    @:<span> | </span>
+                }
+                i++;
+            }
+        </div>
+    </div>
+</div>
+
+<div class="tab-content mt-4" id="fsessionTabContent">
+    <div class="tab-pane fade show active" id="fncompetitor" role="tabpanel" aria-labelledby="fncompetitor-tab">
+        @await Html.PartialAsync("_FinancialSessionCompetitorsPartial")
+    </div>
+    <div class="tab-pane fade" id="fncomparison" role="tabpanel" aria-labelledby="fncomparison-tab">
+        @await Html.PartialAsync("_FinancialSessionComparisonPartial")
+    </div>
+    <div class="tab-pane fade" id="fnnegotiation" role="tabpanel" aria-labelledby="fnnegotiation-tab">
+        @await Html.PartialAsync("_FinancialSessionNegotiationPartial") 
+    </div>
+    <div class="tab-pane fade" id="fnaletter" role="tabpanel" aria-labelledby="fnaletter-tab">
+        @await Html.PartialAsync("_FinancialSessionAwardingLetterPartial")
+    </div>
+</div>

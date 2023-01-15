@@ -1,0 +1,24 @@
+﻿
+@model TechnicalSpecificationProductDetailsViewModel
+
+@if (Model.VM.ProductId != null && Model.VM.ProductId != 0)
+{
+    <input id="roProductName_@Model.Index" asp-for="VM.ProductName" type="hidden" />
+    <input id="roProductNameAr_@Model.Index" asp-for="VM.ProductNameAr" type="hidden" />
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="form-group">
+                <input id="roQuantity_@Model.Index" asp-for="@Model.VM.Quantity" type="hidden" />
+                <label asp-for="VM.Quantity" class="control-label"></label>
+                <p class="p-2">@Model.VM.Quantity</p>
+            </div>
+        </div>
+
+        @if (Model.Index == 0)
+        {
+            <div class="col-12 col-lg-8 my-auto">
+                <a class="clickable-row" onclick="addRequestOfferProduct()"><b>+ @SharedLocalizer["AddAnotherItem"]</b></a>
+            </div>
+        }
+    </div>
+}

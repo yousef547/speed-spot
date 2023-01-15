@@ -1,0 +1,93 @@
+﻿
+<form method="post" class="d-inline" id="CustomersDetailsHistoryForm">
+    <input name="actionType" id="actionType" value="Add" type="hidden" />
+    <div class="row px-2">
+        <div class="col-md-6">
+            <ul class="nav nav-pills" id="mainTab" role="tablist">
+                <li class="tabs-link-outline-blue-bg-white filter-show">
+                    <a class="nav-link active" id="sii-tab" data-toggle="tab" href="#sii" role="tab" aria-controls="sii" aria-selected="true">
+                        @SharedLocalizer["Quotations"]
+                    </a>
+                </li>
+                <li class="tabs-link-outline-blue-bg-white filter-hidden">
+                    <a class="nav-link" id="tss-tab" data-toggle="tab" href="#tss" role="tab" aria-controls="tss" aria-selected="false">
+                        @SharedLocalizer["Orders"]
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <div class="filter-hidden-history">
+                Filter
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="tab-content px-2 sales-informations-tab-content" id="mainTabContent">
+        <div class="tab-pane fade show active" id="sii" role="tabpanel" aria-labelledby="sii-tab">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table customers-details-visit text-center">
+                        <thead>
+                            <tr>
+                                <th>@SharedLocalizer["Name"]</th>
+                                <th>@SharedLocalizer["Admin"]</th>
+                                <th>@SharedLocalizer["Status"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Action"]</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name">Offer Remote wireless</td>
+                                <td class="name">Mohamed Hamdi</td>
+                                <td class="text-danger">New</td>
+                                <td>11/1/2022</td>
+                                <td class="actions-table-btn">
+                                    <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-delete" href="#">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="tss" role="tabpanel" aria-labelledby="tss-tab">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table customers-details-visit text-center">
+                        <thead>
+                            <tr>
+                                <th>@SharedLocalizer["Name"]</th>
+                                <th>@SharedLocalizer["Date"]</th>
+                                <th>@SharedLocalizer["Price"]</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="name">Offer Remote wireless</td>
+                                <td class="">20/4/2022</td>
+                                <td class="text-danger">$5454</td>
+                                <td class="actions-table-btn">
+                                    <a class="btn btn-edit show-loader" title="Edit" href="#">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a class="btn btn-delete" href="#">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

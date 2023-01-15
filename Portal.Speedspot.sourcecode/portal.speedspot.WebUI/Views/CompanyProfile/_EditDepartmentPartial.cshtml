@@ -1,0 +1,130 @@
+﻿@model DepartmentViewModel
+
+<form enctype="multipart/form-data" class="d-inline" id="editDepartmentForm">
+    <div class="form-global-inp mx-4 ">
+        <div class="">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IsArchived" type="hidden" />
+            <input asp-for="Image" type="hidden" />
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label" for="editName">@SharedLocalizer["Name"]</label>
+                        <input class="form-control inp-height" asp-for="Name" id="editName" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label" for="editNameAr">@SharedLocalizer["Name"]</label>
+                        <input class="form-control inp-height" asp-for="NameAr" id="editNameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <div class="form-group">
+                    <label class="control-label" for="editCode">@SharedLocalizer["Code"]</label>
+                    <input class="form-control inp-height" asp-for="Code" id="editCode" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group">
+                    <label for="color-picker-edit" class="control-label">@SharedLocalizer["Color"]</label>
+                    <input asp-for="Color"
+                           class="form-control inp-height cursor-pointer"
+                           id="color-picker-edit"
+                           value="@string.Format("#{0:X2}{1:X2}{2:X2}", Model.Color.R, Model.Color.G, Model.Color.B)" readonly />
+                    <span asp-validation-for="Color" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group">
+                    <label class="control-label" for="editDepartmentImage">@SharedLocalizer["ImageFile"]</label>
+                    <div class="img-department">
+                        <img src="/images/Departments/@Model.Image" id="editDepartmentImage-img-src" />
+                    </div>
+                    <label for="editDepartmentImage" class="btn btn-action">@SharedLocalizer["UploadImage"]</label>
+                    <input asp-for="ImageFile" id="editDepartmentImage" class="d-none" type="file" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label for="editManagingDirectorId" class="control-label">@SharedLocalizer["ManagingDirectorId"]</label>
+                    <select asp-for="ManagingDirectorId"
+                            id="editManagingDirectorId"
+                            data-live-search="true"
+                            class="form-control select-no-border-white"
+                            asp-items="@(new SelectList(ViewBag.Users as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="ManagingDirectorId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label for="editSalesDirectorId" class="control-label">@SharedLocalizer["SalesDirectorId"]</label>
+                    <select asp-for="SalesDirectorId"
+                            id="editSalesDirectorId"
+                            data-live-search="true"
+                            class="form-control select-no-border-white"
+                            asp-items="@(new SelectList(ViewBag.Users as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="SalesDirectorId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group">
+                    <label for="editDescription" class="control-label">@SharedLocalizer["Description"]</label>
+                    <textarea asp-for="Description" class="form-control inp-height" cols="4" id="editDescription"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label for="editDefaultOfferCoverLetter" class="control-label">@SharedLocalizer["DefaultOfferCoverLetter"]</label>
+                    <textarea asp-for="DefaultOfferCoverLetter" class="form-control inp-height" id="editDefaultOfferCoverLetter" cols="4"></textarea>
+                    <span asp-validation-for="DefaultOfferCoverLetter" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label for="editDefaultOfferCoverLetterAr" class="control-label">@SharedLocalizer["DefaultOfferCoverLetterAr"]</label>
+                    <textarea asp-for="DefaultOfferCoverLetterAr" class="form-control inp-height" id="editDefaultOfferCoverLetterAr" cols="4"></textarea>
+                    <span asp-validation-for="DefaultOfferCoverLetterAr" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+
+        @*<div class="card-footer">
+                <a asp-action="Index" class="btn btn-default float-right show-loader">
+                    @SharedLocalizer["Cancel"]
+                </a>
+            </div>*@
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-end">
+                <input type="button" onclick="updateDepartment()" value="@SharedLocalizer["Update"]" class="btn-uploadimg" />
+            </div>
+        </div>
+    </div>
+</form>

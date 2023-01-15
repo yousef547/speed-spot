@@ -1,0 +1,609 @@
+﻿
+@model QuotationViewModel
+
+@if (Model.FinalLGVM == null)
+{
+    Model.FinalLGVM = new LetterOfGuaranteeViewModel();
+}
+
+@{
+    bool canSend = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.SendLG)).Succeeded;
+    bool canApprove = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ApproveLG)).Succeeded;
+    bool canPrint = (await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.PrintLG)).Succeeded;
+
+    bool disableFinalFields = Model.FinalLGVM.IsApproved || Model.FinalLGVM.IsRejected;
+}
+
+<label>@SharedLocalizer["FinalLG"]:</label>
+@if (Model.FinalLGVM.RequestVM != null)
+{
+    <input asp-for="FinalLGVM.RequestVM.Id" type="hidden" />
+    <input asp-for="FinalLGVM.RequestVM.RequestedById" type="hidden" />
+    <input asp-for="FinalLGVM.RequestVM.RequestedDate" type="hidden" value="@Model.FinalLGVM.RequestVM.RequestedDate.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+
+    <input asp-for="FinalLGVM.RequestVM.Status" type="hidden" />
+    if (Model.FinalLGVM.RequestVM.Status != ApplicationEnums.RequestStatusEnum.Pending)
+    {
+        <input asp-for="FinalLGVM.RequestVM.StatusById" type="hidden" />
+        <input asp-for="FinalLGVM.RequestVM.StatusDate" type="hidden" value="@Model.FinalLGVM.RequestVM.StatusDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+
+    <input asp-for="FinalLGVM.RequestVM.IsSent" type="hidden" />
+    if (Model.FinalLGVM.RequestVM.IsSent)
+    {
+        <input asp-for="FinalLGVM.RequestVM.SentById" type="hidden" />
+        <input asp-for="FinalLGVM.RequestVM.SentDate" type="hidden" value="@Model.FinalLGVM.RequestVM.SentDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+
+    <input asp-for="FinalLGVM.RequestVM.IsPrinted" type="hidden" />
+    if (Model.FinalLGVM.RequestVM.IsPrinted)
+    {
+        <input asp-for="FinalLGVM.RequestVM.PrintedById" type="hidden" />
+        <input asp-for="FinalLGVM.RequestVM.PrintedDate" type="hidden" value="@Model.FinalLGVM.RequestVM.PrintedDate.Value.ToString("yyyy-MM-dd hh:mm:ss tt")" />
+    }
+}
+
+<input asp-for="FinalLGVM.Id" type="hidden" />
+<input asp-for="FinalLGVM.QuotationId" type="hidden" />
+<input asp-for="FinalLGVM.IsRequested" id="final-is-requested" type="hidden" />
+<input asp-for="FinalLGVM.IsSent" id="final-is-sent" type="hidden" />
+<input asp-for="FinalLGVM.IsApproved" id="final-is-approved" type="hidden" />
+<input asp-for="FinalLGVM.IsRejected" id="final-is-rejected" type="hidden" />
+<input asp-for="FinalLGVM.IsPrinted" id="final-is-printed" type="hidden" />
+
+
+@if ((Model.FinalLGVM.CashType && Model.FinalLGVM.LetterOfGuaranteeNo != null && Model.FinalLGVM.IssueDate != null && Model.FinalLGVM.AttachmentPath != null) ||
+(!Model.FinalLGVM.CashType && Model.FinalLGVM.AttachmentPath != null))
+{
+    <input type="hidden" asp-for="FinalLGVM.Amount" />
+    <input type="hidden" asp-for="FinalLGVM.AssignedToId" />
+    <input type="hidden" asp-for="FinalLGVM.CashType" />
+    <input type="hidden" asp-for="FinalLGVM.IsCredit" />
+    <input type="hidden" asp-for="FinalLGVM.NoOfPeriods" />
+    <input type="hidden" asp-for="FinalLGVM.BankId" />
+    <input type="hidden" asp-for="FinalLGVM.Percentage" />
+    <input type="hidden" asp-for="FinalLGVM.PaidAmount" />
+    <input type="hidden" asp-for="FinalLGVM.Fees" />
+    <input type="hidden" asp-for="FinalLGVM.BankBranchId" />
+    <input type="hidden" asp-for="FinalLGVM.LetterOfGuaranteeNo" />
+
+    if (Model.FinalLGVM.IssueDate.HasValue)
+    {
+        <input type="hidden" asp-for="FinalLGVM.IssueDate" value="@Model.FinalLGVM.IssueDate.Value.ToString("yyyy-MM-dd")" />
+    }
+    if (Model.FinalLGVM.ExpiryDate.HasValue)
+    {
+        <input type="hidden" asp-for="FinalLGVM.ExpiryDate" value="@Model.FinalLGVM.ExpiryDate.Value.ToString("yyyy-MM-dd")" />
+    }
+
+    <input type="hidden" asp-for="FinalLGVM.Description" />
+    <input type="hidden" asp-for="FinalLGVM.AttachmentPath" />
+    <input type="hidden" asp-for="FinalLGVM.AttachmentTitle" />
+    <div class="card card-lg">
+        <div class="card-body">
+            @if (Model.FinalLGVM.CashType)
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for="FinalLGVM.BankId" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.FinalLGVM.BankNameAr : Model.FinalLGVM.BankName)</label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <label asp-for="FinalLGVM.AssignedToId" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.FinalLGVM.AssignedToName</label>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for="FinalLGVM.AssignedToId" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.FinalLGVM.AssignedToName</label>
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <label asp-for="FinalLGVM.Amount" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@Model.FinalLGVM.Amount</label>
+                </div>
+                @if (Model.FinalLGVM.CashType)
+                {
+                    if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ViewLGTotals)).Succeeded)
+                    {
+                        <div class="col-12 col-lg-8">
+                            <div class="totals-list">
+                                <div class="totals-list-item">
+                                    <label class="label-header">@SharedLocalizer["Percentage"]</label>
+                                    <br />
+                                    <label class="label-info">@Model.FinalLGVM.Percentage</label>
+                                </div>
+                                <div class="totals-list-splitter"></div>
+                                <div class="totals-list-item">
+                                    <label class="label-header">@SharedLocalizer["PaidAmount"]</label>
+                                    <br />
+                                    <label class="label-info">@Model.FinalLGVM.PaidAmount</label>
+                                </div>
+                                <div class="totals-list-splitter"></div>
+                                <div class="totals-list-item">
+                                    <label class="label-header">@SharedLocalizer["BankFees"]</label>
+                                    <br />
+                                    <label class="label-info">@Model.FinalLGVM.Fees</label>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            @if (Model.FinalLGVM.CashType)
+            {
+                <div class="row">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for="FinalLGVM.BankBranchId" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@(SharedLocalizer.IsRightToLeft() ? Model.FinalLGVM.BankBranchNameAr : Model.FinalLGVM.BankBranchName)</label>
+                    </div>
+                </div>
+            }
+
+            <div class="row">
+                <div class="col-12">
+                    <label asp-for="FinalLGVM.Description" class="label-header"></label>
+                    <br />
+                    <label class="label-info">@Model.FinalLGVM.Description</label>
+                </div>
+            </div>
+        </div>
+        @if (Model.FinalLGVM.CashType)
+        {
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <div class="totals-list">
+                            <div class="totals-list-item">
+                                <label asp-for="FinalLGVM.LetterOfGuaranteeNo" class="label-header"></label>
+                                <br />
+                                <label class="label-info">@Model.FinalLGVM.LetterOfGuaranteeNo</label>
+                            </div>
+                            <div class="totals-list-splitter"></div>
+                            <div class="totals-list-item">
+                                <label asp-for="FinalLGVM.IssueDate" class="label-header"></label>
+                                <br />
+                                <label class="label-info">@Model.FinalLGVM.IssueDate.Value.ToString("dd/MM/yyyy")</label>
+                            </div>
+                            <div class="totals-list-splitter"></div>
+                            <div class="totals-list-item">
+                                <label asp-for="FinalLGVM.ExpiryDate" class="label-header"></label>
+                                <br />
+                                <label class="label-info">@Model.FinalLGVM.ExpiryDate.Value.ToString("dd/MM/yyyy")</label>
+                            </div>
+                            <div class="totals-list-splitter"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 d-flex align-items-center">
+                        <label class="label-info">
+                            <i class="fas fa-file-download"></i>
+                            <a class="label-info" target="_blank" href="/images/Quotations/@Model.FinalLGVM.AttachmentPath">@Model.FinalLGVM.AttachmentTitle</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="card-footer d-flex justify-content-center">
+                <div class="row">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <label class="label-info">
+                            <i class="fas fa-file-download"></i>
+                            <a class="label-info" target="_blank" href="/images/Quotations/@Model.FinalLGVM.AttachmentPath">@Model.FinalLGVM.AttachmentTitle</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <label>@SharedLocalizer["CustomerReceived"] - @SharedLocalizer["FinalLG"]:</label>
+    if (Model.FinalLGVM.ReceivingDate != null && Model.FinalLGVM.EmployeeName != null && Model.FinalLGVM.ReceiptAttachmentPath != null)
+    {
+        <input type="hidden" asp-for="FinalLGVM.ReceivingDate" value="@Model.FinalLGVM.ReceivingDate.Value.ToString("yyyy-MM-dd")" />
+        <input type="hidden" asp-for="FinalLGVM.EmployeeName" />
+        <input type="hidden" asp-for="FinalLGVM.ReceiptAttachmentPath" />
+        <input type="hidden" asp-for="FinalLGVM.ReceiptAttachmentTitle" />
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-4">
+                        <label asp-for="FinalLGVM.ReceivingDate" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.FinalLGVM.ReceivingDate.Value.ToString("dd/MM/yyyy")</label>
+                    </div>
+                    <div class="col-12 col-lg-8">
+                        <label asp-for="FinalLGVM.EmployeeName" class="label-header"></label>
+                        <br />
+                        <label class="label-info">@Model.FinalLGVM.EmployeeName</label>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <label class="label-info">
+                            <i class="fas fa-file-download"></i>
+                            <a class="label-info" target="_blank" href="/images/Quotations/@Model.FinalLGVM.ReceiptAttachmentPath">@Model.FinalLGVM.ReceiptAttachmentTitle</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label asp-for="FinalLGVM.ReceivingDate" class="control-label label-sales-information"></label>
+                        <input asp-for="FinalLGVM.ReceivingDate" class="form-control inp-height" />
+                        <span asp-validation-for="FinalLGVM.ReceivingDate" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 col-lg-6 form-group">
+                        <label asp-for="FinalLGVM.EmployeeName" class="control-label label-sales-information"></label>
+                        <input asp-for="FinalLGVM.EmployeeName" class="form-control inp-height" />
+                        <span asp-validation-for="FinalLGVM.EmployeeName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12 form-group">
+                        <div class="custom-file">
+                            <label class="control-label" asp-for="FinalLGVM.ReceiptAttachmentFile"></label>
+                            <label class="file file-upload-label" for="final-receipt-file">
+                                <span class="upload-file-icons">
+                                    <i class="fas fa-file-upload"></i>
+                                </span>
+                                @if (Model.FinalLGVM.ReceiptAttachmentPath != null)
+                                {
+                                    <input type="hidden" asp-for="FinalLGVM.ReceiptAttachmentPath" />
+                                    <input type="hidden" asp-for="FinalLGVM.ReceiptAttachmentTitle" />
+                                    <a class="one-line" href="/images/Quotations/@Model.FinalLGVM.ReceiptAttachmentPath" title="@Model.FinalLGVM.ReceiptAttachmentPath" target="_blank">@Model.FinalLGVM.ReceiptAttachmentTitle</a>
+                                }
+                                else
+                                {
+                                    <span class="span-upload">
+                                        @SharedLocalizer["Upload"]
+                                    </span>
+                                }
+                            </label>
+                            <input id="final-receipt-file"
+                                   asp-for="FinalLGVM.ReceiptAttachmentFile"
+                                   type="file"
+                                   class="custom-file-input d-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="card final-lg">
+        <div class="card-body">
+            <div class="row position-relative">
+                <div class="position-absolute w-100 h-100 bg-white overlay-block disable-final @(!disableFinalFields ? "d-none" : "")">
+
+                </div>
+                <div class="col-12 col-lg-6 form-group">
+                    <label asp-for="FinalLGVM.Amount" class="control-label label-sales-information"></label>
+                    <input asp-for="FinalLGVM.Amount" class="form-control inp-height" id="final-amount" onchange="calculatePaidAmount('final')" />
+                    <span asp-validation-for="FinalLGVM.Amount" class="text-danger"></span>
+                </div>
+
+                <div class="col-12 col-lg-6 form-group">
+                    <label class="control-label" asp-for="FinalLGVM.AssignedToId">@SharedLocalizer["AssignedToId"]</label>
+                    <select class="form-control inp-height"
+                            data-size="5" data-live-search="true"
+                            id="final-assigned-to"
+                            asp-for="FinalLGVM.AssignedToId"
+                            asp-items="@(new SelectList(ViewBag.AssignedToId as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="FinalLGVM.AssignedToId" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (Model.FinalLGVM.IsRequested && canSend)
+            {
+                <div class="row mb-3 position-relative">
+                    <div class="position-absolute w-100 h-100 bg-white overlay-block disable-final @(!disableFinalFields ? "d-none" : "")">
+
+                    </div>
+                    <div class="col-12 col-lg-4 d-table">
+                        <div class="custom-control custom-switch d-table-cell align-middle">
+                            <input type="checkbox" class="custom-control-input cash-type"
+                                   asp-for="FinalLGVM.CashType"
+                                   id="final-cash-type"
+                                   onchange="showHideSections('final')" />
+                            <label class="custom-control-label" asp-for="FinalLGVM.CashType" for="final-cash-type"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 final-cash-type-on">
+                        <div class="d-table h-100">
+                            <div class="custom-control custom-switch d-table-cell align-middle">
+                                <input class="custom-control-input"
+                                       asp-for="FinalLGVM.IsCredit"
+                                       onchange="getBankDetails('final')"
+                                       id="final-is-credit">
+                                <label asp-for="FinalLGVM.IsCredit" class="custom-control-label label-sales-information" for="final-is-credit"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-4 final-cash-type-on">
+                        <select asp-for="FinalLGVM.NoOfPeriods"
+                                class="form-control inp-height"
+                                id="final-periods-no"
+                                asp-items="@(new SelectList(ViewBag.FinalPeriods as List<Period>, "Value", "Text"))"
+                                onchange="calculateExpiryDate('final')"></select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 final-cash-type-on position-relative">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disable-final @(!disableFinalFields ? "d-none" : "")">
+
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" asp-for="FinalLGVM.BankId"></label>
+                            <select class="form-control inp-height"
+                                    asp-for="FinalLGVM.BankId"
+                                    id="final-bank-id"
+                                    onchange="getBankDetails('final')"
+                                    asp-items="@(new SelectList(ViewBag.DepartmentBankId as List<Bank>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                                <option value="" selected>@SharedLocalizer["Select"]</option>
+                            </select>
+                            <span asp-validation-for="FinalLGVM.BankId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.ViewLGTotals)).Succeeded)
+                    {
+                        <div class="col-12 col-lg-6 final-cash-type-on">
+                            <div class="row">
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["Percentage"]</label>
+                                    <br />
+                                    <input type="hidden" id="final-percentage" asp-for="FinalLGVM.Percentage" />
+                                    <p id="lbl-final-percentage"></p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["PaidAmount"]</label>
+                                    <br />
+                                    <input type="hidden" id="final-paid-amount" asp-for="FinalLGVM.PaidAmount" />
+                                    <p id="lbl-final-paid-amount"></p>
+                                </div>
+                                <div class="col-4">
+                                    <label class="control-label">@SharedLocalizer["BankFees"]</label>
+                                    <br />
+                                    <input type="hidden" id="final-bank-fees" asp-for="FinalLGVM.Fees" />
+                                    <p id="lbl-final-bank-fees"></p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="row final-cash-type-on">
+                    <div class="col-12 col-lg-6 form-group">
+                        <div class="position-absolute w-100 h-100 bg-white overlay-block disable-final @(!disableFinalFields ? "d-none" : "")">
+
+                        </div>
+                        <label class="control-label" asp-for="FinalLGVM.BankBranchId"></label>
+                        <input type="hidden" value="@Model.FinalLGVM.BankBranchId" id="final-branch-id" />
+                        <select class="form-control inp-height"
+                                id="final-bank-branch-id"
+                                asp-for="FinalLGVM.BankBranchId">
+                            <option value="" selected>@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="FinalLGVM.BankBranchId" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.FinalLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 final-cash-type-on form-group">
+                            <label class="control-label" asp-for="FinalLGVM.LetterOfGuaranteeNo">@SharedLocalizer["FinalLGNo"]</label>
+                            <input class="form-control inp-height" id="final-lg-no" asp-for="FinalLGVM.LetterOfGuaranteeNo">
+                            <span asp-validation-for="FinalLGVM.LetterOfGuaranteeNo" class="text-danger"></span>
+                        </div>
+                    }
+                </div>
+
+                <div class="row final-cash-type-on">
+                    @if (Model.FinalLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 form-group">
+                            <label class="control-label" asp-for="FinalLGVM.IssueDate"></label>
+                            <input class="form-control inp-height"
+                                   asp-for="FinalLGVM.IssueDate"
+                                   id="final-issue-date"
+                                   onchange="calculateExpiryDate('final')" />
+                            <span asp-validation-for="FinalLGVM.IssueDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-12 col-lg-6 form-group">
+                            <label class="control-label" asp-for="FinalLGVM.ExpiryDate"></label>
+                            <input class="form-control inp-height" asp-for="FinalLGVM.ExpiryDate" id="final-expiry-date" readonly />
+                            <span asp-validation-for="FinalLGVM.ExpiryDate" class="text-danger"></span>
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-lg-6 form-group">
+                        <label class="control-label" asp-for="FinalLGVM.Description"></label>
+                        <textarea class="form-control" asp-for="FinalLGVM.Description" rows="4"></textarea>
+                        <span asp-validation-for="FinalLGVM.Description" class="text-danger"></span>
+                    </div>
+
+                    @if (Model.FinalLGVM.IsPrinted)
+                    {
+                        <div class="col-12 col-lg-6 form-group">
+                            <div class="custom-file">
+                                <label class="control-label" asp-for="FinalLGVM.AttachmentFile"></label>
+                                <label class="file file-upload-label" for="final-file">
+                                    <span class="upload-file-icons">
+                                        <i class="fas fa-file-upload"></i>
+                                    </span>
+                                    @if (Model.FinalLGVM.AttachmentPath != null)
+                                    {
+                                        <input type="hidden" asp-for="FinalLGVM.AttachmentPath" />
+                                        <input type="hidden" asp-for="FinalLGVM.AttachmentTitle" />
+                                        <a class="one-line" href="/images/Quotations/@Model.FinalLGVM.AttachmentPath" title="@Model.FinalLGVM.AttachmentPath" target="_blank">@Model.FinalLGVM.AttachmentTitle</a>
+                                    }
+                                    else
+                                    {
+                                        <span class="span-upload">
+                                            @SharedLocalizer["Upload"]
+                                        </span>
+                                    }
+                                </label>
+                                <input id="final-file"
+                                       asp-for="FinalLGVM.AttachmentFile"
+                                       type="file"
+                                       class="custom-file-input d-none">
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (!Model.FinalLGVM.IsRequested)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <button type="button" class="btn btn-request" onclick="requestLG('final')" id="final-request">
+                        @SharedLocalizer["Request"]
+                    </button>
+                    <div class="d-none" id="final-pending-financial-msg">
+                        <i class="fas fa-history"></i>
+                        @SharedLocalizer["PendingSaveMSG"]
+                    </div>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsRequested && !Model.FinalLGVM.IsSent && !canSend)
+            {
+                <div class="row justify-content-end mx-1 align-items-center">
+                    <i class="fas fa-history"></i>
+                    <p class="PendingFinancialMSG">@SharedLocalizer["PendingFinancialMSG"]</p>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsRequested && !Model.FinalLGVM.IsSent && canSend)
+            {
+                @* Send Bidbond (Requested & Not Sent & Can Send) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-send" onclick="sendLG('final')" id="final-send">
+                        @SharedLocalizer["Send"]
+                    </button>
+                    <div class="d-none" id="final-pending-manager-msg">
+                        <i class="fas fa-history"></i>
+                        <span class="font-size-action">
+                            @SharedLocalizer["PendingSaveMSG"]
+                        </span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsSent && !(Model.FinalLGVM.IsApproved || Model.FinalLGVM.IsRejected) && !canApprove)
+            {
+                @* (Sent & Not Approved & Cannot Approve) *@
+                <div class="row justify-content-end mx-1">
+                    <i class="fas fa-history"></i>
+                    <span class="font-size-action">
+                        @SharedLocalizer["PendingManagerMSG"]
+                    </span>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsSent && !(Model.FinalLGVM.IsApproved || Model.FinalLGVM.IsRejected) && canApprove)
+            {
+                @* Approve / Reject Bidbond (Sent & Not Approved & Can Approve or Reject) *@
+                <div class="row justify-content-end mx-1">
+                    <button type="button" class="btn btn-approve mx-1" id="btn-final-approve" onclick="approveLG('final')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Approve"]
+                    </button>
+                    <div class="d-none mx-1 approvedBlock" id="final-approved-block">
+                        <i class="fas fa-check"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelLGApproval('final')">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                    <button type="button" class="btn btn-reject" id="btn-final-reject" onclick="rejectLG('final')">
+                        <i class="fas fa-times"></i>
+                        @SharedLocalizer["Reject"]
+                    </button>
+                    <div class="d-none rejectedBlock" id="final-rejected-block">
+                        <i class="fas fa-times"></i>
+                        <span>@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                        <button type="button" class="btn btn-cancel" onclick="cancelLGRejection('final')">
+                            @SharedLocalizer["Cancel"]
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsApproved && !Model.FinalLGVM.IsPrinted && canPrint)
+            {
+                @* Print Bidbond (Approved & Can Print) *@
+                <div class="row justify-content-end mx-1 ">
+                    <button type="button" class="btn btn-approve mx-1" id="btn-final-print" onclick="printLGPage('@Model.FinalLGVM.RequestVM.Id', 'final')">
+                        <i class="fas fa-check"></i>
+                        @SharedLocalizer["Print"]
+                    </button>
+                    <div class="d-none mx-1 printedBlock" id="printed-final-block">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["UpdatePendingSaveMSG"]</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsRejected)
+            {
+                <div class="row justify-content-end">
+                    <div class="mx-1">
+                        <i class="fas fa-times"></i>
+                        <span class="font-size-action">@SharedLocalizer["RejectedBy"] @Model.FinalLGVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.FinalLGVM.IsPrinted)
+            {
+                <div class="row justify-content-end checked-success mx-1">
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["DoneBy"] @Model.FinalLGVM.RequestVM.PrintedByName</span>
+                    </div>
+
+                    <div class="">
+                        <i class="fas fa-check"></i>
+                        <span class="font-size-action">@SharedLocalizer["ApprovedBy"] @Model.FinalLGVM.RequestVM.StatusByName</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+

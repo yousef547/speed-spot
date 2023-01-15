@@ -1,0 +1,581 @@
+﻿
+@inject ApplicationUserManager UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject portal.speedspot.BizLayer.BizMethods.CompanyDataBiz CompanyDataBiz
+
+@{
+    bool isRTL = SharedLocalizer.IsRightToLeft();
+
+    ApplicationUser user = null;
+    if (User.Identity.IsAuthenticated)
+    {
+        user = await UserManager.FindByEmailAsync(User.Identity.Name);
+    }
+
+    CompanyData companyData = await CompanyDataBiz.GetAsync();
+}
+
+<!DOCTYPE html>
+<html lang="@(isRTL? "" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewData["Title"] - @SharedLocalizer["AppTitle"]</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Style Data Tables Plugin-->
+    <link rel="stylesheet" type="text/css" href="~/lib/data-tables/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" type="text/css" href="~/lib/data-tables/css/responsive.bootstrap.min.css">
+    <!-- Plugin Textarea Edit -->
+    <link rel="stylesheet" href="~/lib/rich-text-editor/richtext.min.css">
+    <link href="~/lib/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/lib/FinanTree/main.css" rel="stylesheet" />
+    @if (isRTL)
+    {
+        <link rel="stylesheet" href="~/css/site-rtl.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/css/site.css" />
+    }
+    <link rel="stylesheet" href="~/css/common.css" />
+    <link href="~/css/shared.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/lib/adminlte/dist/css/adminlte.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome-free/css/all.min.css">
+    <link href="~/lib/icheck-bootstrap/icheck-bootstrap.css" rel="stylesheet" />
+    @if (isRTL)
+    {
+        <link href="~/lib/bootstrap/dist/css/bootstrap-rtl.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="~/lib/adminlte/dist/css/custom.css" />
+    }
+    <link href="~/lib/data-tables/css/dataTables.dateTime.min.css" rel="stylesheet" />
+    <link href="~/lib/custom-range/custom-range.css" rel="stylesheet" />
+
+    <!--Leaflet Maps-->
+    <link href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" rel="stylesheet" />
+    <link href="~/lib/leaflet/css/L.VisualClick.css" rel="stylesheet" />
+    <link href="~/lib/leaflet/css/leaflet-search.min.css" rel="stylesheet" />
+    <link href="~/lib/dropcountry/dropcountry.css" rel="stylesheet" />
+    <link href="~/lib/Product_Tree/product-tree.css" rel="stylesheet" />
+    <link href="~/lib/supplier-tree/supplier-tree.css" rel="stylesheet" />
+    <link href="~/lib/toastr/toastr.min.css" rel="stylesheet" />
+    <link href="~/lib/data-tables/css/buttons.dataTables.min.css" rel="stylesheet" />
+    <link href="~/lib/custom-list/custom-list.css" rel="stylesheet" />
+    <link href="~/lib/progress-list/style.css" rel="stylesheet" />
+
+    <link href="~/lib/jquery-ui/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/lib/full-calendar/main.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/print.css" media="print" />
+    @await RenderSectionAsync("Styles", required: false)
+
+
+    @* Media Query Responsive *@
+    <link href="~/css/mediaQuery.css" rel="stylesheet" />
+    @if (isRTL)
+    {
+        <link href="~/css/mediaQuery-rtl.css" rel="stylesheet" />
+    }
+</head>
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed sidebar-collapse" style="-webkit-print-color-adjust: exact;">
+    <div class="overlay-body"></div>
+    <div class="wrapper overflow-wrapper">
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <div class="container-fluid">
+                @*<a class="navbar-brand" asp-area="" asp-controller="Movies" asp-action="Index">Movie App</a>*@
+                <div class="navbar-collapse collapse navbar-layouts">
+
+                    <div class="header-logo-and-toggle d-flex justify-content-center">
+
+                        <ul class="navbar-nav">
+                            <li class="nav-item sidebar-toggle">
+                                <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+                            </li>
+                        </ul>
+
+                        <ul class="navbar-umsco navbar-nav">
+                            <li class="toggle-comp">
+                                @if (companyData.ImagePath == null || companyData.ImagePath == "")
+                                {
+                                    <img class="navbar-umsco-img" src="/images/01Umsco.png" />
+                                }
+                                else
+                                {
+                                    <img class="navbar-umsco-img" src="/images/Company/@companyData.ImagePath" />
+                                }
+                                <p class="my-company">@(SharedLocalizer.IsRightToLeft() ? companyData.NameAr : companyData.Name)</p>
+                                <ul class="company-change">
+                                    <li class="head-company">
+                                        <a asp-action="Index" asp-controller="CompanyProfile">
+                                            @SharedLocalizer["ViewProfile"]
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="navbar-nav setting-admin">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="search-inp-header">
+                                <div class="mobile-search">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <form>
+                                    <input type="text" class="form-control" placeholder="search..." />
+                                    <i class="fas fa-search"></i>
+                                </form>
+                            </div>
+
+                            <div class="header-panels-container">
+                                <div class="archive-direct">
+                                    <a class="show-loader" asp-action="Index" asp-controller="Archives" title="@SharedLocalizer["Archives"]">
+                                        <i class="fas fa-archive"></i>
+                                    </a>
+                                </div>
+
+                                <div class='fav' id="favourites">
+                                    <!-- favourites Component Container -->
+                                </div>
+                                <!-- Notification Component Container -->
+                                <div class='position-relative' id="box"></div>
+                            </div>
+
+                            @await Component.InvokeAsync("UserMenu")
+                        }
+                        else
+                        {
+                            <div class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">@SharedLocalizer["Login"]</a>
+                            </div>
+                            <div class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">@SharedLocalizer["Register"]</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+            </div>
+        </nav>
+
+        @await Html.PartialAsync("_Sidebar")
+
+        <div class="content-wrapper">
+            <div class="bg-full d-none" id="global-spinner">
+                <div class="spinner-loading" role="status">
+                    <div class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-full" id="ready-spinner">
+                <div class="spinner-loading" role="status">
+                    <div class="spinner">
+                        <div class="rect1"></div>
+                        <div class="rect2"></div>
+                        <div class="rect3"></div>
+                        <div class="rect4"></div>
+                        <div class="rect5"></div>
+                    </div>
+                </div>
+            </div>
+            <section class="second-header">
+
+                <div class="second-header-container">
+                    <div class="row mb-2">
+                        <div class="my-sm-2 col-12">
+                            <a href="/">
+                                <i class="icon-home-second-header fas fa-home"></i>
+                            </a>
+                            @if (ViewData["Level1Section"] != null)
+                            {
+                                <i class="icon-chevron-right-second-header fas fa-chevron-@(SharedLocalizer.IsRightToLeft()? "left" : "right") mx-3"></i>
+                                @if (ViewData["Level1Url"] != null)
+                                {
+                                    <a class="viewdata-second-header" href="@ViewData["Level1Url"]">@ViewData["Level1Section"]</a>
+                                }
+                                else
+                                {
+                                    <a class="viewdata-second-header">@ViewData["Level1Section"]</a>
+                                }
+                            }
+                            @if (ViewData["Level2Section"] != null)
+                            {
+                                <i class="icon-chevron-right-second-header fas fa-chevron-@(SharedLocalizer.IsRightToLeft()? "left" : "right") mx-3"></i>
+                                @if (ViewData["Level2Url"] != null)
+                                {
+                                    <a class="viewdata-second-header" href="@ViewData["Level2Url"]">@ViewData["Level2Section"]</a>
+                                }
+                                else
+                                {
+                                    <a class="viewdata-second-header">@ViewData["Level2Section"]</a>
+                                }
+                            }
+                            @if (ViewData["Level3Section"] != null)
+                            {
+                                <i class="icon-chevron-right-second-header fas fa-chevron-@(SharedLocalizer.IsRightToLeft()? "left" : "right") mx-3"></i>
+                                <a class="viewdata-second-header"> @ViewData["Level3Section"] </a>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="d-sm-none d-md-block col-xs-6 col-sm-6 col-md-6 col-xl-6 mb-2 flex-grow-1">
+                            <div class="header-details-logo">
+                                @if (ViewData["PartnerLogo"] != null)
+                                {
+                                    <img class="partner-details-img" src="@ViewData["PartnerLogo"]" />
+                                }
+                                <h1 class="title-heade-second-header one-line" title="@ViewData["Title"]">
+                                    @ViewData["Title"]
+                                    @if (ViewData["SubTitle"] != null)
+                                    {
+                                        @::&nbsp;
+                                        <span>@ViewData["SubTitle"]</span>
+                                    }
+                                </h1>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-6 col-xl-6 my-2 second-header-button-and-start flex-grow-1">
+                            @await RenderSectionAsync("HeaderActions", required: false)
+                        </div>
+                    </div>
+                    <div class="row">
+                        @await RenderSectionAsync("AdditionalHeaderContent", required: false)
+                    </div>
+
+                    <div class="noti-mob-show">
+                        <div class="icon-open-noti"><i class="fas fa-tasks"></i></div>
+                        <div class="navbar-nav setting-admin">
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+
+                                <div class="header-panels-container">
+                                    <div class="archive-direct">
+                                        <a class="show-loader" asp-action="Index" asp-controller="Archives" title="@SharedLocalizer["Archives"]">
+                                            <i class="fas fa-archive"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class='fav' id="favourites-moblie">
+                                        <!-- favourites Component Container -->
+                                    </div>
+
+                                    <div class='position-relative' id="box-moblie"></div>
+
+
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">@SharedLocalizer["Login"]</a>
+                                </div>
+                                <div class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">@SharedLocalizer["Register"]</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="content px-2 pb-5">
+                <div class="container-fluid px-1 margin-body-top">
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+        @await Html.PartialAsync("_Taskbar")
+        <footer class="main-footer">
+            <div class="row">
+                <div class="col-md-6">
+                    &copy; @DateTime.UtcNow.Year - @SharedLocalizer["AppTitle"]
+                </div>
+                <div class="col-md-6 text-right show-lang-desk">
+                    @await Html.PartialAsync("_SelectLanguagePartial")
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    @*model Notifications*@
+    <div class="modal fade modal-info-task" id="notificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-md ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["TaskDetails"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="detailsNotification">
+
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <div class="action action-modal">
+                        <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                            @SharedLocalizer["Done"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="show-language-in-phone">
+        @await Html.PartialAsync("_SelectLanguagePartial")
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/popper.min.js"></script>
+
+    <!-- scripts Data Tables Plugin-->
+    <script type="text/javascript" charset="utf8" src="~/lib/data-tables/js/jquery.dataTables.min.js"></script>
+    <!-- Script Textarea Plugin -->
+    <script type="text/javascript" charset="utf8" src="~/lib/rich-text-editor/jquery.richtext.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="~/lib/data-tables/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/data-tables/js/dataTables.responsive.min.js"></script>
+    <script src="~/lib/data-tables/js/responsive.bootstrap.min.js"></script>
+    <script src="~/lib/moment/moment.min.js"></script>
+    <script src="~/lib/jquery.ddslick/jquery.ddslick.min.js"></script>
+    <script src="~/lib/jquery.ddslick/ddslick.js"></script>
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="~/lib/bootstrap/dist/js/bootstrap-confirmation.min.js"></script>
+    <script src="~/lib/adminlte/dist/js/adminlte.js" asp-append-version="true"></script>
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/notifications.js"></script>
+    <script src="~/lib/bootstrap-select/js/bootstrap-select.min.js"></script>
+    @if (SharedLocalizer.IsRightToLeft())
+    {
+        <script src="~/lib/bootstrap-select/js/i18n/defaults-ar_AR.min.js"></script>
+        <script src="~/js/constants-ar.js"></script>
+    }
+    else
+    {
+        <script src="~/lib/bootstrap-select/js/i18n/defaults-en_US.min.js"></script>
+        <script src="~/js/constants.js"></script>
+    }
+
+    <script src="~/lib/data-tables/js/dataTables.dateTime.min.js"></script>
+    <script src="~/lib/custom-range/custom-range.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!--Leaflet Maps-->
+    <script src="~/lib/leaflet/js/leaflet.js"></script>
+    <script src="~/lib/leaflet/js/L.Control.Locate.min.js"></script>
+    <script src="~/lib/leaflet/js/leaflet-search.min.js"></script>
+    <script src="~/lib/leaflet/js/L.VisualClick.js"></script>
+    <script src="~/lib/dropcountry/dropcountry.js"></script>
+    <script src="~/lib/Product_Tree/product-tree.js"></script>
+    <script src="~/lib/supplier-tree/supplier-tree.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
+    <script src="~/lib/data-tables/js/dataTables.buttons.min.js"></script>
+    <script src="~/lib/data-tables/js/jszip.min.js"></script>
+    <script src="~/lib/data-tables/js/pdfmake.min.js"></script>
+    <script src="~/lib/data-tables/js/vfs_fonts.js"></script>
+    <script src="~/lib/data-tables/js/buttons.html5.min.js"></script>
+    <script src="~/lib/data-tables/js/buttons.print.min.js"></script>
+    <script src="~/lib/qrcodejs/qrcode.min.js"></script>
+    @*<script src="~/lib/custom-list/custom-list.js"></script>*@
+
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/lib/FinanTree/main.js"></script>
+    <script type="text/javascript">
+        deleteConfirmationStickyNote();
+        toastr.options = {
+            "closeButton": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "@(SharedLocalizer.IsRightToLeft() ? "toast-bottom-left" : "toast-bottom-right")",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "0",
+            "hideDuration": "1000",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    </script>
+
+    <script type="text/javascript">
+        initConfirmation = function (tableSelector) {
+            $(tableSelector).on('click', '.btn-delete', function (e) {
+                e.preventDefault();
+                $(this).confirmation({
+
+                    rootSelector: '[data-toggle=confirmation]',
+                    // other options
+                    popout: true,
+                    singleton: true,
+                    title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+                    btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+                    btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+                    onConfirm: function () {
+                        showLoader();
+                    }
+                });
+                $(this).confirmation('show');
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#ready-spinner").fadeOut(function () {
+                //$(this).remove(); // Optional if it's going to only be used once.
+            });
+        });
+    </script>
+
+    @if (isRTL)
+    {
+        <script type="text/javascript">
+            var languageOptions = {};
+            languageOptions.sProcessing = "@SharedLocalizer["sProcessing"]";
+            languageOptions.sLengthMenu = "@SharedLocalizer["sLengthMenu"]";
+            languageOptions.sZeroRecords = "@SharedLocalizer["sZeroRecords"]";
+            languageOptions.sInfo = "@SharedLocalizer["sInfo"]";
+            languageOptions.sInfoEmpty = "@SharedLocalizer["sInfoEmpty"]";
+            languageOptions.sInfoFiltered = "@SharedLocalizer["sInfoFiltered"]";
+            languageOptions.sInfoPostFix = "";
+            languageOptions.sSearch = "@SharedLocalizer["sSearch"]";
+            languageOptions.sUrl = "";
+            languageOptions.oPaginate = {};
+            languageOptions.oPaginate.sFirst = "@SharedLocalizer["sFirst"]";
+            languageOptions.oPaginate.sPrevious = "@SharedLocalizer["sPrevious"]";
+            languageOptions.oPaginate.sNext = "@SharedLocalizer["sNext"]";
+            languageOptions.oPaginate.sLast = "@SharedLocalizer["sLast"]";
+
+            var currentDataTable;
+            initTable = function (args) {
+                if (!args.order) {
+                    args.order = [];
+                }
+
+                if (!args.columnDefs) {
+                    args.columnDefs = [];
+                }
+                var actionNoSortColumnDefs = {};
+                actionNoSortColumnDefs.orderable = false;
+                actionNoSortColumnDefs.targets = 'no-sort';
+                args.columnDefs.push(actionNoSortColumnDefs);
+
+                if (!args.footerCallback) {
+                    args.footerCallback = function () { }
+                }
+
+                if (!args.drawCallback) {
+                    args.drawCallback = function () { }
+                }
+
+                if (!args.buttons) {
+                    args.buttons = [];
+                }
+
+                if (!args.paging) {
+                    args.paging = true;
+                }
+
+                currentDataTable = $(args.selector).DataTable({
+                    "autoWidth": false,
+                    "lengthMenu": [5, 10, 25, 50, 75, 100],
+                    "pageLength": 10,
+                    "language": languageOptions,
+                    "order": args.order,
+                    "columnDefs": args.columnDefs,
+                    "responsive": true,
+                    "stateSave": true,
+                    "stateSaveParams": args.stateSaveCallback,
+                    "stateLoadParams": args.stateLoadCallback,
+                    "footerCallback": args.footerCallback,
+                    "drawCallback": args.drawCallback,
+                    "buttons": args.buttons,
+                    "paging": args.paging
+                });
+
+                if (args.childClickFn) {
+                    $(args.selector).find("tbody").on('click', 'td.dt-control', args.childClickFn);
+                }
+            }
+        </script>
+    }
+    else
+    {
+        <script>
+            var currentDataTable;
+            initTable = function (args) {
+                if (!args.order) {
+                    args.order = [];
+                }
+
+                if (!args.columnDefs) {
+                    args.columnDefs = [];
+                }
+                var actionNoSortColumnDefs = {};
+                actionNoSortColumnDefs.orderable = false;
+                actionNoSortColumnDefs.targets = 'no-sort';
+                args.columnDefs.push(actionNoSortColumnDefs);
+
+                if (!args.footerCallback) {
+                    args.footerCallback = function () { }
+                }
+
+                if (!args.drawCallback) {
+                    args.drawCallback = function () { }
+                }
+
+                if (!args.buttons) {
+                    args.buttons = [];
+                }
+
+                if (typeof args.paging === 'undefined') {
+                    args.paging = true;
+                }
+
+                currentDataTable = $(args.selector).DataTable({
+                    "autoWidth": false,
+                    "lengthMenu": [5, 10, 25, 50, 75, 100],
+                    "pageLength": 10,
+                    "order": args.order,
+                    "columnDefs": args.columnDefs,
+                    "responsive": true,
+                    "stateSave": true,
+                    "stateSaveParams": args.stateSaveCallback,
+                    "stateLoadParams": args.stateLoadCallback,
+                    "footerCallback": args.footerCallback,
+                    "drawCallback": args.drawCallback,
+                    "buttons": args.buttons,
+                    "paging": args.paging
+                });
+
+                if (args.childClickFn) {
+                    $(args.selector).find("tbody").on('click', 'td.dt-control', args.childClickFn);
+                }
+            }
+        </script>
+    }
+    <script type="text/javascript">
+        var timeZoneOffset = new Date().getTimezoneOffset();
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</body>
+</html>

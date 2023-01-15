@@ -1,0 +1,263 @@
+﻿@model List<TechnicalSpecificationProductViewModel>
+
+<div class="row">
+    <div class="col-12">
+        <div class="top-add-new">
+            <h3 class="head-box">@SharedLocalizer["ProductList"]:</h3>
+            <a class="btn btn-add-primary"
+               onclick="selectProducts()"
+               data-hidecategorychk="true"
+               data-toggle="modal"
+               data-target="#selectProductsModal">
+                + @SharedLocalizer["AddItem"]
+            </a>
+        </div>
+        <div class="card card-overflow">
+            <table class="table" id="productsTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @SharedLocalizer["Number"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Item"]
+                        </th>
+                        <th>
+                            @SharedLocalizer["Quantity"]*
+                        </th>
+                        <th>
+                            @SharedLocalizer["Description"]*
+                        </th>
+                        <th>
+                            @SharedLocalizer["Origin"]*
+                        </th>
+                        <th class="invisible"> @SharedLocalizer["All"]</th>
+                        <th>
+                            @SharedLocalizer["Attachment"]
+                        </th>
+                        <th class="actions">@SharedLocalizer["Actions"]</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        //if (Model.Count == 0)
+                        //{
+                        //    Model.Add(new TechnicalSpecificationProductViewModel());
+                        //}
+                        int i = 0;
+                        foreach (var productVM in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <p>@(i + 1)</p>
+                                    <input type="hidden" value="@productVM.Id" name="TechnicalSpecificationVM.ProductVMs[@i].Id" />
+                                    <input type="hidden" value="@productVM.TechnicalSpecificationId" name="TechnicalSpecificationVM.ProductVMs[@i].TechnicalSpecificationId" />
+                                    <input type="hidden" value="@productVM.ProductName" name="TechnicalSpecificationVM.ProductVMs[@i].ProductName" />
+                                    <input type="hidden" value="@productVM.ProductNameAr" name="TechnicalSpecificationVM.ProductVMs[@i].ProductNameAr" />
+                                    <input type="hidden" value="@(productVM.Index == 0 ? i + 1 : productVM.Index)" name="TechnicalSpecificationVM.ProductVMs[@i].Index" />
+                                </td>
+                                <td>
+                                    @if (productVM.ProductId != null)
+                                    {
+                                        <a class="select-item-product-list"
+                                           data-toggle="modal"
+                                           data-target="#selectProductsModal"
+                                           onclick="selectProducts()">
+                                            <p class="cat-name-prod">
+                                                <span>@(SharedLocalizer.IsRightToLeft() ? productVM.ProductNameAr : productVM.ProductName) </span>
+                                                @if (productVM.ProductVM != null)
+                                                {
+                                                    @(SharedLocalizer.IsRightToLeft()? productVM.ProductVM.CategoryTreeAr : productVM.ProductVM.CategoryTree)
+                                                }
+                                            </p>
+                                            <p></p>
+                                        </a>
+                                        <input name="TechnicalSpecificationVM.ProductVMs[@i].ProductId"
+                                               type="hidden"
+                                               id="productId_@i"
+                                               value="@productVM.ProductId" />
+                                    }
+                                    else
+                                    {
+                                        <a class="select-item-product-list"
+                                           data-toggle="modal"
+                                           data-target="#selectProductsModal"
+                                           onclick="selectProducts()">
+                                            <i class="fas fa-plus"></i>
+                                            @SharedLocalizer["SelectItem"]
+                                        </a>
+                                        <input name="TechnicalSpecificationVM.ProductVMs[@i].ProductId"
+                                               type="hidden"
+                                               id="productId_@i" />
+                                    }
+
+                                    @if (ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].ProductId"] != null &&
+ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].ProductId"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                                    {
+                                        <span class="text-danger field-validation-error">
+                                            <span>@ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].ProductId"].Errors[0].ErrorMessage</span>
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="position-relative">
+                                        <input asp-for="@Model[i].Quantity"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].Quantity"
+                                               min="0"
+                                               onchange="validity.valid || (value = '1'); this.value = Math.abs(this.value);"
+                                               value="@(Model[i].Quantity != null ? Model[i].Quantity : 1)"
+                                               class="form-control inp-height" />
+
+                                        @if (ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Quantity"] != null &&
+ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Quantity"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                                        {
+                                            <span class="text-danger field-validation-error">
+                                                <span>@ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Quantity"].Errors[0].ErrorMessage</span>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="position-relative">
+                                        <input asp-for="@Model[i].Description"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].Description"
+                                               class="form-control inp-height" />
+
+                                        @if (ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Description"] != null &&
+ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Description"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                                        {
+                                            <span class="text-danger field-validation-error">
+                                                <span>@ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].Description"].Errors[0].ErrorMessage</span>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="position-relative">
+                                        <input class="tsproduct-originstr"
+                                               type="hidden"
+                                               name="TechnicalSpecificationVM.ProductVMs[@i].RequestedOriginIdsStr"
+                                               id="TechnicalSpecificationVM_ProductVMs[@i]_RequestedOriginIdsStr"
+                                               value="@Model[i].RequestedOriginIdsStr" />
+                                        <select name="TechnicalSpecificationVM.ProductVMs[@i].RequestedOriginIds"
+                                                id="TechnicalSpecificationVM_ProductVMs[@i]_RequestedOriginIds"
+                                                asp-for="@Model[i].RequestedOriginIds"
+                                                class="form-control inp-height tsproduct-origin"
+                                                data-live-search="true"
+                                                data-size="5"
+                                                multiple>
+                                            @foreach (var country in ViewData["CountryId"] as List<Country>)
+                                            {
+                                                <option value="@country.Id">@(SharedLocalizer.IsRightToLeft() ? country.NameAr : country.Name)</option>
+                                            }
+                                        </select>
+
+                                        @if (ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].RequestedOriginIds"] != null &&
+ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].RequestedOriginIds"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                                        {
+                                            <span class="text-danger field-validation-error">
+                                                <span>@ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].RequestedOriginIds"].Errors[0].ErrorMessage</span>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (i == 0)
+                                    {
+                                        <input type="button" id="btnApplyOrigins" value="@SharedLocalizer["All"]" class="link-primary" onclick="applyToAllOrigins()" />
+                                    }
+                                </td>
+                                <td class="file-upload-and-show-files">
+                                    <div class="position-relative">
+                                        @if (Model[i].AttachmentId != null)
+                                        {
+                                            <div class="custom-label-upload">
+                                                <label class="" for="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentFile">
+                                                    <span class="upload-file-icons">
+                                                        <i class="fas fa-file-upload"></i>
+                                                    </span>
+                                                </label>
+                                                <a class="one-line" href="/images/Opportunities/@Model[i].AttachmentPath" title="@Model[i].AttachmentTitle" target="_blank">@Model[i].AttachmentTitle</a>
+                                                <input id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentFile"
+                                                       name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentFile"
+                                                       type="file"
+                                                       class="custom-file-input tsproduct-attachment-input d-none">
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="custom-file">
+                                                <label class="file file-upload-label tsproduct-attachment-label" for="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentFile">
+                                                    <span class="upload-file-icons">
+                                                        <i class="fas fa-file-upload"></i>
+                                                    </span>
+                                                    <span class="span-upload">
+
+                                                        @SharedLocalizer["Upload"]
+
+                                                    </span>
+                                                </label>
+                                                <input id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentFile"
+                                                       name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentFile"
+                                                       type="file"
+                                                       class="custom-file-input tsproduct-attachment-input d-none">
+                                            </div>
+                                        }
+                                        @if (Model[i].AttachmentId != null)
+                                        {
+                                            <input class="tsproduct-attachmentid"
+                                                   name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentId"
+                                                   id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentId"
+                                                   value="@Model[i].AttachmentId"
+                                                   type="hidden" />
+                                            <input class="tsproduct-attachmentpath"
+                                                   name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentPath"
+                                                   id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentPath"
+                                                   value="@Model[i].AttachmentPath"
+                                                   type="hidden" />
+                                            <input class="tsproduct-attachmenttitle"
+                                                   name="TechnicalSpecificationVM.ProductVMs[@i].AttachmentTitle"
+                                                   id="TechnicalSpecificationVM_ProductVMs[@i]_AttachmentTitle"
+                                                   value="@Model[i].AttachmentTitle"
+                                                   type="hidden" />
+
+                                        }
+                                        @if (ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].AttachmentId"] != null &&
+ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].AttachmentId"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                                        {
+                                            <span class="text-danger field-validation-error">
+                                                <span>@ViewData.ModelState[$"TechnicalSpecificationVM.ProductVMs[{i}].AttachmentId"].Errors[0].ErrorMessage</span>
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="Opportunities-actions">
+                                    @if (productVM.Id != 0)
+                                    {
+                                        <button type="button"
+                                                class="btn Opportunities-edit-btn"
+                                                onclick="deleteTechDbProduct('@productVM.Id', this)">
+                                            <i class="far fa-trash-alt text-purple"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn Opportunities-edit-btn"
+                                                onclick="deleteProduct(this)">
+                                            <i class="far fa-trash-alt text-purple"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="selected-product-ids">

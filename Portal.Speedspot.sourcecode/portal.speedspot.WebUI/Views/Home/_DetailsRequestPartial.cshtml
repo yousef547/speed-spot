@@ -1,0 +1,38 @@
+﻿@model PendingRequestViewModel
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["CreatedById"]</label>
+            <p>@Model.RequestedByName</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["StatusId"]</label>
+            <p class="deadline">@Model.Status</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["CreatedDate"]</label>
+            <p class="deadline">@Model.RequestedDate.ToString("dd/MM/yyyy") - <span>@Model.RequestedDate.ToString("hh:mm tt")</span></p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Deadline"]</label>
+            <p class="deadline">@Model.Deadline?.ToString("dd/MM/yyyy") - <span>@Model.Deadline?.ToString("hh:mm tt")</span></p>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group">
+            <label class="control-label" for="Name">@SharedLocalizer["Description"]</label>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+
+</div>
+
+
+

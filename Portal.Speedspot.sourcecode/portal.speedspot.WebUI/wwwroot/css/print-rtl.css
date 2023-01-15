@@ -1,0 +1,53 @@
+﻿
+.tables-heade-all-print {
+    border-right: 1px solid #000;
+}
+
+    .tables-heade-all-print .title-tables-print .titlle-head-data,
+    .tables-heade-all-print .title-tables-print .titles-head {
+        text-align: right !important;
+    }
+
+.title-print-tables-notes p {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: right;
+    margin: 0
+}
+
+.title-print-tables-notes {
+    text-align: right !important;
+}
+
+.text-left {
+    text-align: right !important
+}
+
+.tables-heade-all-print .title-tables-print-data {
+    border: 0 !important
+}
+
+    .tables-heade-all-print .title-tables-print-data table, .tables-heade-all-print .title-tables-print-data table tr, .tables-heade-all-print .title-tables-print-data table td {
+        border-left: 0 !important;
+    }
+
+/*
+.tables-heade-all-print .title-tables-print {
+    padding: 0 4px 0 0 !important;
+}
+
+.tables-heade-all-print .title-tables-print p{
+
+}
+
+.title-tables-print-data > table td {
+    padding: 2px;
+    font-size: 11px
+}
+
+.paper-a4-contacts .manager p {
+    flex-direction: row-reverse !important;
+    gap: 10px;
+    display: flex;
+}
+*/

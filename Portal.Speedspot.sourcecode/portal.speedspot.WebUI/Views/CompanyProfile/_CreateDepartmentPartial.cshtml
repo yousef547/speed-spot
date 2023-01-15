@@ -1,0 +1,122 @@
+﻿@model DepartmentViewModel
+
+
+<form enctype="multipart/form-data" class="d-inline" id="createDepartmentForm">
+    <div class="form-global-inp mx-4 ">
+        <div class="">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group mb-0">
+                        <label class="control-label" asp-for="Name"></label>
+                        <input class="form-control inp-height" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group mb-0">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <input class="form-control inp-height" asp-for="NameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label class="control-label" asp-for="Code"></label>
+                    <input class="form-control inp-height" asp-for="Code" />
+                    <span asp-validation-for="Code" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label asp-for="Color" class="control-label"></label>
+                    <input asp-for="Color" class="form-control inp-height cursor-pointer" id="color-picker-create" value='#276cb8' readonly />
+                    <span asp-validation-for="Color" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label class="control-label" asp-for="ImageFile"></label>
+                    <div class="img-department">
+                        <img src="/images/instagram.png" id="createDepartmentImage-img-src" accept="image/*" />
+                    </div>
+                    <label for="createDepartmentImage" class="btn-uploadimg">@SharedLocalizer["UploadImage"]</label>
+                    <input asp-for="ImageFile" id="createDepartmentImage" class="d-none" type="file" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label asp-for="ManagingDirectorId" class="control-label"></label>
+                    <select asp-for="ManagingDirectorId"
+                            id="createManagingDirectorId"
+                            data-live-search="true"
+                            class="form-control select-no-border-white"
+                            asp-items="@(new SelectList(ViewBag.Users as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="ManagingDirectorId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="form-group mb-0">
+                    <label asp-for="SalesDirectorId" class="control-label"></label>
+                    <select asp-for="SalesDirectorId"
+                            id="createSalesDirectorId"
+                            data-live-search="true"
+                            class="form-control select-no-border-white"
+                            asp-items="@(new SelectList(ViewBag.Users as List<ApplicationUser>, "Id", "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                    <span asp-validation-for="SalesDirectorId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label asp-for="Description" class="control-label"></label>
+                    <textarea asp-for="Description" class="form-control inp-height" cols="4"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label asp-for="DefaultOfferCoverLetter" class="control-label"></label>
+                    <textarea asp-for="DefaultOfferCoverLetter" class="form-control inp-height" cols="4"></textarea>
+                    <span asp-validation-for="DefaultOfferCoverLetter" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12 col-lg-12">
+                <div class="form-group mb-0">
+                    <label asp-for="DefaultOfferCoverLetterAr" class="control-label"></label>
+                    <textarea asp-for="DefaultOfferCoverLetterAr" class="form-control inp-height" cols="4"></textarea>
+                    <span asp-validation-for="DefaultOfferCoverLetterAr" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-end">
+                <input type="button" onclick="createDepartment()" value="@SharedLocalizer["Save"]" class="btn-uploadimg" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+

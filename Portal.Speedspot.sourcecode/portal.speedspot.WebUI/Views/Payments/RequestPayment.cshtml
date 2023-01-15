@@ -1,0 +1,324 @@
+
+@model PaymentRequestViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Payments"];
+    ViewData["SubTitle"] = SharedLocalizer["RequestPayment"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+    ViewData["Level2Section"] = SharedLocalizer["Payments"];
+}
+
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Save"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form id="paymentRequestForm" asp-action="RequestPayment">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="TotalAmount"></label>
+                <div class="input-group input-payment-select">
+                    <input min="0" class="form-control inp-height" asp-for="TotalAmount" onchange="changeSpanAmount()">
+                    <div class="input-group-prepend">
+                        <select class="select-no-border-white inp-height"
+                                asp-for="CurrencyId"
+                                asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", "Symbol"))">
+                        </select>
+                    </div>
+                </div>
+                <span class="text-danger" asp-validation-for="TotalAmount"></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="Deadline"></label>
+                <input class="form-control inp-height" asp-for="Deadline">
+                <span class="text-danger" asp-validation-for="Deadline"></span>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+            <div class="form-group">
+                <label class="control-label" asp-for="DepartmentId"></label>
+                <select class="form-control inp-height select-no-border-white"
+                        asp-for="DepartmentId"
+                        asp-items="@(new SelectList(ViewBag.DepartmentId as List<Department>, "Id", SharedLocalizer.IsRightToLeft() ? "NameAr" : "Name"))">
+                    <option value="">@SharedLocalizer["Select"]</option>
+                </select>
+                <span class="text-danger" asp-validation-for="DepartmentId"></span>
+            </div>
+        </div>
+    </div>
+    <div class="card my-4">
+        <div class="card-body">
+            <div class="row my-4">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="custom-control custom-radio">
+                        <input class="custom-control-input" type="radio" id="rbproject" asp-for="IsProject" value="true" checked onchange="checkIsProject()">
+                        <label for="rbproject" class="custom-control-label cursor-pointer">@SharedLocalizer["Project"] <span>@SharedLocalizer["MultipleDirections"]</span></label>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="custom-control custom-radio">
+                        <input class="custom-control-input" type="radio" id="rbDirection" asp-for="IsProject" value="false" onchange="checkIsProject()">
+                        <label for="rbDirection" class="custom-control-label cursor-pointer">@SharedLocalizer["Direction"] <span>@SharedLocalizer["OneDirection"]</span></label>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-4 project-on">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2 col-off">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="ProjectId"></label>
+                        <div class="input-group input-payment-select">
+                            <div class="input-group-prepend">
+                                <select class="form-control select-no-border-white inp-height"
+                                        asp-for="ProjectId"
+                                        onchange="getProjectCode()">
+                                    <option value="">@SharedLocalizer["Select"]</option>
+                                    @foreach (var project in ViewBag.ProjectId as List<ProjectViewModel>)
+                                    {
+                                        <option value="@project.Id" data-code="@project.Code">
+                                            @project.Name
+                                        </option>
+                                    }
+                                </select>
+                                <input class="input-group-text" id="projectCode" value="" onchange="getProjectId()"/>
+                            </div>
+                        </div>
+                        <span class="text-danger" asp-validation-for="ProjectId"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-4 direction-on">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="AccountId"></label>
+                        <select class="form-control select-no-border-white inp-height"
+                                asp-for="AccountId"
+                                asp-items="@(new SelectList(ViewBag.DirectionId as List<FinancialAccountViewModel>, "Id",
+                                SharedLocalizer.IsRightToLeft() ? "DescriptionAr" : "Description"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span class="text-danger" asp-validation-for="AccountId"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label label-sales-information" asp-for="Description">@SharedLocalizer["Description"]</label>
+                        <input class="form-control inp-height select-no-border-white" type="text" asp-for="Description">
+                        <span class="text-danger" asp-validation-for="Description"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-on">
+                <h3 class="head-box">@SharedLocalizer["Directions"]:</h3>
+                <div id="directionVMs">
+                    @await Html.PartialAsync("_DirectionsPartial", Model.Directions)
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!--<form action="" method="POST">
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">-->
+@*<ul class="nav nav-tabs next-btn-payment-create" id="myTab" role="tablist">
+        <li class="nav-item ">
+            <a class="nav-link btn-next-primary" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+               aria-selected="true">
+                @SharedLocalizer["Next"]
+            </a>
+        </li>
+    </ul>*@
+<!--</div>-->
+@*<div class="tab-pane fade mx-4" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <ul class="nav nav-pills" id="myTab" role="tablist">
+            <li class="nav-item top-tab-links-create-envelop active">
+                <a class="nav-link active d-flex justify-content-between" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                   aria-selected="true">
+                    <div>
+                        <span>1</span>
+                        @SharedLocalizer["RequestInfo"]
+                    </div>
+                    <i class="fas fa-check"></i>
+                </a>
+            </li>
+            <li class="nav-item top-tab-links-create-envelop active">
+                <a class="nav-link active" id="ts-tab" data-toggle="tab">
+                    <span>2</span>
+                    @SharedLocalizer["PaymentType"]
+                </a>
+            </li>
+        </ul>
+
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <label class="control-label my-4">@SharedLocalizer["ChoosePaymentType"]</label>
+                    <div class="col-12">
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" type="radio" id="IsPaymentCash" name="IsPayment" value="true">
+                                <label for="IsPaymentCash" class="custom-control-label cursor-pointer is-payment-cash-click" id="">@SharedLocalizer["Cash"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" type="radio" id="IsPaymentTransfer" name="IsPayment" value="false">
+                                <label for="IsPaymentTransfer" class="custom-control-label cursor-pointer is-payment-transfer-click" id="">@SharedLocalizer["Transfer"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input class="custom-control-input" type="radio" id="IsPaymentCheque" name="IsPayment" value="false">
+                                <label for="IsPaymentCheque" class="custom-control-label cursor-pointer is-payment-cheque-click" id="">@SharedLocalizer["Cheque"]</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="all-tab-fade mt-5">
+            <div class="row row-cash d-none">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="DepartmentId">@SharedLocalizer["Safe"]</label>
+                        <select class="form-control inp-height select-no-border-white">
+                            <option value="1">COmpany's Safe'</option>
+                            <option value="1">COmpany's Safe'</option>
+                            <option value="1">COmpany's Safe'</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="DepartmentId" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-transfer d-none">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label label-sales-information" for="z0__Description">@SharedLocalizer["Number"]</label>
+                        <input class="form-control inp-height select-no-border-white" type="text" placeholder="3/12/2021">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="[0].Description" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["IssueBank"]</label>
+                        <select class="form-control inp-height select-no-border-white">
+                            <option value="3/12/2021">3/12/2021</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="DepartmentId" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["IssueDate"]</label>
+                        <input class="form-control inp-height " type="datetime-local">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["ExpiryDate"]</label>
+                        <input class="form-control inp-height " type="datetime-local">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row row-cheque d-none">
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label label-sales-information" for="z0__Description">@SharedLocalizer["Number"]</label>
+                        <input class="form-control inp-height select-no-border-white" type="text" placeholder="3/12/2021">
+                        <span class="text-danger field-validation-valid" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["IssueBank"]</label>
+                        <select class="form-control inp-height select-no-border-white">
+                            <option value="Al-Ahly">Al-Ahly</option>
+                            <option value="">Al-Ahly</option>
+                            <option value="">Bank_Misr</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="DepartmentId" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["RecieverBank"]</label>
+                        <select class="form-control inp-height select-no-border-white">
+                            <option value="Al-Ahly">QNB</option>
+                        </select>
+                        <span class="text-danger field-validation-valid" data-valmsg-for="" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["IssueDate"]</label>
+                        <input class="form-control inp-height " type="datetime-local">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 col-lg-4 mb-2">
+                    <div class="form-group">
+                        <label class="control-label" for="">@SharedLocalizer["ExpiryDate"]</label>
+                        <input class="form-control inp-height " type="datetime-local">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs next-btn-payment-create" id="myTab" role="tablist">
+            <li class="nav-item ">
+                <a class="nav-link btn-next-primary" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                   aria-selected="true">
+                    @SharedLocalizer["Back"]
+                </a>
+            </li>
+            <li class="nav-item">
+                <button type="submit" class="nav-link btn-next-primary" aria-selected="true">
+                    @SharedLocalizer["Finish"]
+                </button>
+            </li>
+        </ul>
+    </div>*@
+
+<!--</div>
+
+
+</form>-->
+
+@section Scripts{
+    <script src="~/js/payments.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            checkIsProject();
+        })
+    </script>
+}

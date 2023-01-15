@@ -1,0 +1,33 @@
+﻿
+@model List<TechnicalSpecificationAttachmentViewModel>
+
+<table class="table table-borderless">
+    <tbody>
+        @{
+            int i = 0;
+            foreach (var attachment in Model)
+            {
+                <tr>
+                    <td>
+                        <input name="TechnicalSpecificationVM.AttachmentFiles[@i].Id" value="@attachment.Id" type="hidden" />
+                        <input name="TechnicalSpecificationVM.AttachmentFiles[@i].TechnicalSpecificationId" value="@attachment.TechnicalSpecificationId" type="hidden" />
+                        <input name="TechnicalSpecificationVM.AttachmentFiles[@i].AttachmentId" value="@attachment.AttachmentId" type="hidden" />
+                        <input name="TechnicalSpecificationVM.AttachmentFiles[@i].AttachmentPath" value="@attachment.AttachmentPath" type="hidden" />
+                        <input name="TechnicalSpecificationVM.AttachmentFiles[@i].Title" value="@attachment.Title" type="hidden" />
+                        <a class="show-attachment one-line" href="/images/Opportunities/@attachment.AttachmentPath" target="_blank">@attachment.Title</a>
+                    </td>
+                    <td>
+                        @if (attachment.AttachmentId != null && attachment.AttachmentId != 0)
+                        {
+                            <button type="button" class="btn btn-close" 
+                                    disabled>
+                                <i class="fas fa-times"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+                i++;
+            }
+        }
+    </tbody>
+</table>

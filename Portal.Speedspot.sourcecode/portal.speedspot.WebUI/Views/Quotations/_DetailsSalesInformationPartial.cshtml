@@ -1,0 +1,158 @@
+﻿
+@model QuotationViewModel
+
+@inject ArabicLanguageHelper ArLangHelper
+
+<h4>@SharedLocalizer["OpportunityInformation"]</h4>
+<br />
+
+<div class="card Opportunities-sections-details">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.Name" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.Name</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <label asp-for="OpportunityVM.TypeId" class="control-label"></label>
+                        <br />
+                        <input asp-for="OpportunityVM.TypeId" type="hidden" />
+                        <p>@(SharedLocalizer.IsRightToLeft()? Model.OpportunityVM.TypeNameAr : Model.OpportunityVM.TypeName)</p>
+                    </div>
+
+                    <div class="col-12 col-lg-6 typeDependant">
+                        <label asp-for="OpportunityVM.TenderNumber" class="control-label"></label>
+                        <br />
+                        <p>@Model.OpportunityVM.TenderNumber</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        @if (Model.OpportunityVM.IsLocalTenderType)
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Local"]</label>
+                        }
+                        else
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Foreign"]</label>
+                        }
+                    </div>
+
+                    <div class="col-12 col-lg-6 typeDependant">
+                        @if (Model.OpportunityVM.IsLimitedTenderType)
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Limited"]</label>
+                        }
+                        else
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Public"]</label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.DueDate" class="control-label"></label>
+                <br />
+                <p class="exclamation">
+                    @(Model.OpportunityVM.DueDate.Value.ToString("dd/MM/yyyy"))
+                    @if (Model.OpportunityVM.DueDate.Value >= DateTime.UtcNow)
+                    {
+                        <i class="fas fa-exclamation"
+                           rel="tooltip"
+                           title="@SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ? ArLangHelper.GetDayStringByNumber(Model.OpportunityVM.DaysRemaining.Value) : Model.OpportunityVM.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)"></i>
+                    }
+                </p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.CustomerId" class="control-label">@SharedLocalizer["CustomerName"]</label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.OpportunityVM.CustomerNameAr : Model.OpportunityVM.CustomerName)</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.CountryId" class="control-label"></label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.OpportunityVM.CountryNameAr : Model.OpportunityVM.CountryName)</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.Address" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.Address</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.SalesAgentId" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.SalesAgentName</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.Budget" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.Budget.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.DepartmentId" class="control-label"></label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.OpportunityVM.DepartmentNameAr : Model.OpportunityVM.DepartmentName)</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="AdminId" class="control-label"></label>
+                <br />
+                <p>@Model.AdminName</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.GuestId" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.GuestName</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-8">
+                <label asp-for="OpportunityVM.Notes" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.Notes</p>
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <label asp-for="OpportunityVM.CreatedById" class="control-label"></label>
+                <br />
+                <p>@Model.OpportunityVM.CreatedByName</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row typeDependant">
+    @if (Model.OpportunityVM.IsBidBond)
+    {
+        <div class="col-12 col-lg-8">
+            <div id="oBidBond">
+                @await Html.PartialAsync("_DetailsBidBondPartial", Model.OpportunityVM.BidBondVM)
+            </div>
+        </div>
+    }
+    @if (Model.OpportunityVM.IsBookTender)
+    {
+        <div class="col-12 col-lg-4">
+            <div class="oBookTender">
+                @await Html.PartialAsync("_DetailsBookTenderPartial", Model.OpportunityVM.BookTenderVM)
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,95 @@
+﻿@model List<DepartmentViewModel>
+
+
+<div class="department-section">
+    <h3 class="head-box">@SharedLocalizer["Departments"]</h3>
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="depart-box" style="background-color:@string.Format("#{0:X2}{1:X2}{2:X2}", item.Color.R, item.Color.G, item.Color.B)">
+                    <div class="layer-overlay">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="head-depart">
+                                    <div class="d-flex">
+                                        <p> @(SharedLocalizer.IsRightToLeft()? item.NameAr : item.Name)</p>
+                                        @if (item.IsArchived)
+                                        {
+                                            <p>
+                                                (@SharedLocalizer["Archived"])
+                                            </p>
+                                        }
+
+                                        @if (item.IsFavourite)
+                                        {
+                                            <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star m-1"></i>
+                                        }
+
+                                    </div>
+
+                                    <div class="dropdown">
+                                        <button typeof="button" class="btn bg-white" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.Edit)).Succeeded)
+                                            {
+                                                <a class="dropdown-item" onclick="editDepartment(@item.Id)">@SharedLocalizer["Edit"]</a>
+                                            }
+                                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.Delete)).Succeeded)
+                                            {
+                                                if (!item.IsArchived)
+                                                {
+                                                    <a class="dropdown-item btn-confirm-delete_department" title="@SharedLocalizer["Delete"]" data-itemid="@item.Id" data-source="archiveDepartment">
+                                                        @SharedLocalizer["Delete"]
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="dropdown-item btn-confirm-delete_department" title="@SharedLocalizer["Restore"]" data-itemid="@item.Id" data-source="unarchiveDepartment">
+                                                        @SharedLocalizer["Restore"]
+                                                    </a>
+                                                }
+                                            }
+                                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.Settings)).Succeeded)
+                                            {
+                                                <a class="dropdown-item" 
+                                                   asp-action="DepartmentSettings" 
+                                                   asp-controller="CompanyProfile" 
+                                                   asp-route-departmentid="@item.Id">
+                                                    @SharedLocalizer["Settings"]
+                                                </a>
+                                            }
+                                            <a class="dropdown-item" onclick="favourite(@item.Id)">@SharedLocalizer["Favourite"]</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content-depart-box">
+                                <i class="fas fa-building"></i>
+                                <span>@item.OpportunitiesCount</span>
+                                <p>@SharedLocalizer["Projects"]</p>
+                            </div>
+                        </div>
+                        <div class="card-img-top">
+                            @if (item.Image == null || item.Image == "")
+                            {
+                                <img src="/images/instagram.png" class="" alt="Img-Department">
+                            }
+                            else
+                            {
+                                <img src="/images/Departments/@item.Image" class="" alt="Img-Department">
+                            }
+                        </div>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Departments.Details)).Succeeded)
+                        {
+                            <a class="know-more" asp-action="DepartmentDetails" asp-route-id="@item.Id"> @SharedLocalizer["KnowMore"] <i class="fas fa-long-arrow-alt-right"></i></a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

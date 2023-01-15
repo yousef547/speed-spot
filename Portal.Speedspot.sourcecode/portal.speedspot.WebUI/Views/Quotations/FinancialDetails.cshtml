@@ -1,0 +1,136 @@
+
+@model List<CompetitorOfferViewModel>
+
+@{
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    ViewData["Level2Section"] = SharedLocalizer["Quotations"];
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["FinancialDetails"];
+
+    int? competitorId = (int?)ViewData["CompetitorId"];
+
+    List<QuotationFinancialDetailsViewModel> quotationCompetitorVMs = (ViewData["QuotationGroups"] as List<QuotationFinancialDetailsViewModel>).ToList();
+
+    int unDoneCount = 0;
+}
+
+<input type="hidden" name="Id" value="@ViewData["QuotationId"]" />
+
+<form id="competitorFinancialDetailsForm">
+    <input type="hidden" id="quotationId" value="@ViewData["QuotationId"]" />
+    <div class="card">
+        <div class="d-flex justify-content-center" id="availableCompetitors" data-selectedid="@competitorId">
+            <input type="hidden" class="list-selected-id" onchange="getCompetitorOfferProducts()" id="soOfferId" name="CompetitorOfferId" />
+            <ul class="custom-list">
+                @foreach (var competitor in quotationCompetitorVMs)
+                {
+                    if (!competitor.IsCompetitor)
+                    {
+
+                        <li class="custom-list-item done"
+                            data-itemid="@competitor.Id"
+                            data-iscompetitor="false"
+                            data-alternateid="@competitor.Id"
+                            data-offer-count="@(competitor.OfferVersionVM.AlternateVMs.Count + 1)">
+                            <div class="list-img-container">
+                                @if (competitor.ImagePath != null)
+                                {
+                                    <img class="list-img" src="/images/Company/@competitor.ImagePath" />
+                                }
+                                else
+                                {
+                                    <img class="list-img" src="/images/01Umsco.png" />
+                                }
+                            </div>
+                            <div class="list-label" title="@competitor.Name">
+                                @competitor.Name
+                            </div>
+                            <div class="list-dot"></div>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="custom-list-item @(competitor.CompetitorOfferVMs.SelectMany(o=>o.ProductVMs).Any(p => p.UnitPrice != null) ? "done" : "")"
+                            data-itemid="@competitor.Id"
+                            data-iscompetitor="true"
+                            data-alternateid="@competitor.Id"
+                            data-offer-count="@(competitor.CompetitorOfferVMs.Count)">
+                            <div class="list-img-container">
+                                @if (competitor.ImagePath != null)
+                                {
+                                    <img class="list-img" src="/images/Competitors/@competitor.ImagePath" />
+                                }
+                                else
+                                {
+                                    <img class="list-img" src="/images/01Umsco.png" />
+                                }
+                            </div>
+                            <div class="list-label" title="@competitor.Name">
+                                @competitor.Name
+                            </div>
+                            <div class="list-dot"></div>
+                        </li>
+                        if (competitor.CompetitorOfferVMs.SelectMany(o => o.ProductVMs).Any(o => o.UnitPrice == null && o.IsIncluded))
+                        {
+                            unDoneCount++;
+                        }
+                    }
+                }
+            </ul>
+        </div>
+
+        <div id="competitorOfferProducts" class="m-3">
+            @await Html.PartialAsync("_CompetitorOfferProductsPartial", new List<CompetitorOfferViewModel>())
+        </div>
+        <div class="action-financial-details m-3" id="competitorOfferBtn">
+            @if (unDoneCount > 0)
+            {
+                <button type="button" class="btn-add-primary" onclick="skipCurrentItem('#availableCompetitors', false)">@SharedLocalizer["Skip"]</button>
+                <button type="button" class="add-primary-main" onclick="saveFinancialDetails()">@SharedLocalizer["Next"]</button>
+            }
+            else
+            {
+                <button type="button" class="add-primary-main" onclick="saveFinancialDetails()">@SharedLocalizer["Save"]</button>
+                <a asp-action="Details" class="add-primary-main show-loader" asp-route-id="@ViewData["QuotationId"]">@SharedLocalizer["Finish"]</a>
+            }
+        </div>
+        <div id="companyOfferProducts" class="m-3">
+            @await Html.PartialAsync("_CompanyOfferProductsPartial", new List<QuotationOfferViewModel>())
+        </div>
+        <div class="action-financial-details m-3" id="companyOfferBtn">
+            @if (unDoneCount > 0)
+            {
+                <button type="button" class="btn-add-primary" onclick="skipCurrentItem('#availableCompetitors', false)">@SharedLocalizer["Skip"]</button>
+                <button type="button" class="add-primary-main" onclick="saveCompanyDetails()">@SharedLocalizer["Next"]</button>
+            }
+            else
+            {
+                <button type="button" class="add-primary-main" onclick="saveCompanyDetails()">@SharedLocalizer["Save"]</button>
+                <a asp-action="Details" class="add-primary-main show-loader" asp-route-id="@ViewData["QuotationId"]">@SharedLocalizer["Finish"]</a>
+            }
+        </div>
+
+
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/lib/custom-list/custom-list.js"></script>
+    <script src="~/js/quotations.js"></script>
+    <script type="text/javascript">
+        priceChanged = function (index) {
+            let unitPrice = $(`#item_${index} .product-UnitPrice`).val();
+            if (unitPrice) {
+                let quantity = $(`#item_${index} .item-quantity`).val();
+                let totalPrice = unitPrice * quantity;
+                $(`#item_${index} .product-total`).val(totalPrice);
+            } else {
+                $(`#item_${index} .product-total`).val(0);
+            }
+        }
+
+        $(document).ready(function () {
+            initCustomList("#availableCompetitors");
+        })
+    </script>
+}

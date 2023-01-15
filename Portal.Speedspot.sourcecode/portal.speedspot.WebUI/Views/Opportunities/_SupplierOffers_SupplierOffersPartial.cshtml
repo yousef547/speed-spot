@@ -1,0 +1,7 @@
+﻿
+@model OpportunityViewModel
+
+<input type="hidden" id="soOpportunityId" value="@Model.Id" />
+<div id="supplierOffers">
+    @await Html.PartialAsync("_SupplierOffersPartial", Model.SupplierOfferVMs.OrderBy(o => o.LocalTotalPriceWCIF).ToList())
+</div>

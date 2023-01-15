@@ -1,0 +1,50 @@
+﻿
+@model List<VisitReasonViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["VisitReasons"];
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"];
+}
+@section HeaderActions{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.VisitReasons.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["VisitReason"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchReasons"]">
+        </div>
+    </div>
+</div>
+
+<div class="OrganizationTypes-home">
+    <div class="card" id="visitReasons">
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/lookups.js"></script>
+    <script type="text/javascript">
+
+        var stateloadparams = function (settings, data) {
+            var searchdata = data.search.search;
+            $("#searchbox").val(searchdata);
+        }
+
+        $(document).ready(function () {
+            getVisitReasons();
+        })
+    </script>
+}

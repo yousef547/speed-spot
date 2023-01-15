@@ -1,0 +1,48 @@
+﻿@model CustomerNegotiationViewModel
+@{
+    var companyData = ViewBag.CompanyData as CompanyDataViewModel;
+}
+<form id="NegotiationCustomer" enctype="multipart/form-data">
+    <div class="row">
+        <div asp-validation-summary="All" class="text-danger col-md-12"></div>
+
+        <input type="hidden" asp-for="QuotationId" />
+        <div class="col-sm-12 col-md-6">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="CreatedDate" class="control-label"></label>
+                    <input asp-for="CreatedDate" value="" type="date" class="form-control">
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="DueDate" class="control-label"></label>
+                    <input type="date" class="form-control" asp-for="DueDate">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
+            <div class="item">
+                <div class="form-group">
+                    <label asp-for="IsCustomer" class="control-label">@SharedLocalizer["ChooseSpeaker"]</label>
+                    <div class="modal-attach-message">
+                        <select class="inp-height" asp-for="IsCustomer" title="Attach Message">
+                            <option value="false">@(SharedLocalizer.IsRightToLeft() ? companyData.NameAr : companyData.Name)</option>
+                            <option value="true">@SharedLocalizer["Customer"]</option>
+
+                        </select>
+                        <input asp-for="Message" type="text" class="form-control inp-height">
+                        <label asp-for="ConversationFile" class="attach-file-message" for="customerCreateNegotiationFile">
+                            <i class="fas fa-paperclip"></i>
+                            <input type="file" asp-for="ConversationFile" class="d-none" id="customerCreateNegotiationFile" />
+                        </label>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

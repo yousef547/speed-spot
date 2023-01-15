@@ -1,0 +1,133 @@
+﻿
+@model List<BankViewModel>
+
+@{
+    ViewData["Title"] = SharedLocalizer["Banks"];
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"];
+}
+
+@section HeaderActions{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Roles.Create)).Succeeded)
+    {
+        <a asp-action="Create" class="btn btn-primary show-loader addNew">
+            <span class="text-white">+</span>
+            @SharedLocalizer["NewBank"]
+        </a>
+    }
+}
+
+<div class="row mx-4 justify-content-end">
+    <div class="col-12 col-md-3">
+        <div class="input-group mb-3 justify-content-end">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">
+                    <i class="fas fa-search"></i>
+                </span>
+            </div>
+            <input class="form-control" type="text" id="searchbox" placeholder="@SharedLocalizer["SearchBanks"]">
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body p-0 table-bank">
+        <table class="table table-head-fixed">
+            <thead>
+                <tr>
+                    <th>
+                        @SharedLocalizer["Name"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["NameAr"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["CountryId"]
+                    </th>
+                    @*<th>
+                        @SharedLocalizer["BidBondPercentage"]
+                    </th>
+                    <th>
+                        @SharedLocalizer["BidBondFees"]
+                    </th>*@
+                    <th class="no-sort">
+                        @SharedLocalizer["Actions"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="text-center">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @item.Name
+                            </span>
+                        </td>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @item.NameAr
+                            </span>
+                        </td>
+                        <td>
+                            <span class="name-details one-line">
+                                @(SharedLocalizer.IsRightToLeft() ? item.CountryNameAr : item.CountryName)
+                            </span>
+                        </td>
+                        @*<td class="">
+                            <span class="name-details one-line">
+                                @item.BidBondPercentage%
+                            </span>
+                        </td>
+                        <td class="">
+                            <span class="name-details one-line">
+                                @item.BidBondFees.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))
+                            </span>
+                        </td>*@
+                        <td class="">
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Edit)).Succeeded)
+                            {
+                                <a class="btn btn-edit show-loader btn-table-width" asp-action="Edit" asp-route-id="@item.Id" title="@SharedLocalizer["Edit"]">
+                                    <i class="far fa-edit"></i>
+                                </a>
+                            }
+                            @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Banks.Delete)).Succeeded)
+                            {
+                                if (!item.IsArchived)
+                                {
+                                    <a data-toggle="confirmation"
+                                       class="btn btn-delete btn-table-width"
+                                       asp-action="Archive"
+                                       asp-route-id="@item.Id">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-delete-unarchive show-loader btn-table-width" asp-action="Unarchive" asp-route-id="@item.Id" title="@SharedLocalizer["Unarchive"]">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts{
+    <script type="text/javascript">
+        var stateLoadParams = function (settings, data) {
+            var searchData = data.search.search;
+            $("#searchbox").val(searchData);
+        }
+
+        $(document).ready(function () {
+            handleDataTable({
+                selector: ".table-bank table",
+                stateLoadCallback: stateLoadParams
+            });
+        })
+    </script>
+}

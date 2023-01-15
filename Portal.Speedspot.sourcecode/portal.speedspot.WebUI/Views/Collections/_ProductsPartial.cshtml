@@ -1,0 +1,54 @@
+
+@model List<QuotationOfferProductViewModel>
+
+<h5>@SharedLocalizer["ProductList"]:</h5>
+<div class="card">
+    <div class="card-body px-0 py-1">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>@SharedLocalizer["Item"]</th>
+                    <th>@SharedLocalizer["Price"]</th>
+                    <th class="tax-column">@SharedLocalizer["Tax"]</th>
+                    <th>@SharedLocalizer["Description"]</th>
+                    <th>@SharedLocalizer["Quantity"]</th>
+                    <th>@SharedLocalizer["TotalPrice"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @{
+                    int i = 0;
+                }
+                @foreach (var item in Model)
+                {
+                    <tr class="item-row" id="item_@i">
+                        <td>@(i + 1)</td>
+                        <td>@(SharedLocalizer.IsRightToLeft() ? item.ProductNameAr : item.ProductName)</td>
+                        <td class="item-price">@item.UnitPrice</td>
+                        <td class="tax-column">
+                            <select class="form-control select-no-border-white item-tax"
+                                    onchange="calculateItemTotal('@i')"
+                                    asp-items="@(new SelectList(ViewBag.VATValueId as List<VATValueViewModel>, "Value", "DisplayValue"))">
+                            </select>
+                        </td>
+                        <td>@item.OfferDescription</td>
+                        <td>
+                            <input type="number" min="1" max="@item.Quantity" value="@item.Quantity"
+                                   class="form-control inp-height item-quantity"
+                                   onchange="validity.valid || (value = '1'); this.value = Math.abs(this.value); calculateItemTotal('@i')" />
+                        </td>
+                        <td class="item-total"></td>
+                        <td>
+                            <button class="btn btn-action btn-action-details" type="button">
+                                <i class="far fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

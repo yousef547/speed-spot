@@ -1,0 +1,94 @@
+﻿
+@model BankViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer.IsRightToLeft() ? Model.NameAr : Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"].Value;
+    ViewData["Level2Section"] = SharedLocalizer["Banks"].Value;
+    ViewData["Level2Url"] = Url.Action("Index");
+    ViewData["Level3Section"] = SharedLocalizer["Edit"].Value + " " + SharedLocalizer["Bank"].Value;
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+<form method="post" asp-action="Edit" class="d-inline" id="banksForm">
+    <div class="form-global-inp mx-4">
+        <div class="">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input asp-for="Id" type="hidden" />
+            <input asp-for="IsArchived" type="hidden" />
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="CountryId"></label>
+                        <select class="form-control inp-height"
+                                asp-for="CountryId"
+                                asp-items="@(new SelectList(ViewBag.CountryId as List<Country>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                            <option value="">@SharedLocalizer["Select"]</option>
+                        </select>
+                        <span asp-validation-for="CountryId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name">@SharedLocalizer["Name"]</label>
+                        <input class="form-control inp-height" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr">@SharedLocalizer["NameAr"]</label>
+                        <input class="form-control inp-height" asp-for="NameAr" />
+                        <span asp-validation-for="NameAr" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+            
+
+                @*<div class="col-12 col-lg-6">
+            <div class="form-group">
+                <label class="control-label" asp-for="BidBondPercentage">@SharedLocalizer["BidBondPercentage"]</label>
+                <input class="form-control inp-height" asp-for="BidBondPercentage" />
+                <span asp-validation-for="BidBondPercentage" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="form-group">
+                <label class="control-label" asp-for="BidBondFees">@SharedLocalizer["BidBondFees"]</label>
+                <input class="form-control inp-height" asp-for="BidBondFees" />
+                <span asp-validation-for="BidBondFees" class="text-danger"></span>
+            </div>
+        </div>*@
+            </div>
+            
+            <div class="row justify-content-between align-items-center">
+                <h4>@SharedLocalizer["Branches"]</h4>
+                <button class="btn-add-primary justify-content-end" type="button" onclick="addBranch()">@SharedLocalizer["AddBranch"]</button>
+            </div>
+
+            <div class="row" id="branches">
+                @await Html.PartialAsync("_BranchesPartial", Model.BranchVMs)
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script src="~/js/banks.js"></script>
+}

@@ -1,0 +1,310 @@
+﻿
+@model CustomerViewModel
+@*Start First Row*@
+<div class="card mx-4 details-partial-tabs">
+    <div class="card-body">
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="Name" class="text-details"></label>
+                    <p class="details-label">@Model.Name</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-left">
+                <div class="form-group">
+                    <label asp-for="SubName" class="text-details"></label>
+                    <p class="details-label">@Model.SubName</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="text-details" asp-for="NameAr"></label>
+                    <div class=" position-relative">
+                        <p class="details-label">@Model.NameAr</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="Email" class="text-details"></label>
+                    <p class="details-label">@Model.Email</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="WebsiteUrl" class="text-details"></label>
+                    <p class="details-label">@Model.WebsiteUrl</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="ActivityTypeId" class="text-details"></label>
+                    <div class="">
+                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.ActivityTypeNameAr : Model.ActivityTypeName)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="OrganizationTypeId" class="text-details"></label>
+                    <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.OrganizationTypeNameAr : Model.OrganizationTypeName)</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="DepartmentIds" class="text-details"></label>
+                    <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.DepartmentsStrAr : Model.DepartmentsStr)</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="Rank" class="text-details"></label>
+                    <div class="">
+                        <p class="details-label">@Model.Rank / 100</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            @if (Model.IsSubCompany)
+            {
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="ParentId" class="text-details"></label>
+                        <p class="details-label">@(SharedLocalizer.IsRightToLeft() ? Model.ParentNameAr : Model.ParentName)</p>
+                    </div>
+                </div>
+            }
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SalesAgentIds" class="text-details"></label>
+                    <p class="details-label">@Model.SalesAgentsStr</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Start Second Row*@
+
+<div class="row details-partial-tabs mt-4">
+    <div class="col-md-3">
+        <h3 class="head-box">@SharedLocalizer["LegalInfo"]:</h3>
+        <div class="item">
+            <div class="form-group">
+                <label asp-for="LegalInfoVM.TaxCardNumber" class="text-details"></label>
+                <p class="details-label">@(Model.LegalInfoVM != null ? Model.LegalInfoVM.TaxCardNumber : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LegalInfoVM.CommercialRegister" class="text-details"></label>
+                <p class="details-label">@(Model.LegalInfoVM != null ? Model.LegalInfoVM.CommercialRegister : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LegalInfoVM.VatNumber" class="text-details"></label>
+                <p class="details-label">@(Model.LegalInfoVM != null ? Model.LegalInfoVM.VatNumber : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="LegalInfoVM.AttachmentId" class="text-details"></label>
+                @if (Model.LegalInfoVM != null && Model.LegalInfoVM.AttachmentPath != null)
+                {
+                    <a href="/images/Customers/@Model.LegalInfoVM.AttachmentPath" class="details-label d-flex">
+                        <i class="fas fa-file-download"></i>
+                        <p class="">@Model.LegalInfoVM.AttachmentTitle</p>
+                    </a>
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <h3 class="head-box">@SharedLocalizer["Address"]:</h3>
+        <div class="item">
+            <input type="hidden" asp-for="AddressVM.Latitude" />
+            <input type="hidden" asp-for="AddressVM.Longitude" />
+            <div class="map-sec">
+                <i class="fas fa-map-marker-alt"></i>
+                <p id="locationText"></p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AddressVM.CountryId" class="text-details"></label>
+                <p class="details-label">@(Model.AddressVM != null ? (SharedLocalizer.IsRightToLeft() ? Model.AddressVM.CountryNameAr : Model.AddressVM.CountryName) : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AddressVM.CityId" class="text-details"></label>
+                <p class="details-label">@(Model.AddressVM != null ? SharedLocalizer.IsRightToLeft() ? Model.AddressVM.CityNameAr : Model.AddressVM.CityName : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AddressVM.Street" class="text-details"></label>
+                <p class="details-label">@(Model.AddressVM != null ? Model.AddressVM.Street : "")</p>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AddressVM.BillingAddress" class="text-details"></label>
+                <p class="details-label">@(Model.AddressVM != null ? Model.AddressVM.BillingAddress : "")</p>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-md-6">
+        <h3 class="head-box">@SharedLocalizer["Contacts"]:</h3>
+        <div class="item">
+
+            <div class="title-number">
+                <p>@SharedLocalizer["Type"]</p>
+                <p>@SharedLocalizer["AlNumber"]</p>
+                <p class="invisible"></p>
+            </div>
+            @foreach (var contact in Model.ContactVMs)
+            {
+                <div class="mobile-and-phone">
+                    <p>@(SharedLocalizer.IsRightToLeft() ? contact.ContactVM.TypeNameAr : contact.ContactVM.TypeName)</p>
+                    <div class="phone-number-country">
+                        <img src="/images/Flags/svg/@(contact.ContactVM.CountryCode2).svg" />
+                        <p class="">+@contact.ContactVM.PhoneCodeId@contact.ContactVM.Number</p>
+                    </div>
+                    <p class="invisible"></p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@*Start Third Row vendor List*@
+<div class="row details-partial-tabs mt-5">
+    <div class="col-md-7">
+        <h3 class="head-box">@SharedLocalizer["VendorList"]:</h3>
+        <div class="item">
+            <div class="scroll-Custom px-2">
+                @for (int i = 0; i < Model.VendorRegistrationVMs.Count; i++)
+                {
+                    <div class="vendor-list">
+                        <h5 class="count-vendors">@(i+1)</h5>
+                        <div class="box">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="" class="text-details">@SharedLocalizer["BookRegistrationNumber"]</label>
+                                        <p class="details-label">@Model.VendorRegistrationVMs[i].BookRegistrationNumber</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="" class="text-details">@SharedLocalizer["Value"]</label>
+                                        <p class="details-label">@(Model.VendorRegistrationVMs[i].Value.HasValue ? Model.VendorRegistrationVMs[i].Value.Value.ToString("#,000.00") : "")</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="" class="text-details">@SharedLocalizer["Date"]</label>
+                                        <p class="details-label">@Model.VendorRegistrationVMs[i].RegistrationDate</p>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="" class="text-details">@SharedLocalizer["Tax"]</label>
+                                        <p class="details-label">@(Model.VendorRegistrationVMs[i].VAT.HasValue ? Model.VendorRegistrationVMs[i].VAT.Value.ToString("#,000.00") : "")</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="" class="text-details">@SharedLocalizer["Attachment"]</label>
+                                        <a href="/images/Customers/@Model.VendorRegistrationVMs[i].AttachmentPath" class="details-label" target="_blank">
+                                            <i class="fas fa-file-download"></i>@Model.VendorRegistrationVMs[i].AttachmentTitle
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <h3 class="head-box">@SharedLocalizer["Files"]</h3>
+        <div class="item">
+            <div class="form-group px-2 scroll-Custom">
+                @foreach (var item in Model.FileVMs)
+                {
+                    <div class="actions-uploaded">
+                        <a class="file-name" href="/images/Customers/@item.AttachmentPath" target="_blank">
+                            <i class="fas fa-file-upload"></i>
+                            <p>@item.AttachmentTitle</p>
+                        </a>
+                        @*<div class="close-del">
+                                <i class="fas fa-times"></i>
+                            </div>*@
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Start Employees Row*@
+
+<div class="row details-partial-tabs mt-5">
+    <div class="col-12">
+        <h3 class="head-box">@SharedLocalizer["Employees"]</h3>
+        <div class="item-emp">
+            <div class="table-emp">
+                <div class="header-table-emp">
+                    <ul class="list-unstyled">
+                        <li class="name-attach-file-head">@SharedLocalizer["Name"]</li>
+                        <li class="name-attach-file-head">@SharedLocalizer["Department"]</li>
+                        <li class="name-attach-file-head">@SharedLocalizer["Position"]</li>
+                        <li class="name-attach-file-head">@SharedLocalizer["Email"]</li>
+                        <li class="name-attach-file-head">@SharedLocalizer["Phone"]</li>
+                        <li class="invisible">..</li>
+                    </ul>
+                </div>
+                <div class="table-emp-body scroll-Custom">
+                    @foreach (var item in Model.EmployeeVMs)
+                    {
+                        <div class="box">
+                            <p>@item.EmployeeVM.Name</p>
+                            <p>@item.EmployeeVM.Department</p>
+                            <p>@item.EmployeeVM.Position</p>
+                            <p>@item.EmployeeVM.Email</p>
+                            <div class="phone-number-emp">
+                                <img src="/images/Flags/svg/@(item.EmployeeVM.CountryCode2).svg" />
+                                <a href="tel:+@(item.EmployeeVM.PhoneCode)@item.EmployeeVM.Phone">+@(item.EmployeeVM.PhoneCode)@item.EmployeeVM.Phone</a>
+                            </div>
+                            <p class="invisible"></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

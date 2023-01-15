@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewData["Title"] = "Email Confirmation";
+    Layout = "_AccountLayout";
+    List<string> errors = ViewBag.Errors;
+}
+
+<div class="login-box">
+    <div class="login-logo">
+        <a class="show-loader" asp-controller="Home" asp-action="Index">
+            <img src="~/lib/adminlte/dist/img/Logo.svg" />
+        </a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="card">
+        <div class="card-body login-card-body">
+            @if (errors.Count > 0)
+            {
+                foreach (var error in errors)
+                {
+                    <p class="login-box-msg ">
+                        @error
+                    </p>
+                }
+            }
+            else
+            {
+                <p class="login-box-msg">
+                    @SharedLocalizer["EmailConfirmed"]
+                </p>
+            }
+        </div>
+        <!-- /.login-card-body -->
+    </div>
+</div>
+

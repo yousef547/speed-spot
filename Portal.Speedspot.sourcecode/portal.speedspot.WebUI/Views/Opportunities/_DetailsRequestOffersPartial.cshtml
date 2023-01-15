@@ -1,0 +1,50 @@
+﻿
+@model List<RequestOfferViewModel>
+
+@{
+    int i = 0;
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@SharedLocalizer["SupplierId"]</th>
+            <th>@SharedLocalizer["Items"]</th>
+            <th>@SharedLocalizer["Status"]</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var offer in Model)
+        {
+            <tr>
+                <td><p class="items-supp"> @(SharedLocalizer.IsRightToLeft()? offer.SupplierVM.NameAr: offer.SupplierVM.Name)</p></td>
+                <td>
+                    @foreach (var productVM in offer.ProductVMs)
+                    {
+                    <p class="items-supp"> @(SharedLocalizer.IsRightToLeft()? productVM.ProductVM.ProductNameAr : productVM.ProductVM.ProductName)</p>
+                    }
+                </td>
+                <td>
+                    @if (offer.IsEmailSent)
+                    {
+                        <p class="sent"><i class="fas fa-check"></i> @SharedLocalizer["Sent"]</p>
+                    }
+                    else
+                    {
+                        <p class="notsent"><i class="fas fa-times"></i> @SharedLocalizer["NotSent"]</p>
+                    }
+                </td>
+                <td class="actions-table-btn">
+                    <button type="button"
+                            class="btn btn-action btn-action-danger show-loader"
+                            onclick="deleteDbRequestOffer('@offer.Id', this)">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+            i++;
+        }
+    </tbody>
+</table>

@@ -1,0 +1,62 @@
+﻿
+@model portal.speedspot.Models.ViewModels.UserDepartmentsViewModel
+
+@{
+    bool isRTL = SharedLocalizer.IsRightToLeft();
+    ViewData["Title"] = SharedLocalizer["ManageDepartmentsFor"].Value + Model.Username;
+}
+@section HeaderActions{
+    <button class="btn btn-outline-success mx-2 headres-action-global" value="Save" onclick="saveUserDepartments()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Update"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<div class="mx-4">
+    <div id="viewAll" class="table-responsive">
+        <form method="post" asp-action="UpdateDepartments" class="d-inline update-roles" id="userDepartmentsForm">
+            <input asp-for="UserId" type="hidden" />
+            <table class="table text-center" id="userDepartmentsTable">
+                <thead>
+                    <tr>
+                        <th class="update-roles-head">
+                            @SharedLocalizer["Department"]
+                        </th>
+                        <th class="update-roles-head">
+                            @SharedLocalizer["Grant"]
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.UserDepartments.Count(); i++)
+                    {
+                        <tr>
+                            <td class="update-roles-body">
+                                <input asp-for="UserDepartments[i].DepartmentId" type="hidden" />
+                                @(isRTL? Model.UserDepartments[i].DepartmentNameAr : Model.UserDepartments[i].DepartmentName)
+                            </td>
+                            <td class="update-roles-body">
+                                <div class="form-check mb-5">
+                                    <input asp-for="UserDepartments[i].Selected" class="form-check-input" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @*            <div class="col-sm-12">
+                    <input type="button" class="btn btn-save show-loader" value="@SharedLocalizer["Save"]" />
+                    <a asp-action="Index" class="btn btn-default float-right show-loader">
+                        @SharedLocalizer["Cancel"]
+                    </a>
+                </div>*@
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/users.js"></script>
+}

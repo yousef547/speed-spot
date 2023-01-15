@@ -1,0 +1,43 @@
+﻿
+<div class="modal fade" id="selectSuppliersModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">@SharedLocalizer["SelectSuppliers"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a class="new-supplier" onclick="showModalAddSupplier()" ><i class="fas fa-plus"></i> @SharedLocalizer["NewSupplier"]</a>
+                <br />
+                <label id="supplierDepartmentNames" class="department-names"></label>
+                <div class="category-products-list">
+                    <input type="hidden" id="departmentIds" />
+                    <input type="hidden" id="productIds" />
+                    <div id="left" class="span3">
+                        <ul id="suppliersModal" class="nav menu">
+                            @await Html.PartialAsync("_SuppliersSelectPartial", new List<ProductSuppliersTreeViewModel>())
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-suppliers">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 my-3" id="selectedSuppliers">
+                            @await Html.PartialAsync("_SelectedSuppliersPartial", new List<SupplierProductsViewModel>())
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="action">
+                                <a class="btn" id="saveSelectedSuppliers">@SharedLocalizer["Save"]</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

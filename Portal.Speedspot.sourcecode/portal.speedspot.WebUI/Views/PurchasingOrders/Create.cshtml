@@ -1,0 +1,311 @@
+@model PurchaseOrderViewModel
+
+
+
+@{
+    ViewData["Title"] = SharedLocalizer["AddNewPO"].Value;
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    ViewData["Level2Section"] = SharedLocalizer["PurchasingOrders"];
+    ViewData["Level2Url"] = Url.Action("Index");
+
+    if(Model == null)
+    {
+        new PurchaseOrderViewModel();
+    }
+}
+
+@section HeaderActions{
+ 
+
+        <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm()">
+            <i class="fas fa-check"></i> @SharedLocalizer["Save"]
+        </button>
+    
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<div class="purchasingOrders mx-4">
+    <div class="row">
+        <ul class="nav nav-pills" id="mainTabb" role="tablist">
+            <li class="nav-item top-tab-links-create-box">
+                <a class="nav-link active" id="si-tab" data-toggle="tab" href="#si" role="tab" aria-controls="si" aria-selected="true">
+                    <span>1</span>
+                    @SharedLocalizer["PoInformation"]
+
+                </a>
+            </li>
+            @if (ViewBag.typeFound == ApplicationEnums.FundType.Funded)
+            {
+                <li class="nav-item top-tab-links-create-box">
+                    <a class="nav-link" id="ts-tab" data-toggle="tab" href="#ts" role="tab" aria-controls="ts" aria-selected="false">
+                        <span>2</span>
+                        @SharedLocalizer["FundDetails"]
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    <br />
+
+    <form enctype="multipart/form-data" method="post" asp-action="Create" id="submitPurcaseOrder">
+
+
+        <input name="actionType" id="actionType" value="Add" type="hidden" />
+        <input id="poOpportunityId" type="hidden" value="@Model.OpportunityId" />
+        <input id="PurchaseOrderId" type="hidden" asp-for="Id" value="@Model.Id" />
+        <input id="createdById" type="hidden" asp-for="CreatedById" value="@Model.CreatedById" />
+        <input id="departmentCode" type="hidden" asp-for="DepartmentId" />
+        <input type="hidden" asp-for="QuotationId" value="@Model.QuotationId" />
+        <input type="hidden" asp-for="SelectedVersionId" />
+        <input type="hidden" asp-for="Type" value="@ViewBag.typeFound" id="createType" data-type="@ViewBag.typeFound" />
+        <input type="date" class="d-none" asp-for="CreatedDate" value="@Model.CreatedDate.ToString("yyyy-MM-dd")"/>
+        <div class="tab-content" id="mainTabContent">
+
+            <div class="tab-pane fade show active" id="si" role="tabpanel" aria-labelledby="si-tab">
+                <div class="row">
+
+                    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="CustomerPo-tab" data-toggle="tab" href="#CustomerPo" role="tab" aria-controls="CustomerPo" aria-selected="true">@SharedLocalizer["CustomerPo"]</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="SupplierPo-tab" data-toggle="tab" href="#SupplierPo" role="tab" aria-controls="SupplierPo" aria-selected="false">@SharedLocalizer["SupplierPo"]</a>
+                        </li>
+                    </ul>
+                </div>
+                <br />
+
+                @* Tab Fade Child  PoInformation*@
+                <div class="row">
+                    <div class="col-12">
+                        <div class="tab-content" id="mainTabContent">
+                            <div class="tab-pane fade active show" id="CustomerPo" aria-labelledby="CustomerPo-tab">
+                                @*method="post" asp-action="Create"*@
+                                <partial name="_FormCustomerPoPartial" model="@Model" />
+                            </div>
+                            <div id="SupplierPo" class="tab-pane fade" aria-labelledby="SupplierPo-tab">
+                                <div class="">
+                                    <span></span>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div id="availableSuppliers" class="d-flex justify-content-center">
+                                                <ul class="custom-list" id="availableSuppliers">
+                                                    <input type="hidden" class="list-selected-id" onchange="getDSupplierProducts(true, this)" id="poSupplierId" />
+                                                    @foreach (var supplierOffer in Model.AcceptedOfferVMs.ToList())
+                                                    {
+                                                        <li class="custom-list-item
+                                                        @( Model.SupplierPOVMs.Count(po => po.SupplierId == supplierOffer.SupplierOfferVM.SupplierId) == 0? "active":"done")
+                                                         "
+                                                            data-itemid="@supplierOffer.SupplierOfferVM.SupplierId">
+                                                            <div class="list-img-container">
+                                                                @if (supplierOffer.SupplierOfferVM.SupplierLogoAttachmentPath != null)
+                                                                {
+                                                                    <img class="list-img" src="/images/Suppliers/@supplierOffer.SupplierOfferVM.SupplierLogoAttachmentPath" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <img class="list-img" src="/images/01Umsco.png" />
+                                                                }
+                                                            </div>
+                                                            <div class="list-label" title="@(SharedLocalizer.IsRightToLeft()? supplierOffer.SupplierOfferVM.SupplierNameAr : supplierOffer.SupplierOfferVM.SupplierName)">
+                                                                @(SharedLocalizer.IsRightToLeft()? supplierOffer.SupplierOfferVM.SupplierNameAr : supplierOffer.SupplierOfferVM.SupplierName)
+                                                            </div>
+                                                            <div class="list-dot"></div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div>
+
+                                        @for (int i = 0; i < Model.AcceptedOfferVMs.Select(x => x.SupplierOfferVM).Count(); i++)
+                                        {
+                                            var acceptedSupplierId = Model.AcceptedOfferVMs.Select(x => x.SupplierOfferVM).ToList()[i].SupplierId;
+                                            var supplierPO = Model.SupplierPOVMs.FirstOrDefault(po => po.SupplierId == acceptedSupplierId);
+                                            <input type="hidden" name="SupplierPOVMs[@i].purchaseOrderId" value="@Model.Id" />
+                                            if (Model.SupplierPOVMs.Count > i)
+                                            {
+                                                <input type="hidden" name="SupplierPOVMs[@i].Id" value="@Model.SupplierPOVMs[i].Id" />
+                                            }
+
+                                            <div class=" @(i != 0? "d-none" : "showSupplier")" id="supplierPo_@acceptedSupplierId">
+
+                                                <div class="row ">
+                                                    <input type="hidden" name="SupplierPOVMs[@i].SupplierId" value="@acceptedSupplierId" />
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <label class="control-label label-sales-information"
+                                                                   asp-for="SupplierPOVMs[@i].SupplierPONumber">
+                                                                @SharedLocalizer["SupplierPoNumber"]
+                                                            </label>
+                                                            <input class="form-control inp-height valid set-text"
+                                                                   id="SupplierPOVMs[@i].SupplierPONumber"
+                                                                   type="text" data-val="true" onchange="setValueSupplier()" value="@supplierPO?.SupplierPONumber" name="SupplierPOVMs[@i].SupplierPONumber">
+                                                            @*<span class="text-danger" asp-validation-for="@Model.SupplierPOVMs[i].SupplierPONumber"></span>*@
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <label class="control-label label-sales-information" for="Name">@SharedLocalizer["CustomerPoNumber"]</label>
+                                                            <input class="form-control inp-height valid get-value" type="text" readonly data-val="true">
+                                                            <span class="text-danger"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <div class="customperPo-flex-centered">
+                                                                <p>@SharedLocalizer["QuotationNo"]:  </p>
+                                                                <span>#@ViewData["quotationNo"]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <label class="control-label label-sales-information" asp-for="SupplierPOVMs[@i].StartDate">@SharedLocalizer["DateFrom"]</label>
+                                                            <input class="form-control inp-height valid" type="date" value="@supplierPO?.StartDate?.ToString("yyyy-MM-dd")" data-val="true" id="SupplierPOVMsStartDate_@acceptedSupplierId"
+                                                                   onchange="calculateEndDate(`SupplierPOVMsStartDate_@acceptedSupplierId`,`inputDeliveryPeriod_@i`,`endDate_@i`,)" name="SupplierPOVMs[@i].StartDate">
+                                                            @*<span class="text-danger " asp-validation-for="@Model.SupplierPOVMs[i].StartDate"></span>*@
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <div class="customperPo-flex-centered">
+                                                                <input type="hidden" value="@ViewData["resultNegotiation"]" id="inputDeliveryPeriod_@i" name="SupplierPOVMs[@i].DeliveryPeriod" />
+                                                                <p>@SharedLocalizer["DeliveryRange"]:  </p>
+                                                                <span>@ViewData["resultNegotiation"]</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-4">
+                                                        <div class="form-group">
+                                                            <div class="customperPo-flex-centered">
+                                                                <p>@SharedLocalizer["ExpiryDate"]:  </p>
+                                                                <span id="endDate_@i">@ViewData["EndDate"]</span>
+                                                                <span class="info"><i class="fas fa-info"></i></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <br />
+
+                                                <div class="row mx-4">
+                                                    <label class="control-label label-sales-information ChooseOffers" for="">@SharedLocalizer["SupplierOffers"]</label>
+                                                    <div class="col-12 checkBoxId_@i" id="tableSupplierOffer">
+                                                        @*@await Html.PartialAsync("_TableSupplierOffersPartial", Model.AcceptedOfferVMs.Select(x => x.SupplierOfferVM).Where(x => x.SupplierId == acceptedSupplierId).ToList())*@
+
+                                                        <table class="table table-supplier-purchasing ">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th class="bg-white">@SharedLocalizer["OfferNumber"]</th>
+                                                                    @*<th class="bg-white">@SharedLocalizer["Country"]</th>*@
+                                                                    <th class="bg-white">@SharedLocalizer["DeliveryRange"]</th>
+                                                                    <th class="bg-white">@SharedLocalizer["Date"]</th>
+                                                                    <th class="bg-white">@SharedLocalizer["Price"]</th>
+                                                                    <th class="bg-white">@SharedLocalizer["LocalPriceTable"]</th>
+                                                                    <th class="bg-white">@SharedLocalizer["Payment"]</th>
+                                                                    <th class="bg-white">@SharedLocalizer["Offer"]</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                                @{
+                                                                    int g = 0;
+                                                                }
+                                                                @foreach (var item in Model.OfferAccept.Where(x => x.SupplierId == acceptedSupplierId).ToList())
+                                                                {
+                                                                    <tr>
+                                                                        <td>
+                                                                            <div class="icheck-primary">
+                                                                                <input type="checkbox" class="checkBoxOffer" @(supplierPO?.SupplierPoOffers?.FirstOrDefault(x => x.SupplierOfferId == item.Id) != null ? "checked" : "") id="offer_@item.Id" name="SupplierPOVMs[@i].SupplierPoOffers[@g].SupplierOfferId" value="@item.Id">
+                                                                                <label class="" for="offer_@item.Id">
+                                                                                </label>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="bg-white offerId">#@item.Id</td>
+                                                                        @*<td class="bg-white country">@item.cou</td>*@
+                                                                        <td class="bg-white delivery">@item.DeliveryTypeName</td>
+                                                                        <td class="bg-white date">  @SharedLocalizer["From"] @item.DeliveryRangeFrom @SharedLocalizer["To"] @item.DeliveryRangeTo @SharedLocalizer["Days"] </td>
+                                                                        <td class="bg-white price-eg">@item.TotalPrice @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" + Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)</td>
+                                                                        <td class="bg-white price">@item.LocalTotalPriceWCIF @item.CurrencySymbol</td>
+                                                                        <td class="bg-white payment">@item.PaymentTypeName</td>
+                                                                        <td class="bg-white">
+                                                                            @foreach (var attach in item.AttachmentVMs as List<SupplierOfferAttachmentViewModel>)
+                                                                            {
+                                                                                <a class="attachment-download" href="/images/Opportunities/@attach.AttachmentPath">
+                                                                                    <i class="fas fa-download"></i>
+                                                                                </a>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                    g++;
+                                                                }
+                                                            </tbody>
+                                                        </table>
+
+
+                                                        @*Model.SupplierPOVMs*@
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        }
+
+                                        @*<div class="col-12">
+                                            <div class="d-flex align-items-end flex-column">
+
+
+                                                @if (Model.SupplierPOVMs.Count(po => po.SupplierId == acceptedSupplierId) == 0)
+                                                {
+                                                    <a class="btn btn-add-primary btn-next bg-white " onclick="addSupplierPo(@i)"
+                                                       id="nextSupplier_@acceptedSupplierId">
+                                                        @SharedLocalizer["Add"]
+                                                    </a>
+                                                }
+                                                <a class="btn-next-primary d-none" id="nextStep">@SharedLocalizer["Next"]</a>
+                                            </div>
+                                        </div>*@
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            @if (ViewBag.typeFound == ApplicationEnums.FundType.Funded)
+            {
+                <div class="tab-pane fade" id="ts" role="tabpanel" aria-labelledby="ts-tab">
+                    <partial name="_FundDetailsPartial" model="@Model" view-data='@new ViewDataDictionary(ViewData) { { "index", Model.Id } }' />
+
+                </div>
+            }
+        </div>
+    </form>
+
+</div>
+
+
+@section Scripts{
+    <script src="~/lib/custom-list/custom-list.js"></script>
+    <script src="~/js/purchaseorders.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initCustomList('#availableSuppliers');
+            setValueCustomer();
+            changeInterest();
+        })
+
+    </script>
+}

@@ -1,0 +1,158 @@
+﻿
+@model OpportunityViewModel
+
+@inject ArabicLanguageHelper ArLangHelper
+
+<h4>@SharedLocalizer["OpportunityInformation"]</h4>
+<br />
+
+<div class="card Opportunities-sections-details">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <label asp-for="Name" class="control-label"></label>
+                <br />
+                <p>@Model.Name</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        <label asp-for="TypeId" class="control-label"></label>
+                        <br />
+                        <input asp-for="TypeId" type="hidden" />
+                        <p>@(SharedLocalizer.IsRightToLeft()? Model.TypeNameAr : Model.TypeName)</p>
+                    </div>
+
+                    <div class="col-12 col-lg-6 typeDependant">
+                        <label asp-for="TenderNumber" class="control-label"></label>
+                        <br />
+                        <p>@Model.TenderNumber</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <div class="row">
+                    <div class="col-12 col-lg-6">
+                        @if (Model.IsLocalTenderType)
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Local"]</label>
+                        }
+                        else
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Foreign"]</label>
+                        }
+                    </div>
+
+                    <div class="col-12 col-lg-6 typeDependant">
+                        @if (Model.IsLimitedTenderType)
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Limited"]</label>
+                        }
+                        else
+                        {
+                            <label class="label-sales-information">@SharedLocalizer["Public"]</label>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-4">
+                <label asp-for="DueDate" class="control-label"></label>
+                <br />
+                <p class="exclamation">
+                    @(Model.DueDate.Value.ToString("dd/MM/yyyy"))
+                    @if (Model.DueDate.Value >= DateTime.UtcNow)
+                    {
+                        <i class="fas fa-exclamation"
+                           rel="tooltip"
+                           title="@SharedLocalizer["EndingIn"] @(SharedLocalizer.IsRightToLeft() ? ArLangHelper.GetDayStringByNumber(Model.DaysRemaining.Value) : Model.DaysRemaining.ToString() + " " + SharedLocalizer["SmallDays"].Value)"></i>
+                    }
+                </p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="CustomerId" class="control-label">@SharedLocalizer["CustomerName"]</label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.CustomerNameAr : Model.CustomerName)</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="CountryId" class="control-label"></label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.CountryNameAr : Model.CountryName)</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="Address" class="control-label"></label>
+                <br />
+                <p>@Model.Address</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="SalesAgentId" class="control-label"></label>
+                <br />
+                <p>@Model.SalesAgentName</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="Budget" class="control-label"></label>
+                <br />
+                <p>@Model.Budget.ToString("C", CultureInfo.CreateSpecificCulture("en-EG"))</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="DepartmentId" class="control-label"></label>
+                <br />
+                <p>@(SharedLocalizer.IsRightToLeft()? Model.DepartmentNameAr : Model.DepartmentName)</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="ProjectManagerId" class="control-label"></label>
+                <br />
+                <p>@Model.ProjectManagerName</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="GuestId" class="control-label"></label>
+                <br />
+                <p>@Model.GuestName</p>
+            </div>
+
+            <div class="col-12 col-lg-8">
+                <label asp-for="Notes" class="control-label"></label>
+                <br />
+                <p>@Model.Notes</p>
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label asp-for="CreatedById" class="control-label"></label>
+                <br />
+                <p>@Model.CreatedByName</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row typeDependant">
+    @if (Model.IsBidBond)
+    {
+        <div class="col-12 col-lg-8">
+            <div id="oBidBond">
+                @await Html.PartialAsync("_DetailsBidBondPartial", Model.BidBondVM)
+            </div>
+        </div>
+    }
+    @if (Model.IsBookTender)
+    {
+        <div class="col-12 col-lg-4">
+            <div class="oBookTender">
+                @await Html.PartialAsync("_DetailsBookTenderPartial", Model.BookTenderVM)
+            </div>
+        </div>
+    }
+</div>
+

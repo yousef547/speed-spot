@@ -1,0 +1,91 @@
+﻿
+@model BidBondRequestViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Opportunities"];
+    ViewData["Level1Section"] = SharedLocalizer["PrintBidbondRequest"];
+}
+
+<style type="text/css" media="print">
+    @@page {
+        size: auto; /* auto is the initial value */
+        margin: 0mm; /* this affects the margin in the printer settings */
+    }
+</style>
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="printBidbond();">
+        @SharedLocalizer["Print"]
+    </button>
+}
+
+<div class="header-print-pdf">
+    <img src="/images/umsco01.png" />
+    <div class="qrcode" id="qrcode"></div>
+</div>
+<table class="print-table">
+    <tr>
+        <th colspan="2">
+            <h3>@SharedLocalizer["BidBondRequest"]</h3>
+        </th>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["AssignedToId"]</th>
+        <td>@Model.BidBondVM.AssignedToName</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["CustomerName"]</th>
+        <td>@(SharedLocalizer.IsRightToLeft() ? Model.CustomerNameAr : Model.CustomerName)</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["TypeId"]</th>
+        <td>@(Model.BidBondVM.CashType ? SharedLocalizer["LG"] : SharedLocalizer["Cash"])</td>
+    </tr>
+    <tr>
+        <th>@SharedLocalizer["Amount"]</th>
+        <td>@Model.BidBondVM.Amount</td>
+    </tr>
+    @if (Model.BidBondVM.CashType)
+    {
+        <tr>
+            <th>@SharedLocalizer["BankId"]</th>
+            <td>@(SharedLocalizer.IsRightToLeft() ? Model.BidBondVM.BidBondOn_BankNameAr : Model.BidBondVM.BidBondOn_BankName)</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["NoOfPeriods"]</th>
+            <td>@Model.BidBondVM.BidBondOn_NoOfPeriods</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["IssueDate"]</th>
+            <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+        </tr>
+        <tr>
+            <th>@SharedLocalizer["IsCredit"]</th>
+            <td>@(Model.BidBondVM.BidBondOn_IsCredit ? SharedLocalizer["Yes"] : SharedLocalizer["No"])</td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <th>@SharedLocalizer["Date"]</th>
+            <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+        </tr>
+    }
+</table>
+
+@section Scripts{
+    <script src="~/js/opportunities.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var qrcode = new QRCode("qrcode");
+            qrcode.makeCode(window.location.href);
+
+            $("#ready-spinner").fadeOut(function () {
+                printBidbond();
+
+                //$(this).remove(); // Optional if it's going to only be used once.
+            });
+        })
+    </script>
+}

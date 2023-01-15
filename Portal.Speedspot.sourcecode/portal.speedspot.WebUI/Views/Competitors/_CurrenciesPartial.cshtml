@@ -1,0 +1,57 @@
+﻿
+@model List<CompetitorBankCurrencyViewModel>
+
+@if (Model.Count == 0)
+{
+    Model.Add(new CompetitorBankCurrencyViewModel());
+}
+
+@{
+    int i = 0;
+}
+
+@foreach (var item in Model)
+{
+    <div class="row rowcurrency">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="CurrencyId_@i">@SharedLocalizer["Currency"]</label>
+                <select class="form-control inp-height currencyid"
+                        id="CurrencyId_@i"
+                        name="CurrencyId_@i"
+                        asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name", item.CurrencyId))">
+                    <option value="">@SharedLocalizer["Select"]</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="AccountNo_@i">@SharedLocalizer["AccountNo"]</label>
+                <input class="form-control inp-height accountno"
+                       type="text"
+                       id="AccountNo_@i"
+                       name="AccountNo_@i"
+                       value="@item.AccountNo">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group sec-iban">
+                <label class="control-label" for="IBAN_@i">@SharedLocalizer["IBAN"]</label>
+                <input class="form-control inp-height iban"
+                       type="text"
+                       id="IBAN_@i"
+                       name="IBAN_@i"
+                       value="@item.IBAN">
+            </div>
+        </div>
+        @if (i > 0)
+        {
+            <div class="col-md-3 action-currency">
+                <button class="btn btn-delete" onclick="deleteCurrency('@i')">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        }
+    </div>
+    i++;
+}

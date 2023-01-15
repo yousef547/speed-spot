@@ -1,0 +1,29 @@
+﻿@model List<StickyNoteViewModel>
+
+<div class="tolerance">
+    @foreach (var item in Model)
+    {
+        <div class="mb-3">
+            <div class="box-note-show">
+                <div class="header-note-show">
+                    <div class="date-title">
+                        <span>@item.Title</span>
+                        <span class="date">@item.CreatedDate.ToString("dd/MM/yyyy") | @item.CreatedDate.ToString("hh:mm tt")</span>
+                    </div>
+
+                    <a class="btn note-confirm-delete"
+                       data-itemid="@item.Id"
+                       data-source="DeletedNote"
+                       data-toggle="confirmation">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            </div>
+            <p>@item.Description</p>
+            @if (item.PageUrl != null)
+            {
+                <a class="go-page" href="@item.PageUrl" target="_blank">@SharedLocalizer[item.PageController] - @SharedLocalizer[item.PageAction]</a>
+            }
+        </div>
+    }
+</div>

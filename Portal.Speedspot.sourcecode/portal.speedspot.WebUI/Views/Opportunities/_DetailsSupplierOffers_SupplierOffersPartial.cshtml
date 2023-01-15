@@ -1,0 +1,117 @@
+﻿
+@model OpportunityViewModel
+
+<input id="soOpportunityId" asp-for="Id" type="hidden" />
+
+<!--<div class="form-global-inp">
+    <div class="">
+        <h5 class="mb-3">@SharedLocalizer["SelectSupplier"]:</h5>
+        <div class="row">
+            <div class="col-12 col-lg-3">
+                <div id="soAvailableSuppliers">
+                    @await Html.PartialAsync("_DetailsSupplierOffer_AvailableSuppliersPartial")
+                </div>-->
+@*<div class="form-group">
+        <label for="soSupplierId" class="control-label">@SharedLocalizer["SupplierId"]</label>
+        <select id="soSupplierId"
+                onchange="getSupplierOfferSupplierDetails()"
+                class="form-control"
+                asp-items="@(new SelectList(ViewBag.SupplierOffer_SupplierId as List<SupplierViewModel>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+            <option value="" selected>@SharedLocalizer["Select"]</option>
+        </select>
+    </div>*@
+<!--</div>
+
+            <div class="col-12 col-lg-9">
+                <div class="row" id="soSupplierDetails">
+                    @await Html.PartialAsync("_SupplierDetailsPartial", new SupplierViewModel())
+                </div>
+            </div>
+        </div>
+
+        <h5 class="my-3">@SharedLocalizer["SupplierOffer"]:</h5>
+
+        <div class="row">
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <label for="soPrice" class="control-label">@SharedLocalizer["Price"]</label>
+                    <input id="soPrice" class="form-control" onchange="getCurrencyDetails()" />
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <label for="soCurrencyId" class="control-label">@SharedLocalizer["CurrencyId"]</label>
+                    <select id="soCurrencyId"
+                            onchange="getCurrencyDetails()"
+                            class="form-control"
+                            asp-items="@(new SelectList(ViewBag.CurrencyId as List<Currency>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="row" id="soCurrencyDetails">
+                    @await Html.PartialAsync("_CurrencyDetailsPartial", new CalculatedCurrencyViewModel())
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <label for="soDeliveryTypeId" class="control-label">@SharedLocalizer["DeliveryTypeId"]</label>
+                    <select id="soDeliveryTypeId"
+                            class="form-control"
+                            asp-items="@(new SelectList(ViewBag.DeliveryTypeId as List<DeliveryType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <label for="soDeliveryDate" class="control-label">@SharedLocalizer["DeliveryDate"]</label>
+                    <input id="soDeliveryDate " type="date" class="form-control inp-height" />
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-3">
+                <div class="form-group">
+                    <label for="soPaymentTypeId" class="control-label">@SharedLocalizer["PaymentTypeId"]</label>
+                    <select id="soPaymentTypeId"
+                            class="form-control"
+                            asp-items="@(new SelectList(ViewBag.PaymentTypeId as List<PaymentType>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                        <option value="" selected>@SharedLocalizer["Select"]</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-3 bg-white">
+                <div class="form-group">
+
+                        <label class="file file-upload-label" for="soAttachmentFile">
+                            <span class="upload-file-icons">
+                                <i class="fas fa-file-upload"></i>
+                            </span>
+                            <span class="span-upload"> @SharedLocalizer["Attachment"]</span>
+                        </label>
+
+                        <input class="d-none" type="file" id="soAttachmentFile" aria-label="File browser example">
+                        <span class="file-custom"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-2 justify-content-end">
+            <button type="button" class="btn btn-outline-primary" onclick="addSupplierOffer()">
+                + @SharedLocalizer["Add"]
+            </button>
+        </div>
+    </div>
+</div>-->
+
+<div class="card mx-4" id="supplierOffers">
+    @await Html.PartialAsync("_DetailsSupplierOffers", Model.SupplierOfferVMs.OrderBy(o => o.LocalTotalPriceWCIF).ToList())
+</div>

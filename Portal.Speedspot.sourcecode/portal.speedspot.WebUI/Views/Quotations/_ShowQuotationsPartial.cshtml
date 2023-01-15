@@ -1,0 +1,141 @@
+﻿
+@using static portal.speedspot.Models.Constants.ApplicationEnums
+
+@model List<QuotationViewModel>
+
+@{
+    int? statusId = (int?)ViewBag.StatusEnum;
+}
+
+<table class="table table-head-fixed table-quotations">
+    <thead>
+        <tr>
+            <th>
+                @SharedLocalizer["Name"]
+            </th>
+            <th>
+                @SharedLocalizer["AdminId"]
+            </th>
+            <th>
+                @SharedLocalizer["TypeId"]
+            </th>
+            <th class="@(statusId == null ? "" : "d-none")">
+                @SharedLocalizer["Status"]
+            </th>
+            <th>
+                @SharedLocalizer["Offers"]
+            </th>
+            <th>
+                @SharedLocalizer["CreatedById"]
+            </th>
+            <th>
+                @SharedLocalizer["DueDate"]
+            </th>
+            <th class="no-sort">
+                @SharedLocalizer["Actions"]
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <span class="name-details one-line">
+                        @item.OpportunityName
+                    </span>
+                </td>
+                <td>
+                    <span class="customer-name-details one-line">
+                        @item.AdminName
+                    </span>
+                </td>
+                <td>
+                    <span class="type-details @(!item.OpportunityVM.IsLocalTenderType ? "text-orange" : !item.OpportunityVM.IsLimitedTenderType ? "" : "text-navy")">
+                        @(SharedLocalizer.IsRightToLeft()? item.OpportunityVM.TypeNameAr : item.OpportunityVM.TypeName)
+                    </span>
+                </td>
+                <td class="@(statusId == null ? "" : "d-none")">
+                    <span class="name-details one-line text-danger">
+                        @(SharedLocalizer.IsRightToLeft() ? item.StatusNameAr : item.StatusName)
+                    </span>
+                </td>
+                <td>
+                    <span class="customer-name-details one-line">
+                        @item.OfferVMs.Count
+                    </span>
+                </td>
+                <td>
+                    <span class="customer-name-details one-line">
+                        @item.CreatedByName
+                    </span>
+                </td>
+                <td class="date-details"
+                    data-sort="@item.DueDate.ToString("yyyy-MM-dd")"
+                    data-filter="@item.DueDate.ToString("yyyy-MM-dd")">
+                    @item.DueDate.ToString("dd/MM/yyyy")
+                </td>
+                <td class="actions-table-btn min-w-250">
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.Details)).Succeeded)
+                    {
+                        <a asp-action="Details" asp-route-id="@item.Id" asp-route-statusid="@statusId" class="btn btn-info info-details my-1 show-loader-ajax">
+                            <i class="fas fa-info"></i>
+                        </a>
+                    }
+                    @if (item.HasRemainingOffers)
+                    {
+                        <a class="btn my-1 btn-add-new-offer show-loader-ajax"
+                           asp-action="AddOffer"
+                           asp-route-id="@item.Id">
+                            <i class="fas fa-plus fa-xs"></i>
+                            <span class="newoffer">@SharedLocalizer["NewOffer"]</span>
+                        </a>
+                    }
+                    @*else
+                        {
+                            <a class="btn my-1 btn-add-new-offer show-loader"
+                               asp-action="Offers"
+                               asp-route-id="@item.Id">
+                                <span class="newoffer">
+                                    @SharedLocalizer["Offers"]
+                                </span>
+                            </a>
+                        }*@
+                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Quotations.Delete)).Succeeded)
+                    {
+                        if (statusId == (int)QuotationStatusEnum.New)
+                        {
+                            <a class="btn quotations-confirm-delete"
+                               data-status="@statusId"
+                               title="@SharedLocalizer["BackToOpportunity"]"
+                               data-itemid="@item.Id" data-source="convertQuotation"
+                               data-singleton="true"
+                               data-popout="true"
+                               data-toggle="confirmation">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a class="btn quotations-confirm-delete"
+                               data-status="@statusId"
+                               title="@SharedLocalizer["Delete"]"
+                               data-itemid="@item.Id" data-source="myQuotations"
+                               data-singleton="true"
+                               data-popout="true"
+                               data-toggle="confirmation">
+                                <i class="fas fa-archive"></i>
+                            </a>
+                        }
+                    }
+                    <button type="button" class="btn btn-fav my-1" onclick="favourite(@item.Id)">
+                        <i id="favouriteIcon_@item.Id" class="fa@(item.IsFavourite ? "s" : "r") fa-star"></i>
+                    </button>
+                    @*<a class="btn btn-dote my-1">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

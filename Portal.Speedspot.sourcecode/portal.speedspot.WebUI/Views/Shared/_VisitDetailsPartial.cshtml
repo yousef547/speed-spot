@@ -1,0 +1,50 @@
+﻿
+@model VisitViewModel
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="ReasonName"></label>
+                    <p class="modal-text">@(SharedLocalizer.IsRightToLeft() ? Model.ReasonNameAr : Model.ReasonName)</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="SalesAgentId"></label>
+                    <p class="modal-text">@Model.SalesAgentName</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="CustomerId"></label>
+                    <p class="modal-text">@(SharedLocalizer.IsRightToLeft() ? Model.CustomerNameAr : Model.CustomerName)</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="DateTime"></label>
+                    <p class="modal-text">@Model.DateTime.ToString("yyyy-MM-dd") - <span class="time">@Model.DateTime.ToString("hh:mm tt")</span></p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="Duration">@SharedLocalizer["VisitDuration"] (@SharedLocalizer["Hours"])</label>
+                    <p class="modal-text">@Model.Duration</p>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="modal-title" asp-for="Notes"></label>
+                    <p class="modal-text">@Model.Notes</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

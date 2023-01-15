@@ -1,0 +1,193 @@
+﻿
+@model OpportunityViewModel
+
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["Level1Section"] = SharedLocalizer["Sales"];
+    ViewData["Level2Section"] = SharedLocalizer["Opportunities"];
+    ViewData["Level2Url"] = Url.Action("Index", "Opportunities");
+    ViewData["Level3Section"] = SharedLocalizer["OpportunityDetails"];
+}
+
+@section HeaderActions{
+
+    <div id="changeableActions">
+        @await Html.PartialAsync("_DetailsChangeableActionsPartial", Model)
+    </div>
+
+    <div class="vertical-split"></div>
+
+    <div class="btn-actions-header-second">
+        @if (!Model.IsConverted)
+        {
+            if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.Edit)).Succeeded)
+            {
+                <a asp-action="Edit" class="btn btn-action show-loader" asp-route-id="@Model.Id" title="@SharedLocalizer["Edit"]">
+                    <i class="far fa-edit"></i>
+                </a>
+            }
+        }
+        else
+        {
+            if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.SuperEdit)).Succeeded)
+            {
+                <a asp-action="Edit" class="btn btn-action show-loader" asp-route-id="@Model.Id" title="@SharedLocalizer["Edit"]">
+                    <i class="far fa-edit"></i>
+                </a>
+            }
+        }
+
+        <button type="button" class="btn btn-action" onclick="favourite('@Model.Id')" title="@SharedLocalizer[Model.IsFavourite ? "RemoveFromFavourites" : "AddToFavourites"]">
+            <i id="favouriteIcon_@Model.Id" class="fa@(Model.IsFavourite ? "s" : "r") fa-star"></i>
+        </button>
+
+        @*<a href="#" class="btn btn-action">
+                <i class="fas fa-print"></i>
+            </a>
+
+            <a href="#" class="btn btn-action">
+                <i class="fas fa-ellipsis-h"></i>
+            </a>*@
+    </div>
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item ">
+            <a class="nav-link active" id="si-tab" data-toggle="tab" href="#si" role="tab" aria-controls="si" aria-selected="true">@SharedLocalizer["Overview"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="ts-tab" data-toggle="tab" href="#ts" role="tab" aria-controls="ts" aria-selected="false">@SharedLocalizer["TechnicalSpecs"]</a>
+        </li>
+        @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewSupplierOffers)).Succeeded)
+        {
+            if (Model.IsTechnicalApproved)
+            {
+                <li class="nav-item">
+                    <a class="nav-link" id="so-tab" data-toggle="tab" href="#so" role="tab" aria-controls="so" aria-selected="false">
+                        @SharedLocalizer["SupplierOffers"]
+                        <span id="totalOffersNo" class="badge bg-info mx-1">@Model.SupplierOffersNo</span>
+                    </a>
+                </li>
+            }
+        }
+        <li class="nav-item">
+            <a class="nav-link" id="ofiles-tab" data-toggle="tab" href="#ofiles" role="tab" aria-controls="ofiles" aria-selected="false">@SharedLocalizer["Files"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="fstudy-tab" data-toggle="tab" href="#fstudy" role="tab" aria-controls="fstudy" aria-selected="false">@SharedLocalizer["FeasibilityStudy"]</a>
+        </li>
+    </ul>
+}
+
+<br />
+<div class="row d-flex align-items-center m-2">
+    <div class="col-4 col-xl-5">
+        <p class="title-any">@SharedLocalizer["ID"]: #@Model.SerialStr</p>
+    </div>
+    <div class="col-8 col-xl-7">
+        <div class="progress-list-container">
+            <div class="progress-list-header">
+                @SharedLocalizer["TenderProgress"]
+            </div>
+            <ul class="progress-list">
+                <li class="progress-list-item active">
+                    <span class="progress-list-dot"></span>
+                    <span class="progress-list-text">
+                        @SharedLocalizer["Opportunity"]
+                    </span>
+                </li>
+                <li class="progress-list-item">
+                    <span class="progress-list-dot"></span>
+                    <span class="progress-list-text">
+                        @SharedLocalizer["Quotation"]
+                    </span>
+                </li>
+                <li class="progress-list-item">
+                    <span class="progress-list-dot"></span>
+                    <span class="progress-list-text">
+                        @SharedLocalizer["TechnicalSession"]
+                    </span>
+                </li>
+                <li class="progress-list-item">
+                    <span class="progress-list-dot"></span>
+                    <span class="progress-list-text">
+                        @SharedLocalizer["FinancialSession"]
+                    </span>
+                </li>
+                <li class="progress-list-item">
+                    <span class="progress-list-dot"></span>
+                    <span class="progress-list-text">
+                        @SharedLocalizer["PurchaseOrder"]
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="tab-content" id="mainTabContent">
+    <div class="tab-pane fade show active" id="si" role="tabpanel" aria-labelledby="si-tab">
+        @await Html.PartialAsync("_DetailsSalesInformationPartial", Model)
+    </div>
+    <div class="tab-pane fade" id="ts" role="tabpanel" aria-labelledby="ts-tab">
+        @await Html.PartialAsync("_DetailsTechnicalSpecificationPartial", Model)
+    </div>
+    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Opportunities.ViewSupplierOffers)).Succeeded)
+    {
+        if (Model.IsTechnicalApproved)
+        {
+            <div class="tab-pane fade" id="so" role="tabpanel" aria-labelledby="so-tab">
+                @await Html.PartialAsync("_DetailsSupplierOffersMainPartial", Model)
+            </div>
+        }
+    }
+    <div class="tab-pane fade" id="ofiles" role="tabpanel" aria-labelledby="ofiles-tab">
+        <input id="ofilesOpportunityId" asp-for="@Model.Id" type="hidden" />
+        <div id="opportunityFiles">
+            @await Html.PartialAsync("_DetailsFiles", Model.OtherAttachmentVMs)
+        </div>
+    </div>
+    <div class="tab-pane fade" id="fstudy" role="tabpanel" aria-labelledby="fstudy-tab">
+
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/opportunities.js"></script>
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $("[rel=tooltip]").tooltip({ placement: '@(SharedLocalizer.IsRightToLeft()? "left" : "right")' });
+
+        checkType();
+        showHideSections();
+        calculateHoldAmount();
+        calculateExpiryDate();
+        calculateBookTenderTotal();
+
+        $("[data-toggle=confirmation]").confirmation({
+            rootSelector: '[data-toggle=confirmation]',
+            // other options
+            popout: true,
+            singleton: true,
+            title: "@SharedLocalizer["DeleteConfirmationTitle"]",
+            btnOkLabel: "@SharedLocalizer["DeleteOkLabel"]",
+            btnCancelLabel: "@SharedLocalizer["DeleteCancelLabel"]",
+            onConfirm: function () {
+                switch ($(this).data('source')) {
+                    case "archiveOpportunity":
+                        removeOpportunity($(this).data('itemid'));
+                        $(this).toggleClass('d-none');
+                        $("a[data-source='unArchiveOpportunity']").toggleClass("d-none");
+                        break;
+                    case "unArchiveOpportunity":
+                        unRemoveOpportunity($(this).data('itemid'));
+                        $(this).toggleClass('d-none');
+                        $("a[data-source='archiveOpportunity']").toggleClass("d-none");
+                        break;
+                }
+            }
+        });
+    });
+    </script>
+}

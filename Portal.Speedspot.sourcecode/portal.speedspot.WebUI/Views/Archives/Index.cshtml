@@ -1,0 +1,44 @@
+
+@{
+    ViewData["Title"] = SharedLocalizer["Archives"];
+    ViewData["Level1Section"] = SharedLocalizer["Archives"];
+}
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="opportunity-tab" data-toggle="tab" href="#opportunity" role="tab" aria-controls="opportunity" aria-selected="false">@SharedLocalizer["NotJoined"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tsession-tab" data-toggle="tab" href="#tsession" role="tab" aria-controls="tsession" aria-selected="false">@SharedLocalizer["RejectedTS"]</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="fsession-tab" data-toggle="tab" href="#fsession" role="tab" aria-controls="fsession" aria-selected="false">@SharedLocalizer["RejectedFS"]</a>
+        </li>
+    </ul>
+}
+
+<br />
+
+<div class="tab-content" id="mainTabContent">
+    <div class="tab-pane fade show active" id="opportunity" role="tabpanel" aria-labelledby="opportunity-tab">
+    </div>
+    <div class="tab-pane fade" id="tsession" role="tabpanel" aria-labelledby="tsession-tab">
+    </div>
+    <div class="tab-pane fade" id="fsession" role="tabpanel" aria-labelledby="fsession-tab">
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/js/opportunities.js"></script>
+    <script src="~/js/quotations.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            reloadOpportunityComponent();
+            reloadRejectedTSQuotationsComponent();
+            reloadRejectedFSQuotationsComponent();
+        })
+    </script>
+}

@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = SharedLocalizer["ChartOfAccounts"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+}
+
+@section HeaderActions{
+
+}
+
+<br />
+
+@section AdditionalHeaderContent{
+    <ul class="nav nav-pills mx-4 mainTab-details" id="mainTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="incomeAccounts-tab" data-toggle="tab" href="#incomeAccounts" role="tab" aria-controls="incomeAccounts" aria-selected="true">
+                @SharedLocalizer["Income"]
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="expenseAccounts-tab" data-toggle="tab" href="#expenseAccounts" role="tab" aria-controls="expenseAccounts" aria-selected="false">
+                @SharedLocalizer["Expenses"]
+            </a>
+        </li>
+    </ul>
+}
+
+<div class="tab-content">
+    <div class="tab-pane fade active show" id="incomeAccounts" role="tabpanel" aria-labelledby="incomeAccounts-tab">
+        <div class="bg-full d-none" id="income-spinner">
+            <div class="spinner-loading" role="status">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mx-4 justify-content-end">
+            <div class="col-12">
+                <select class="select-depart-id select-no-border-white" data-live-search="true"
+                        onchange="incomeDepartmentChanged()"
+                        id="incomeDepartmentId"
+                        asp-items="@(new SelectList(ViewBag.Departments as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                </select>
+
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Create)).Succeeded)
+                {
+                    <a class="btn btn-add-primary visits d-inline-block" onclick="addParentIncomeAccount()">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="tree-parent scroll-Custom mt-2" id="income-tree-parent">
+            <div class="tree-financials">
+                <div class="all-box" id="incomeTree">
+                    @await Html.PartialAsync("_ParentsPartial", new List<FinancialAccountViewModel>())
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="expenseAccounts" role="tabpanel" aria-labelledby="expenseAccounts-tab">
+        <div class="bg-full d-none" id="expense-spinner">
+            <div class="spinner-loading" role="status">
+                <div class="spinner">
+                    <div class="rect1"></div>
+                    <div class="rect2"></div>
+                    <div class="rect3"></div>
+                    <div class="rect4"></div>
+                    <div class="rect5"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mx-4 justify-content-end">
+            <div class="col-12">
+                <select class="select-depart-id select-no-border-white" data-live-search="true"
+                        onchange="expenseDepartmentChanged()"
+                        id="expenseDepartmentId"
+                        asp-items="@(new SelectList(ViewBag.Departments as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+                </select>
+
+                @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.ChartOfAccounts.Create)).Succeeded)
+                {
+                    <a class="btn btn-add-primary visits d-inline-block" onclick="addParentExpenseAccount()">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <div class="tree-parent scroll-Custom mt-2" id="expense-tree-parent">
+            <div class="tree-financials">
+                <div class="all-box" id="expenseTree">
+                    @await Html.PartialAsync("_ParentsPartial", new List<FinancialAccountViewModel>())
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCreate" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md modal-tree-finan">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="account-modal-title">@SharedLocalizer["AccountInfo"]</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="accountInfoModal">
+                @await Html.PartialAsync("_AccountInfoModal", new FinancialAccountViewModel())
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalViewBox" data-keyboard="true" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="account-modal-title">@SharedLocalizer["AccountInfo"]</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-supp my-4" id="viewInfoModal">
+                @await Html.PartialAsync("_ViewInBox", new FinancialAccountViewModel())
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <div class="action action-modal">
+                    <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                        @SharedLocalizer["Done"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalViewRun" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="card" id="JournalEntry">
+                    <partial name="_TableEntryPartial" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Send message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    <script src="~/js/chartofaccounts.js"></script>
+
+    <script type="text/javascript">
+        incomeDepartmentChanged();
+        expenseDepartmentChanged();
+        scrollGrabInit('income-tree-parent');
+        scrollGrabInit('expense-tree-parent');
+        $("#incomeDepartmentId").selectpicker();
+        $("#expenseDepartmentId").selectpicker();
+    </script>
+}

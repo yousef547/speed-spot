@@ -1,0 +1,49 @@
+﻿@model IList<SupplierOfferViewModel>
+@{
+    var offerSupplier = ViewData["offerSupplier"] as List<SupplierPoOfferViewModel>;
+}
+<table class="table table-supplier-purchasing ">
+    <thead>
+        <tr>
+            <th></th>
+            <th class="bg-white">@SharedLocalizer["OfferNumber"]</th>
+            @*<th class="bg-white">@SharedLocalizer["Country"]</th>*@
+            <th class="bg-white">@SharedLocalizer["DeliveryRange"]</th>
+            <th class="bg-white">@SharedLocalizer["Date"]</th>
+            <th class="bg-white">@SharedLocalizer["Price"]</th>
+            <th class="bg-white">@SharedLocalizer["LocalPriceTable"]</th>
+            <th class="bg-white">@SharedLocalizer["Payment"]</th>
+            <th class="bg-white">@SharedLocalizer["Offer"]</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <div class="icheck-primary" >
+                        <input type="checkbox" class="checkBoxOffer" @(offerSupplier?.FirstOrDefault(x=>x.SupplierOfferId == item.Id) != null ?"checked":"") id="offer_@item.Id" name="SupplierPOVMs[].SupplierPoOffers[].SupplierOfferId" value="@item.Id">
+                        <label class="" for="offer_@item.Id">
+                        </label>
+                    </div>
+                </td>
+                <td class="bg-white offerId">#@item.Id</td>
+                @*<td class="bg-white country">@item.cou</td>*@
+                <td class="bg-white delivery">@item.DeliveryTypeName</td>
+                <td class="bg-white date">  @SharedLocalizer["From"] @item.DeliveryRangeFrom @SharedLocalizer["To"] @item.DeliveryRangeTo @SharedLocalizer["Days"] </td>
+                <td class="bg-white price-eg">@item.TotalPrice @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" + Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)</td>
+                <td class="bg-white price">@item.LocalTotalPriceWCIF @item.CurrencySymbol</td>
+                <td class="bg-white payment">@item.PaymentTypeName</td>
+                <td class="bg-white">
+                    @foreach (var attach in item.AttachmentVMs as List<SupplierOfferAttachmentViewModel>)
+                    {
+                        <a class="attachment-download" href="/images/Opportunities/@attach.AttachmentPath">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -1,0 +1,142 @@
+﻿
+@{
+    List<IGrouping<int, TreasuryViewModel>> cashGroup = ViewData["CashGroup"] as List<IGrouping<int, TreasuryViewModel>>;
+    List<IGrouping<int, TreasuryViewModel>> bankGroup = ViewData["BankGroup"] as List<IGrouping<int, TreasuryViewModel>>;
+}
+
+<h4>
+    @SharedLocalizer["BankAccounts"]
+    <span>
+        @bankGroup.Sum(x => x.Sum(t => t.Balance) * x.FirstOrDefault().CurrencyVM.ExchangeRate).ToString("#,##0.00")
+        @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+    </span>
+</h4>
+@foreach (var group in bankGroup)
+{
+    <h6>
+        @(SharedLocalizer.IsRightToLeft() ? group.FirstOrDefault().CurrencyVM.NameAr : group.FirstOrDefault().CurrencyVM.Name)
+        <span>
+            @group.Sum(t => t.Balance).ToString("#,##0.00") @group.FirstOrDefault().CurrencyVM.Symbol
+        </span>
+    </h6>
+    <div class="row">
+        @foreach (var item in group)
+        {
+            <div class="col-3">
+                <div class="card text-center @(item.IsArchived?"card-archive":"")">
+                    <div class="card-header">
+                        @(SharedLocalizer.IsRightToLeft() ? item.BankVM.NameAr : item.BankVM.Name)
+                        <br />
+                        @item.AccountNo
+                        <div class="card-tools">
+                            <div class="dropdown">
+                                <button type="button"
+                                        class="btn btn-tool"
+                                        id="dropdownMenuLink"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Treasuries.Edit)).Succeeded)
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">@SharedLocalizer["Edit"]</a>
+                                    }
+
+                                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Treasuries.Delete)).Succeeded)
+                                    {
+                                        if (!item.IsArchived)
+                                        {
+                                            <a class="dropdown-item treasuries-confirm-delete" data-toggle="confirmation"
+                                               data-source="archiveTreasuries"
+                                               data-itemid="@item.Id">@SharedLocalizer["Archive"]</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item treasuries-confirm-delete" data-toggle="confirmation"
+                                               data-source="UnarchiveTreasuries"
+                                               data-itemid="@item.Id">@SharedLocalizer["Unarchive"]</a>
+                                        }
+
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@item.Balance.ToString("#,##0.00") @item.CurrencyVM.Symbol</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<h4>
+    @SharedLocalizer["Cash"]
+    <span>
+        @cashGroup.Sum(x => x.Sum(t => t.Balance) * x.FirstOrDefault().CurrencyVM.ExchangeRate).ToString("#,##0.00")
+        @(CultureInfo.GetCultureInfo((SharedLocalizer.IsRightToLeft() ? "ar" : "en") + "-" +
+                                                       Configuration.GetSection("AppSettings").GetValue<string>("CultureCountry")).NumberFormat.CurrencySymbol)
+    </span>
+</h4>
+@foreach (var group in cashGroup)
+{
+    <h6>
+        @(SharedLocalizer.IsRightToLeft() ? group.FirstOrDefault().CurrencyVM.NameAr : group.FirstOrDefault().CurrencyVM.Name)
+        <span>
+            @group.Sum(t => t.Balance).ToString("#,##0.00") @group.FirstOrDefault().CurrencyVM.Symbol
+        </span>
+    </h6>
+    <div class="row">
+        @foreach (var item in group)
+        {
+            <div class="col-3">
+                <div class="card text-center @(item.IsArchived?"card-archive":"")">
+                    <div class="card-header">
+                        @item.Name
+                        <div class="card-tools">
+                            <div class="dropdown">
+                                <button type="button"
+                                        class="btn btn-tool"
+                                        id="dropdownMenuLink"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Treasuries.Edit)).Succeeded)
+                                    {
+                                        <a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id">@SharedLocalizer["Edit"]</a>
+                                    }
+
+                                    @if ((await AuthorizationService.AuthorizeAsync(User, Permissions.Treasuries.Delete)).Succeeded)
+                                    {
+                                        if (!item.IsArchived)
+                                        {
+                                            <a class="dropdown-item treasuries-confirm-delete" data-toggle="confirmation"
+                                               data-source="archiveTreasuries"
+                                               data-itemid="@item.Id">@SharedLocalizer["Archive"]</a>
+                                        }
+                                        else
+                                        {
+                                            <a class="dropdown-item treasuries-confirm-delete" data-toggle="confirmation"
+                                               data-source="UnarchiveTreasuries"
+                                               data-itemid="@item.Id">@SharedLocalizer["Unarchive"]</a>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@item.Balance.ToString("#,##0.00") @item.CurrencyVM.Symbol</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,77 @@
+﻿
+@model List<BankBranchViewModel>
+
+@if (Model.Count == 0)
+{
+    Model.Add(new BankBranchViewModel());
+}
+
+<table class="table table-active">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>@SharedLocalizer["Name"]</th>
+            <th>@SharedLocalizer["NameAr"]</th>
+            <th>@SharedLocalizer["Address"]</th>
+            <th>@SharedLocalizer["SwiftCode"]</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td>@(i + 1)</td>
+                <td>
+                    <input type="text" class="form-control branchname" name="BranchVMs[@i].Name" id="BranchVMs[@i]_Name" value="@Model[i].Name" />
+                    @if (ViewData.ModelState[$"BranchVMs[{i}].Name"] != null &&
+ViewData.ModelState[$"BranchVMs[{i}].Name"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                    {
+                        <span class="text-danger field-validation-error">
+                            <span>@ViewData.ModelState[$"BranchVMs[{i}].Name"].Errors[0].ErrorMessage</span>
+                        </span>
+                    }
+                </td>
+                <td>
+                    <input type="text" class="form-control branchnamear" name="BranchVMs[@i].NameAr" value="@Model[i].NameAr" />
+                    @if (ViewData.ModelState[$"BranchVMs[{i}].NameAr"] != null &&
+ViewData.ModelState[$"BranchVMs[{i}].NameAr"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                    {
+                        <span class="text-danger field-validation-error">
+                            <span>@ViewData.ModelState[$"BranchVMs[{i}].NameAr"].Errors[0].ErrorMessage</span>
+                        </span>
+                    }
+                </td>
+                <td>
+                    <input type="text" class="form-control branchaddress" name="BranchVMs[@i].Address" value="@Model[i].Address" />
+                    @if (ViewData.ModelState[$"BranchVMs[{i}].Address"] != null &&
+ViewData.ModelState[$"BranchVMs[{i}].Address"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                    {
+                        <span class="text-danger field-validation-error">
+                            <span>@ViewData.ModelState[$"BranchVMs[{i}].Address"].Errors[0].ErrorMessage</span>
+                        </span>
+                    }
+                </td>
+                <td>
+                    <input type="text" class="form-control branchswiftcode" name="BranchVMs[@i].SwiftCode" value="@Model[i].SwiftCode" />
+                    @if (ViewData.ModelState[$"BranchVMs[{i}].SwiftCode"] != null &&
+ViewData.ModelState[$"BranchVMs[{i}].SwiftCode"].ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+                    {
+                        <span class="text-danger field-validation-error">
+                            <span>@ViewData.ModelState[$"BranchVMs[{i}].SwiftCode"].Errors[0].ErrorMessage</span>
+                        </span>
+                    }
+                </td>
+                <td>
+                    @if (i > 0)
+                    {
+                        <button type="button" class="btn btn-action btn-action-danger" onclick="deleteBranch('@i')">
+                            <i class="far fa-trash-alt"></i>
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

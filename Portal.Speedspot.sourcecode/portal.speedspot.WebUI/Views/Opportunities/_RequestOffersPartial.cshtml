@@ -1,0 +1,112 @@
+﻿
+@model List<RequestOfferViewModel>
+
+@{
+    int i = 0;
+}
+
+<div class="row">
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="col-12">
+            <div class="card">
+                <table class="table tblRequestOffers" id="tblRequestOffers">
+                    <thead>
+                        <tr>
+                            <th>@SharedLocalizer["SupplierId"]</th>
+                            <th>@SharedLocalizer["Items"]</th>
+                            <th>@SharedLocalizer["Status"]</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var offer in Model)
+                        {
+                            if (offer.SupplierId != 0)
+                            {
+                                <tr>
+                                    <td class="name-request">#@(SharedLocalizer.IsRightToLeft() ? offer.SupplierVM.NameAr : offer.SupplierVM.Name)</td>
+                                    <td class="item-request">
+                                        @{
+                                            int j = 0;
+                                        }
+                                        @foreach (var productVM in offer.ProductVMs)
+                                        {
+                                            <a data-toggle="modal"
+                                               data-target="#tsProductDetailsModal"
+                                               onclick="loadProductDetails('@productVM.ProductVM.Id')">
+                                                @(SharedLocalizer.IsRightToLeft() ? productVM.ProductVM.ProductNameAr : productVM.ProductVM.ProductName)
+                                            </a>
+                                        }
+                                    </td>
+                                    <td id="emailSentMSG_@i">
+                                        @*<p class="@(offer.IsEmailSent ? "" : "d-none")" id="emailSentMSG_@i"><i class="fas fa-check"></i>@SharedLocalizer["Sent"]</p>*@
+                                        <p class="sent @(offer.IsEmailSent ? "" : "d-none")"><i class="fas fa-check"></i> @SharedLocalizer["Sent"]</p>
+                                        <p class="notsent @(!offer.IsEmailSent ? "" : "d-none")"><i class="fas fa-times"></i> @SharedLocalizer["NotSent"]</p>
+                                    </td>
+                                    <td class="actions">
+                                        <input name="RequestOfferVMs[@i].Id" value="@offer.Id" type="hidden" />
+                                        <input name="RequestOfferVMs[@i].OpportunityId" value="@offer.OpportunityId" type="hidden" />
+                                        <input name="RequestOfferVMs[@i].SupplierId" value="@offer.SupplierId" type="hidden" />
+                                        <input name="RequestOfferVMs[@i].IsSendEmail" value="@offer.IsSendEmail.ToString()" @*checked="@offer.IsSendEmail"*@ type="hidden" />
+                                        <input name="RequestOfferVMs[@i].SupplierVM.Name" value="@offer.SupplierVM.Name" type="hidden" />
+                                        <input name="RequestOfferVMs[@i].SupplierVM.NameAr" value="@offer.SupplierVM.NameAr" type="hidden" />
+                                        <input name="RequestOfferVMs[@i].IsEmailSent" value="@offer.IsEmailSent.ToString()" @*checked="@offer.IsEmailSent"*@ type="hidden" />
+                                        @{
+                                            j = 0;
+
+                                            foreach (var productVM in offer.ProductVMs)
+                                            {
+                                                <span>
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].Id" value="@productVM.Id" type="hidden" />
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].RequestOfferId" value="@productVM.RequestOfferId" type="hidden" />
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].ProductId" value="@productVM.ProductId" type="hidden" />
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].ProductVM.Id" value="@productVM.ProductVM.Id" type="hidden" />
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].ProductVM.ProductName" value="@productVM.ProductVM.ProductName" type="hidden" />
+                                                    <input name="RequestOfferVMs[@i].ProductVMs[@j].ProductVM.ProductNameAr" value="@productVM.ProductVM.ProductNameAr" type="hidden" />
+                                                </span>
+                                                j++;
+                                            }
+                                        }
+
+                                        @if (!offer.IsEmailSent)
+                                        {
+                                            <button type="button" class="btn btn-sent" onclick="requestOfferEmailSent('@i', this, '@offer.Id')">
+                                                @SharedLocalizer["Sent"]
+                                            </button>
+
+                                            if (offer.Id != 0)
+                                            {
+                                                <a class="btn btn-delete"
+                                                   onclick="deleteDbRequestOffer('@offer.Id', this)">
+                                                    <i class="far fa-trash-alt"></i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-delete"
+                                                   onclick="deleteRequestOffer(this)">
+                                                    <i class="far fa-trash-alt"></i>
+                                                </a>
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            i++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-12 mt-3 mx-3">
+            @SharedLocalizer["AddedRequestOffersMSG"]
+        </div>
+    }
+</div>
+
+<input type="hidden" id="selected-supplier-ids">

@@ -1,0 +1,40 @@
+
+
+@{
+    ViewData["Title"] = SharedLocalizer["Treasuries"];
+    ViewData["Level1Section"] = SharedLocalizer["Financials"];
+}
+
+@section HeaderActions{
+    <div class="second-header-button-and-start">
+        <a asp-action="Create" class="btn btn-add-primary visits show-loader"
+           title="@SharedLocalizer["Create"] @SharedLocalizer["Treasury"]">
+            <i class="fas fa-plus"></i>
+        </a>
+    </div>
+}
+<div class="row mx-4">
+    <div class="col-12">
+        <div class="input-group mb-3 justify-content-start align-items-center">
+            <select class="select-depart-id select-no-border-white" data-live-search="true"
+                    onchange="getTreasuries()"
+                    id="incomeDepartmentId"
+                    asp-items="@(new SelectList(ViewBag.Departments as List<Department>, "Id", SharedLocalizer.IsRightToLeft()? "NameAr" : "Name"))">
+            </select>
+        </div>
+    </div>
+</div>
+
+<div id="trasuries" class="mx-4">
+    
+</div>
+@section Scripts{
+    <script src="~/js/treasuries.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            getTreasuries();
+            $("#incomeDepartmentId").selectpicker();
+        })
+    </script>
+}

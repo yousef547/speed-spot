@@ -1,0 +1,56 @@
+﻿
+@model VisitReasonViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Create"].Value + " " + SharedLocalizer["VisitReason"].Value;
+    ViewData["Level1Section"] = SharedLocalizer["Lookups"];
+    ViewData["Level2Section"] = SharedLocalizer["VisitReasons"];
+    ViewData["Level2Url"] = Url.Action("Index");
+
+}
+
+@section HeaderActions{
+    <button class="btn btn-outline-primary mx-2 headres-action-global" value="Add" onclick="saveForm()">
+        <i class="fas fa-check"></i> @SharedLocalizer["Add"]
+    </button>
+
+    <a asp-action="Index" class="btn btn-outline-danger mx-2 show-loader headres-action-global">
+        <i class="fas fa-times"></i> @SharedLocalizer["Cancel"]
+    </a>
+}
+
+<form method="post" asp-action="Create" class="d-inline" id="VisitReasonsForm">
+    <div class="create-organizationTypes mx-4">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="Name"></label>
+                        <input class="form-control inp-height" type="text" asp-for="Name">
+                        <span class="text-danger" asp-validation-for="Name"></span>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="form-group">
+                        <label class="control-label" asp-for="NameAr"></label>
+                        <input class="form-control inp-height" type="text" asp-for="NameAr">
+                        <span class="text-danger" asp-validation-for="NameAr"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script type="text/javascript">
+        saveForm = function () {
+            var isFormValid = $("#VisitReasonsForm").valid();
+            if (isFormValid) {
+                showLoader();
+                $("#VisitReasonsForm").submit();
+            }
+        }
+    </script>
+}
